@@ -2,7 +2,6 @@ import {useState, useEffect} from 'react';
 
 type AsyncCallback<T> = () => Promise<T>;
 
-
 interface ServiceResult<T> {
   data: T | null,
   error: Error | null,
@@ -18,7 +17,7 @@ const useService = <T>(callback: AsyncCallback<T>): ServiceResult<T> => {
     const executeCallback = async () => {
       setLoading(true);
       try {
-        const result = await callback(); // Führe den übergebenen Callback aus
+        const result = await callback();
         setData(result);
       } catch (err) {
         setError(err as Error);
