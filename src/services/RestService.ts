@@ -1,9 +1,8 @@
 import axios from 'axios';
 import {makeRedirectUri} from "expo-auth-session";
-import User from "@/model/User";
+import {User} from "@/src/model/User";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
-const JWT_TOKEN = process.env.EXPO_PUBLIC_JWT_TOKEN;
 
 export interface Token {
     access_token: string,
@@ -14,9 +13,8 @@ export interface Token {
 
 }
 
-
 const RestService = {
-    exchangeSpotifyCodeForToken: async (code: string) => {
+    exchangeSpotifyCodeForToken: async (code: string, jwtToken: string) => {
         try {
             const redirectUri = makeRedirectUri({
                 scheme: 'led.matrix',
@@ -25,7 +23,7 @@ const RestService = {
             const response = await axios.get<{ token: Token }>(
                 `${API_URL}/spotify/token/generate/code/${code}/redirect-uri/${encodeURIComponent(redirectUri)}`, {
                     headers: {
-                        Authorization: `Bearer ${JWT_TOKEN}`,
+                        Authorization: `Bearer ${jwtToken}`,
                     }
                 }
             );
@@ -36,11 +34,11 @@ const RestService = {
         }
     },
 
-    fetchAllUser: async () => {
+    fetchAllUser: async (jwtToken: string) => {
         try {
             const response = await axios.get<{ users: User[] }>(`${API_URL}/user`, {
                 headers: {
-                    Authorization: `Bearer ${JWT_TOKEN}`,
+                    Authorization: `Bearer ${jwtToken}`,
                 },
             });
             return response.data;
@@ -50,14 +48,28 @@ const RestService = {
         }
     },
 
-    sendPayloadToSocket: async (userId: string, payload: object) => {
+    fetchUserById: async (id: string, jwtToken: string) => {
+        try {
+            const response = await axios.get<User>(`${API_URL}/user/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${jwtToken}`,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching user by id:", error);
+            throw error;
+        }
+    },
+
+    sendPayloadToSocket: async (userId: string, payload: object, jwtToken: string) => {
         try {
             const response = await axios.post(
                 `${API_URL}/websocket/send-message`,
                 {users: [userId], payload},
                 {
                     headers: {
-                        Authorization: `Bearer ${JWT_TOKEN}`,
+                        Authorization: `Bearer ${jwtToken}`,
                         'Content-Type': 'application/json',
                     },
                 }
@@ -69,14 +81,14 @@ const RestService = {
         }
     },
 
-    broadcast: async (payload: object) => {
+    broadcast: async (payload: object, jwtToken: String) => {
         try {
             const response = await axios.post(
                 `${API_URL}/websocket/broadcast`,
                 {payload},
                 {
                     headers: {
-                        Authorization: `Bearer ${JWT_TOKEN}`,
+                        Authorization: `Bearer ${jwtToken}`,
                         'Content-Type': 'application/json',
                     },
                 }
@@ -87,6 +99,42 @@ const RestService = {
             throw error;
         }
     },
+
+    updateUser:
+        async (user: User, jwtToken: string) => {
+            const {_id, ...rest} = user;
+            try {
+                const response = await axios.put<User>(
+                    `${API_URL}/user/${_id}`,
+                    rest,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${jwtToken}`,
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+                return response.data;
+            } catch (error) {
+                console.error("Error updating user:", error);
+                throw error;
+            }
+        },
+
+    login: async (username: string, password: string) => {
+        const response = await axios.post<{
+            success: boolean, token: string, message: string,
+            id: "username" | "password"
+        }>(
+            `${API_URL}/auth/login`, {
+                username,
+                password,
+            }, {
+                validateStatus: (status) => status === 200 || status === 401 || status === 404,
+            }
+        );
+        return response.data;
+    }
 };
 
 export {RestService};
