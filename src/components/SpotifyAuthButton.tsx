@@ -1,7 +1,7 @@
 import React from 'react';
-import {Button} from 'react-native';
-import {useSpotifyAuth} from '@/hooks/useSpotifyAuth';
-import {Token} from "@/services/RestService";
+import {useSpotifyAuth} from '@/src/hooks/useSpotifyAuth';
+import {Token} from "@/src/services/RestService";
+import ThemedButton from "@/src/components/themed/ThemedButton";
 
 interface SpotifyAuthButtonProps {
     onAuthSuccess: (token: Token) => void;
@@ -15,11 +15,11 @@ const SpotifyAuthButton = ({onAuthSuccess}: SpotifyAuthButtonProps) => {
     }
 
     return (
-        <Button
-            disabled={!isReady}
-            title={'Login mit Spotify'}
+        <ThemedButton
             onPress={promptAuth}
-        />
+            mode={"outlined"}>
+            {isReady ? 'Sign in with Spotify' : 'Loading...'}
+        </ThemedButton>
     );
 };
 

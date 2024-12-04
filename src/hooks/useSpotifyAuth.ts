@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 import {makeRedirectUri, useAuthRequest} from "expo-auth-session";
-import {RestService, Token} from "@/services/RestService";
+import {RestService, Token} from "@/src/services/RestService";
 
 const discovery = {
     authorizationEndpoint: 'https://accounts.spotify.com/authorize',
@@ -34,7 +34,7 @@ export const useSpotifyAuth = (
             if (response?.type === 'success') {
                 try {
                     const {code} = response.params;
-                    const token = (await RestService.exchangeSpotifyCodeForToken(code)).token;
+                    const token = (await RestService.exchangeSpotifyCodeForToken(code,"TODO")).token;
                     console.log('Token:', token);
                     onAuthSuccess(token);
                 } catch (error) {
