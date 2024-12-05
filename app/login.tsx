@@ -60,7 +60,8 @@ export default function LoginScreen() {
                 returnKeyType="next"
                 value={username.value}
                 onChangeText={(text: string) => setUsername({value: text})}
-                errorText={error?.id === "username" ? error?.message : ""}
+                error={!!error && error?.id === "username"}
+                errorText={error?.message}
                 autoCapitalize="none"
             />
             <ThemedTextInput
@@ -68,7 +69,8 @@ export default function LoginScreen() {
                 returnKeyType="done"
                 value={password.value}
                 onChangeText={(text: string) => setPassword({value: text})}
-                errorText={error?.id === "password" ? error?.message : ""}
+                error={!!error && error?.id === "password"}
+                errorText={error?.message}
                 secureTextEntry
             />
             <ThemedButton mode="outlined" onPress={onLoginPressed}>
