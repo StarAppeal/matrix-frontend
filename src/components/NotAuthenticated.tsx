@@ -2,11 +2,11 @@ import {Image} from "react-native";
 import React from "react";
 import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import ThemedParagraph from "@/src/components/themed/ThemedParagraph";
-import {useNavigation} from "@react-navigation/core";
 import ThemedButton from "@/src/components/themed/ThemedButton";
+import {useRouter} from "expo-router";
 
 export default function NotAuthenticated() {
-    const navigation = useNavigation<any>();
+    const router = useRouter();
     return (
         <ThemedBackground>
             <Image
@@ -20,7 +20,7 @@ export default function NotAuthenticated() {
             <ThemedParagraph>
                 You are not authenticated. Please log in to view this content.
             </ThemedParagraph>
-            <ThemedButton mode="outlined" onPress={() => navigation.navigate("LoginScreen")}>
+            <ThemedButton mode="outlined" onPress={() => router.push("/login")}>
                 Login
             </ThemedButton>
         </ThemedBackground>

@@ -49,6 +49,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
         await saveInStorage(JWT_TOKEN_KEY, response.token);
         setToken(response.token);
         setIsAuthenticated(true);
+        // correctly logged in, reset error
+        setError(null);
     };
 
     const logout = async () => {
