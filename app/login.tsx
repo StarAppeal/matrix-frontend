@@ -1,20 +1,21 @@
 import React, {useEffect, useState} from "react";
 
-import ThemedBackground from "../../src/components/themed/ThemedBackground";
-import Logo from "../../src/components/Logo";
-import ThemedHeader from "../../src/components/themed/ThemedHeader";
-import ThemedButton from "../../src/components/themed/ThemedButton";
-import ThemedTextInput from "../../src/components/themed/ThemedTextInput";
-import BackButton from "../../src/components/BackButton";
 
-import {useNavigation} from "@react-navigation/core";
+import ThemedBackground from "../src/components/themed/ThemedBackground";
+import Logo from "../src/components/Logo";
+import ThemedHeader from "../src/components/themed/ThemedHeader";
+import ThemedButton from "../src/components/themed/ThemedButton";
+import ThemedTextInput from "../src/components/themed/ThemedTextInput";
+import BackButton from "../src/components/BackButton";
+
 import {useAuth} from "@/src/context/AuthProvider";
 import {useTheme} from "@/src/context/ThemeProvider";
+import {useRouter} from "expo-router";
 
 
 export default function LoginScreen() {
     const {isAuthenticated, login, logout, error} = useAuth();
-    const navigation = useNavigation<any>();
+    const router = useRouter();
     const [username, setUsername] = useState({value: ""});
     const [password, setPassword] = useState({value: ""});
     const {toggleTheme} = useTheme();
@@ -25,10 +26,7 @@ export default function LoginScreen() {
 
         if (isAuthenticated) {
             console.log("User ist eingeloggt, weiterleiten...");
-            navigation.reset({
-                index: 0,
-                routes: [{name: "HomeScreen"}],
-            });
+            router.replace("/");
         }
     }, [isAuthenticated]);
 
@@ -45,7 +43,7 @@ export default function LoginScreen() {
                 <ThemedButton mode="contained" onPress={logout}>
                     Logout
                 </ThemedButton>
-                <ThemedButton mode="outlined" onPress={() => navigation.navigate("HomeScreen")}>
+                <ThemedButton mode="outlined" onPress={() => router.push("/")}>
                     Zurück
                 </ThemedButton>
             </ThemedBackground>
@@ -54,7 +52,7 @@ export default function LoginScreen() {
 
     return (
         <ThemedBackground>
-            <BackButton goBack={navigation.goBack}/>
+            <BackButton goBack={router.back}/>
             <Logo/>
             <ThemedHeader>Hello.</ThemedHeader>
             <ThemedTextInput
