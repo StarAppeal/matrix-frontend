@@ -2,7 +2,6 @@ import React from "react";
 import {StyleSheet} from "react-native";
 import {Button as PaperButton} from "react-native-paper";
 import {useTheme} from "@/src/context/ThemeProvider";
-import {ThemeType} from "@/src/core/theme";
 
 type Props = {
     mode: "text" | "outlined" | "contained";
@@ -13,7 +12,6 @@ type Props = {
 
 export default function ThemedButton({mode, style, ...props}: Props) {
     const {theme} = useTheme();
-    const styles = createStyle(theme);
     return (
         <PaperButton
             style={[
@@ -28,19 +26,17 @@ export default function ThemedButton({mode, style, ...props}: Props) {
     );
 }
 
-const createStyle =(theme:ThemeType) => {
-   return StyleSheet.create({
-       button: {
-           width: "100%",
-           marginVertical: 10,
-           paddingVertical: 2,
-       },
-       text: {
-           fontWeight: "bold",
-           fontSize: 15,
-           lineHeight: 26,
-           color: theme.colors.text,
-       },
-   });
-}
+const styles =
+    StyleSheet.create({
+        button: {
+            width: "100%",
+            marginVertical: 10,
+            paddingVertical: 2,
+        },
+        text: {
+            fontWeight: "bold",
+            fontSize: 15,
+            lineHeight: 26,
+        },
+    });
 
