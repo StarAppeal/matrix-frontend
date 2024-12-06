@@ -9,8 +9,8 @@ import ThemedTextInput from "../src/components/themed/ThemedTextInput";
 import BackButton from "../src/components/BackButton";
 
 import {useAuth} from "@/src/context/AuthProvider";
-import {useTheme} from "@/src/context/ThemeProvider";
 import {useRouter} from "expo-router";
+import ThemeToggleButton from "@/src/components/ThemeToggleButton";
 
 
 export default function LoginScreen() {
@@ -18,8 +18,6 @@ export default function LoginScreen() {
     const router = useRouter();
     const [username, setUsername] = useState({value: ""});
     const [password, setPassword] = useState({value: ""});
-    const {toggleTheme} = useTheme();
-
 
     useEffect(() => {
         console.log(isAuthenticated);
@@ -76,9 +74,7 @@ export default function LoginScreen() {
             <ThemedButton mode="outlined" onPress={onLoginPressed}>
                 Log in
             </ThemedButton>
-            <ThemedButton mode={"outlined"} onPress={toggleTheme}>
-                Toggle Theme
-            </ThemedButton>
+           <ThemeToggleButton />
         </ThemedBackground>
     );
 }
