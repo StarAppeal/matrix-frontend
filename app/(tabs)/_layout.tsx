@@ -1,6 +1,6 @@
-import {Tabs} from 'expo-router';
+import {Link, Tabs} from 'expo-router';
 import React from "react";
-import {FontAwesome} from "@expo/vector-icons";
+import {Feather} from "@expo/vector-icons";
 import {useTheme} from "@/src/context/ThemeProvider";
 import AuthenticatedWrapper from "@/src/components/AuthenticatedWrapper";
 
@@ -19,6 +19,15 @@ export default function TabLayout() {
                     headerTitleContainerStyle: {
                         paddingHorizontal: 16,
                     },
+                    headerRight: () => (
+                        <Link href="/settings" style={{marginRight: 16}}>
+                            <Feather
+                                name="settings"
+                                size={24}
+                                color={theme.theme.colors.onPrimaryContainer}
+                            />
+                        </Link>
+                    ),
                     tabBarActiveTintColor: theme.theme.colors.primary,
                     tabBarInactiveTintColor: theme.theme.colors.onSurfaceVariant,
                     tabBarStyle: {
@@ -32,25 +41,51 @@ export default function TabLayout() {
                     name={'modes/text'}
                     options={{
                         title: 'Text',
-                        tabBarIcon: ({color}) => <FontAwesome size={28} name="file-text" color={color}/>,
+                        tabBarIcon: ({color}) => <Feather size={28} name="type" color={color}/>,
                     }}
                 />
+
+                <Tabs.Screen
+                    name={'modes/image'}
+                    options={{
+                        title: 'Bilder',
+                        tabBarIcon: ({color}) => <Feather size={28} name="image" color={color}/>,
+                    }}/>
+
                 <Tabs.Screen
                     name="index"
                     options={{
-                        title: 'Home',
-                        tabBarIcon: ({color}) => <FontAwesome size={28} name="home" color={color}/>,
+                        title: 'Startseite',
+                        tabBarIcon: ({color}) => <Feather size={28} name="home" color={color}/>,
                     }}
                 />
+
+
+                <Tabs.Screen
+                    name={'modes/music'}
+                    options={{
+                        title: 'Musik',
+                        tabBarIcon: ({color}) => <Feather size={28} name="music" color={color}/>,
+                    }}/>
+
+
+                <Tabs.Screen
+                    name={'modes/clock'}
+                    options={{
+                        title: 'Uhr',
+                        tabBarIcon: ({color}) => <Feather size={28} name="clock" color={color}/>,
+                    }}/>
+
                 <Tabs.Screen
                     name="settings"
                     options={{
-                        title: 'Settings',
-                        tabBarIcon: ({color}) => <FontAwesome size={28} name="cog" color={color}/>,
+                        title: 'Einstellungen',
+                        href: null, // prevents showing in the tab bar
                     }}
                 />
             </Tabs>
         </AuthenticatedWrapper>
 
-    );
+    )
+        ;
 }
