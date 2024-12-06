@@ -3,18 +3,14 @@ import React from "react";
 
 import {AuthProvider} from "@/src/context/AuthProvider";
 import {ThemeProvider} from "@/src/context/ThemeProvider";
-import {Stack} from "expo-router";
+import CustomStack from "@/src/core/Stack";
 
 
 export default function Layout() {
     return (
         <ThemeProvider>
             <AuthProvider>
-                <Stack
-                    screenOptions={{
-                        headerShown: false
-                    }}
-                />
+                <CustomStack />
             </AuthProvider>
         </ThemeProvider>
     );
