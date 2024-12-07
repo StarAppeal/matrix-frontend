@@ -14,11 +14,11 @@ const tabs = [
     {name: 'index', title: 'Startseite', icon: 'home'},
     {name: 'modes/music', title: 'Musik', icon: 'music'},
     {name: 'modes/clock', title: 'Uhr', icon: 'clock'},
-] as const; // "as const" macht das Array readonly und validiert die Strings.
+] as const;
 
 export default function TabLayout() {
     const theme = useTheme();
-    const shouldHideText = (screenWidth < 400); // Dynamisch basierend auf der Bildschirmbreite
+    const shouldHideText = (screenWidth < 400);
 
     return (
         <AuthenticatedWrapper>
