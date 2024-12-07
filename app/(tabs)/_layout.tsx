@@ -4,8 +4,6 @@ import {Feather} from "@expo/vector-icons";
 import {useTheme} from "@/src/context/ThemeProvider";
 import AuthenticatedWrapper from "@/src/components/AuthenticatedWrapper";
 import {Dimensions} from "react-native";
-import {Tooltip} from "react-native-paper";
-
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -64,11 +62,7 @@ export default function TabLayout() {
                         options={{
                             title: shouldHideText ? '' : title,
                             tabBarIcon: ({color}) => (
-                                <Tooltip
-                                    title={title}
-                                >
                                     <Feather size={28} name={icon} color={color}/>
-                                </Tooltip>
                             ),
                         }}
                     />
