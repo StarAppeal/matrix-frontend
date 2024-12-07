@@ -14,7 +14,8 @@ interface UseSpotifyAuthResult {
 }
 
 export const useSpotifyAuth = (
-    onAuthSuccess: (token: Token) => void
+    onAuthSuccess: (token: Token) => void,
+    jwtToken: string,
 ): UseSpotifyAuthResult => {
     const [request, response, promptAsync] = useAuthRequest(
         {
@@ -34,7 +35,7 @@ export const useSpotifyAuth = (
             if (response?.type === 'success') {
                 try {
                     const {code} = response.params;
-                    const token = (await RestService.exchangeSpotifyCodeForToken(code,"TODO")).token;
+                    const token = (await RestService.exchangeSpotifyCodeForToken(code,jwtToken)).token;
                     console.log('Token:', token);
                     onAuthSuccess(token);
                 } catch (error) {

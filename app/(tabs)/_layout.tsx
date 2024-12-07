@@ -85,7 +85,5 @@ export default function TabLayout() {
                 />
             </Tabs>
         </AuthenticatedWrapper>
-
-    )
-        ;
+    );
 }
