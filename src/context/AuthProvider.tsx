@@ -1,21 +1,29 @@
 import React, {createContext, useContext, useEffect, useState} from "react";
 import {getFromStorage, JWT_TOKEN_KEY, removeFromStorage, saveInStorage} from "@/src/utils/secureStorage";
 import {RestService} from "@/src/services/RestService";
+import {User} from "@/src/model/User";
+
+interface AuthError {
+    message: string;
+    id: "username" | "password" | "general";
+}
 
 type AuthContextType = {
     isAuthenticated: boolean | null;
     token: string | null;
     login: (username: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
-    error: { message: string; id: "username" | "password" } | null;
+    error: AuthError | null;
+    authenticatedUser: User | null;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+    const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
-    const [error, setError] = useState<{ message: string; id: "username" | "password" } | null>(null);
+    const [error, setError] = useState<AuthError | null>(null);
 
     useEffect(() => {
         const checkAuthStatus = async () => {
@@ -23,6 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
             if (storedToken) {
                 setToken(storedToken);
                 setIsAuthenticated(true);
+                await saveUser(storedToken);
             } else {
                 setIsAuthenticated(false);
             }
@@ -30,6 +39,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
 
         checkAuthStatus();
     }, []);
+
+    const saveUser = async (token: string) => {
+        const user = await RestService.getSelf(token);
+        if (!user) {
+            // token is invalid
+            await removeFromStorage(JWT_TOKEN_KEY);
+            setToken(null);
+            setIsAuthenticated(false);
+            setError({
+                message: "Token invalid",
+                id: "general",
+            });
+            return;
+        }
+        setAuthenticatedUser(user);
+    }
 
     const login = async (username: string, password: string) => {
         if (isAuthenticated) {
@@ -51,6 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
         setIsAuthenticated(true);
         // correctly logged in, reset error
         setError(null);
+        await saveUser(response.token)
     };
 
     const logout = async () => {
@@ -60,7 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     };
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, token, login, logout, error}}>
+        <AuthContext.Provider value={{isAuthenticated, token, login, logout, error, authenticatedUser}}>
             {children}
         </AuthContext.Provider>
     );
