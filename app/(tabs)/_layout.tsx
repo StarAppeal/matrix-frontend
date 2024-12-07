@@ -3,13 +3,29 @@ import React from "react";
 import {Feather} from "@expo/vector-icons";
 import {useTheme} from "@/src/context/ThemeProvider";
 import AuthenticatedWrapper from "@/src/components/AuthenticatedWrapper";
+import {Dimensions} from "react-native";
+import {Tooltip} from "react-native-paper";
+
+
+const screenWidth = Dimensions.get("window").width;
+
+
+const tabs = [
+    {name: 'modes/text', title: 'Text', icon: 'type'},
+    {name: 'modes/image', title: 'Bilder', icon: 'image'},
+    {name: 'index', title: 'Startseite', icon: 'home'},
+    {name: 'modes/music', title: 'Musik', icon: 'music'},
+    {name: 'modes/clock', title: 'Uhr', icon: 'clock'},
+] as const; // "as const" macht das Array readonly und validiert die Strings.
 
 export default function TabLayout() {
     const theme = useTheme();
+    const shouldHideText = (screenWidth < 400); // Dynamisch basierend auf der Bildschirmbreite
+
     return (
         <AuthenticatedWrapper>
             <Tabs
-                screenOptions={{
+                screenOptions={({route}) => ({
                     headerStyle: {
                         backgroundColor: theme.theme.colors.primaryContainer,
                     },
@@ -35,46 +51,28 @@ export default function TabLayout() {
                         borderTopColor: theme.theme.colors.outline,
                         elevation: 4,
                     },
-                }}
+                    tabBarItemStyle: {
+                        borderLeftWidth: route.name === tabs[0].name ? 0 : 1,
+                        borderLeftColor: theme.theme.colors.outlineVariant, // Trennlinienfarbe
+                    },
+                })}
             >
-                <Tabs.Screen
-                    name={'modes/text'}
-                    options={{
-                        title: 'Text',
-                        tabBarIcon: ({color}) => <Feather size={28} name="type" color={color}/>,
-                    }}
-                />
-
-                <Tabs.Screen
-                    name={'modes/image'}
-                    options={{
-                        title: 'Bilder',
-                        tabBarIcon: ({color}) => <Feather size={28} name="image" color={color}/>,
-                    }}/>
-
-                <Tabs.Screen
-                    name="index"
-                    options={{
-                        title: 'Startseite',
-                        tabBarIcon: ({color}) => <Feather size={28} name="home" color={color}/>,
-                    }}
-                />
-
-
-                <Tabs.Screen
-                    name={'modes/music'}
-                    options={{
-                        title: 'Musik',
-                        tabBarIcon: ({color}) => <Feather size={28} name="music" color={color}/>,
-                    }}/>
-
-
-                <Tabs.Screen
-                    name={'modes/clock'}
-                    options={{
-                        title: 'Uhr',
-                        tabBarIcon: ({color}) => <Feather size={28} name="clock" color={color}/>,
-                    }}/>
+                {tabs.map(({name, title, icon}) => (
+                    <Tabs.Screen
+                        key={name}
+                        name={name}
+                        options={{
+                            title: shouldHideText ? '' : title,
+                            tabBarIcon: ({color}) => (
+                                <Tooltip
+                                    title={title}
+                                >
+                                    <Feather size={28} name={icon} color={color}/>
+                                </Tooltip>
+                            ),
+                        }}
+                    />
+                ))}
 
                 <Tabs.Screen
                     name="settings"

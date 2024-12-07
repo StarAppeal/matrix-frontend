@@ -12,8 +12,9 @@ export default function HomeScreen() {
             <ThemedHeader>Welcome to the Home Page!</ThemedHeader>
             <ThemedButton mode={"outlined"} onPress={() => {
                 console.log("Button pressed");
-                logout();
-                router.replace("/login");
+                logout().then(() => {
+                    router.replace("/login");
+                });
             }
             }>
                 Logout
