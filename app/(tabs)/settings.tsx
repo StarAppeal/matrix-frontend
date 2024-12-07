@@ -7,11 +7,8 @@ import SpotifyAuthButton from "@/src/components/SpotifyAuthButton";
 import {Token} from "@/src/services/RestService";
 import {Paragraph, Text} from 'react-native-paper';
 
-import * as WebBrowser from "expo-web-browser";
 import {useAuth} from "@/src/context/AuthProvider";
 import {StyleSheet, View} from "react-native";
-
-WebBrowser.maybeCompleteAuthSession();
 
 export default function SettingsScreen() {
     const {token: jwtToken, authenticatedUser} = useAuth();
