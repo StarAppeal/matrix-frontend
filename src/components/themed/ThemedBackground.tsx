@@ -1,6 +1,8 @@
 import React from "react";
 import {ImageBackground, KeyboardAvoidingView, StyleSheet,} from "react-native";
 import {useTheme} from "../../context/ThemeProvider";
+import { Dimensions } from "react-native";
+
 
 type Props = {
     children: React.ReactNode;
@@ -21,6 +23,8 @@ export default function ThemedBackground({children}: Props) {
     );
 }
 
+const screenWidth = Dimensions.get("window").width;
+
 const styles = StyleSheet.create({
     background: {
         flex: 1,
@@ -29,8 +33,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        width: "100%",
-        maxWidth: 340,
+        width: Math.min(screenWidth, 340),
         alignSelf: "center",
         alignItems: "center",
         justifyContent: "center",
