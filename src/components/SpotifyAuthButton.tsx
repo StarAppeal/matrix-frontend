@@ -5,10 +5,11 @@ import ThemedButton from "@/src/components/themed/ThemedButton";
 
 interface SpotifyAuthButtonProps {
     onAuthSuccess: (token: Token) => void;
+    jwtToken: string;
 }
 
-const SpotifyAuthButton = ({onAuthSuccess}: SpotifyAuthButtonProps) => {
-    const {promptAuth, isReady, error} = useSpotifyAuth(onAuthSuccess);
+const SpotifyAuthButton = ({onAuthSuccess, jwtToken}: SpotifyAuthButtonProps) => {
+    const {promptAuth, isReady, error} = useSpotifyAuth(onAuthSuccess, jwtToken);
 
     if (error) {
         console.error('Spotify Auth Error:', error);
