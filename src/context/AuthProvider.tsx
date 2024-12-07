@@ -15,6 +15,7 @@ type AuthContextType = {
     logout: () => Promise<void>;
     error: AuthError | null;
     authenticatedUser: User | null;
+    loading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,6 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [error, setError] = useState<AuthError | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const checkAuthStatus = async () => {
@@ -35,6 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
             } else {
                 setIsAuthenticated(false);
             }
+            setLoading(false);
         };
 
         checkAuthStatus();
@@ -77,6 +80,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
         // correctly logged in, reset error
         setError(null);
         await saveUser(response.token)
+        // needed?
+        setLoading(false);
     };
 
     const logout = async () => {
@@ -86,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     };
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, token, login, logout, error, authenticatedUser}}>
+        <AuthContext.Provider value={{isAuthenticated, token, login, logout, error, authenticatedUser, loading}}>
             {children}
         </AuthContext.Provider>
     );
