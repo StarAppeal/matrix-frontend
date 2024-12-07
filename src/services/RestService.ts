@@ -62,6 +62,20 @@ const RestService = {
         }
     },
 
+    getSelf: async (jwtToken: string) => {
+        try {
+            const response = await axios.get<User>(`${API_URL}/user/me`, {
+                headers: {
+                    Authorization: `Bearer ${jwtToken}`,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching self:", error);
+            throw error;
+        }
+    },
+
     sendPayloadToSocket: async (userId: string, payload: object, jwtToken: string) => {
         try {
             const response = await axios.post(

@@ -5,7 +5,7 @@ import ChangePasswordModal from "@/src/components/ChangePasswordModal";
 import ThemeToggleButton from "@/src/components/ThemeToggleButton";
 import SpotifyAuthButton from "@/src/components/SpotifyAuthButton";
 import {Token} from "@/src/services/RestService";
-import {Text} from 'react-native-paper';
+import {Paragraph, Text} from 'react-native-paper';
 
 import * as WebBrowser from "expo-web-browser";
 import {useAuth} from "@/src/context/AuthProvider";
@@ -13,7 +13,7 @@ import {useAuth} from "@/src/context/AuthProvider";
 WebBrowser.maybeCompleteAuthSession();
 
 export default function SettingsScreen() {
-    const {token: jwtToken} = useAuth();
+    const {token: jwtToken, authenticatedUser} = useAuth();
     const [token, setToken] = useState<Token | null>(null);
 
     const handleAuthSuccess = (token: Token) => {
@@ -21,11 +21,14 @@ export default function SettingsScreen() {
         console.log('Erhaltener Authentifizierungscode:', token);
     };
 
+    console.log('authenticatedUser', authenticatedUser)
+
     return (
         <ThemedBackground>
             <ThemedHeader>
                 Settings
             </ThemedHeader>
+            <Paragraph>Guten Tag, {authenticatedUser?.name}</Paragraph>
             <ChangePasswordModal/>
             <ThemeToggleButton/>
             <SpotifyAuthButton onAuthSuccess={handleAuthSuccess} jwtToken={jwtToken!}/>
