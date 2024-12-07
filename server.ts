@@ -7,8 +7,8 @@ const express = require('express');
 const compression = require('compression');
 const morgan = require('morgan');
 
-const CLIENT_BUILD_DIR = path.join(process.cwd(), 'dist/client');
-const SERVER_BUILD_DIR = path.join(process.cwd(), 'dist/server');
+const CLIENT_BUILD_DIR = path.join(process.cwd(), 'serve/client');
+const SERVER_BUILD_DIR = path.join(process.cwd(), 'serve/server');
 
 const app = express();
 
@@ -16,8 +16,6 @@ app.use(compression());
 
 // http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
 app.disable('x-powered-by');
-
-// process.env.NODE_ENV = 'production';
 
 app.use(
     express.static(CLIENT_BUILD_DIR, {
