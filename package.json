@@ -10,7 +10,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build-web": "expo export --platform web",
-    "run-server": "pm2 start server.ts --name 'matrix-frontend'",
+    "run-server": "pm2 start run-ts.sh --name 'matrix-frontend'",
     "reset-project": "node ./scripts/reset-project.js",
     "test": "jest --watchAll",
     "lint": "expo lint"
