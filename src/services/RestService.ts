@@ -76,6 +76,31 @@ const RestService = {
         }
     },
 
+    changeSelfPassword: async (
+        password: string,
+        passwordConfirmation: string,
+        jwtToken: string
+    ) => {
+        try {
+            const response = await axios.put<{ result: { success: boolean; message: string } }>(
+                `${API_URL}/user/me/password`,
+                {password, passwordConfirmation},
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwtToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    validateStatus: (status) => status >= 200 && status < 500, // Erlaube 4xx-Statuscodes
+                }
+            );
+
+            return response.data.result;
+        } catch (error) {
+            console.error('Unexpected error:', error);
+            return {success: false, message: 'An unexpected error occurred.'};
+        }
+    },
+
     sendPayloadToSocket: async (userId: string, payload: object, jwtToken: string) => {
         try {
             const response = await axios.post(
