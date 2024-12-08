@@ -88,6 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
         await removeFromStorage(JWT_TOKEN_KEY);
         setToken(null);
         setIsAuthenticated(false);
+        setAuthenticatedUser(null);
     };
 
     return (

@@ -27,7 +27,7 @@ const RestService = {
                     }
                 }
             );
-            return response.data;
+            return response.data.token;
         } catch (error) {
             console.error("Error exchanging Spotify code:", error);
             throw error;

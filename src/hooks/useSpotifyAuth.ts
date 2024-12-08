@@ -35,7 +35,7 @@ export const useSpotifyAuth = (
             if (response?.type === 'success') {
                 try {
                     const {code} = response.params;
-                    const token = (await RestService.exchangeSpotifyCodeForToken(code,jwtToken)).token;
+                    const token = (await RestService.exchangeSpotifyCodeForToken(code,jwtToken));
                     console.log('Token:', token);
                     onAuthSuccess(token);
                 } catch (error) {
