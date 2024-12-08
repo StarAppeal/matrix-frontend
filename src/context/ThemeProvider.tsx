@@ -1,17 +1,17 @@
 import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {MD3Theme, Provider as PaperProvider} from "react-native-paper";
+import {Provider as PaperProvider} from "react-native-paper";
 import {getFromStorage, saveInStorage, THEME_KEY} from "@/src/utils/secureStorage";
-import {darkTheme, lightTheme} from "@/src/core/theme";
+import {CustomMD3Theme, darkTheme, lightTheme} from "@/src/core/theme";
 
 type ThemeContextType = {
-    theme: MD3Theme;
+    theme: CustomMD3Theme;
     toggleTheme: () => void;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({children}: { children: ReactNode }) => {
-    const [theme, setTheme] = useState<MD3Theme>();
+    const [theme, setTheme] = useState<CustomMD3Theme>();
 
     useEffect(() => {
         getFromStorage(THEME_KEY).then((theme) => {

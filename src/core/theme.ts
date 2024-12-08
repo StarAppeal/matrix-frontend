@@ -1,17 +1,28 @@
-import { MD3LightTheme as DefaultTheme, MD3DarkTheme as DarkTheme, MD3Theme } from "react-native-paper";
+import {MD3DarkTheme as DarkTheme, MD3LightTheme as DefaultTheme, MD3Theme} from "react-native-paper";
 
-export const lightTheme: MD3Theme = {
+export type CustomMD3Theme = MD3Theme & {
+    colors: {
+        success: string;
+        onSuccess: string;
+    };
+};
+
+
+export const lightTheme: CustomMD3Theme = {
     ...DefaultTheme,
     colors: {
         ...DefaultTheme.colors,
-        // add more colors here if you want to change some
-        },
+        primary: DefaultTheme.colors.primary,
+        success: "#4CAF50", // Standard Erfolgsfarbe
+        onSuccess: "#FFFFFF", // Schriftfarbe auf Success-Hintergrund
+    },
 };
 
-export const darkTheme: MD3Theme = {
+export const darkTheme: CustomMD3Theme = {
     ...DarkTheme,
     colors: {
         ...DarkTheme.colors,
-        // add more colors here if you want to change some
+        success: "#388E3C", // Dunklere Erfolgsfarbe
+        onSuccess: "#FFFFFF", // Schriftfarbe auf Success-Hintergrund
     },
 };
