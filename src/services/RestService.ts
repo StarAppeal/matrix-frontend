@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {makeRedirectUri} from "expo-auth-session";
-import {User} from "@/src/model/User";
+import {SpotifyConfig, User} from "@/src/model/User";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -139,26 +139,25 @@ const RestService = {
         }
     },
 
-    updateUser:
-        async (user: User, jwtToken: string) => {
-            const {_id, ...rest} = user;
-            try {
-                const response = await axios.put<User>(
-                    `${API_URL}/user/${_id}`,
-                    rest,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${jwtToken}`,
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
-                return response.data;
-            } catch (error) {
-                console.error("Error updating user:", error);
-                throw error;
-            }
-        },
+    updateSelfSpotifyConfig: async (spotifyConfig: SpotifyConfig, jwtToken: string) => {
+        try {
+            const response = await axios.put<{ result: { success: boolean, message: string } }>(
+                `${API_URL}/user/me/spotify`,
+                spotifyConfig,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwtToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error updating self:", error);
+            throw error;
+        }
+    },
+
 
     login: async (username: string, password: string) => {
         const response = await axios.post<{
