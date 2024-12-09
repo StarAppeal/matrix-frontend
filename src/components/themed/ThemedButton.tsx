@@ -8,6 +8,7 @@ type Props = {
     style?: any;
     children: React.ReactNode;
     onPress: () => void;
+    disabled?: boolean;
 }
 
 export default function ThemedButton({mode, style, ...props}: Props) {

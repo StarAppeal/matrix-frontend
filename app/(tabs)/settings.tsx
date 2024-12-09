@@ -1,39 +1,55 @@
 import ThemedHeader from "@/src/components/themed/ThemedHeader";
-import React, {useState} from "react";
+import React from "react";
 import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import ChangePasswordModal from "@/src/components/ChangePasswordModal";
 import ThemeToggleButton from "@/src/components/ThemeToggleButton";
 import SpotifyAuthButton from "@/src/components/SpotifyAuthButton";
-import {Token} from "@/src/services/RestService";
-import {Paragraph, Text} from 'react-native-paper';
+import {RestService, Token} from "@/src/services/RestService";
 
 import {useAuth} from "@/src/context/AuthProvider";
 import {StyleSheet, View} from "react-native";
+import ThemedButton from "@/src/components/themed/ThemedButton";
+import {useRouter} from "expo-router";
 
 export default function SettingsScreen() {
-    const {token: jwtToken, authenticatedUser} = useAuth();
-    const [token, setToken] = useState<Token | null>(null);
+    const {token: jwtToken, authenticatedUser, logout} = useAuth();
+    const router = useRouter();
 
     const handleAuthSuccess = (token: Token) => {
-        setToken(token);
-        console.log('Erhaltener Authentifizierungscode:', token);
+        const spotifyConfig = {
+            accessToken: token.access_token,
+            refreshToken: token.refresh_token,
+            scope: token.scope,
+            expirationDate: new Date(Date.now() + token.expires_in * 1000),
+        };
+
+        RestService.updateSelfSpotifyConfig(spotifyConfig, jwtToken!).then((result) => {
+            console.log("Spotify Token gespeichert");
+            console.log(result);
+        });
     };
 
     return (
         <ThemedBackground>
-            <ThemedHeader>
-                Settings
-            </ThemedHeader>
             <View style={styles.container}>
-                <Paragraph>Guten Tag, {authenticatedUser?.name}</Paragraph>
+                <ThemedHeader>Guten Tag, {authenticatedUser?.name}</ThemedHeader>
                 <ChangePasswordModal/>
                 <ThemeToggleButton/>
                 <SpotifyAuthButton
                     onAuthSuccess={handleAuthSuccess}
                     jwtToken={jwtToken!}
+                    disabled={authenticatedUser?.spotifyConfig !== null}
                 />
-                {token && <Text>Erhaltener Code: {token.access_token}</Text>}
             </View>
+            <ThemedButton mode={"outlined"} onPress={() => {
+                console.log("Button pressed");
+                logout().then(() => {
+                    router.replace("/login");
+                });
+            }
+            }>
+                Logout
+            </ThemedButton>
         </ThemedBackground>
     );
 }

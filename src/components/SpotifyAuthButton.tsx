@@ -6,9 +6,10 @@ import ThemedButton from "@/src/components/themed/ThemedButton";
 interface SpotifyAuthButtonProps {
     onAuthSuccess: (token: Token) => void;
     jwtToken: string;
+    disabled: boolean;
 }
 
-const SpotifyAuthButton = ({onAuthSuccess, jwtToken}: SpotifyAuthButtonProps) => {
+const SpotifyAuthButton = ({onAuthSuccess, jwtToken, disabled}: SpotifyAuthButtonProps) => {
     const {promptAuth, isReady, error} = useSpotifyAuth(onAuthSuccess, jwtToken);
 
     if (error) {
@@ -18,7 +19,9 @@ const SpotifyAuthButton = ({onAuthSuccess, jwtToken}: SpotifyAuthButtonProps) =>
     return (
         <ThemedButton
             onPress={promptAuth}
-            mode={"outlined"}>
+            mode={"outlined"}
+            disabled={disabled}
+        >
             {isReady ? 'Sign in with Spotify' : 'Loading...'}
         </ThemedButton>
     );
