@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     }, []);
 
     const saveUser = async (token: string) => {
-        const user = await RestService.getSelf(token);
+        const user = await new RestService(token).getSelf();
         if (!user) {
             // token is invalid
             await removeFromStorage(JWT_TOKEN_KEY);
@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
             console.log("Already authenticated");
             return;
         }
-        const response = await RestService.login(username, password);
+        const response = await new RestService(null).login(username, password);
         if (!response.success) {
             console.error("Login failed:", response.message);
             setError({
