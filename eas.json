@@ -16,8 +16,11 @@
     },
     "production": {
       "autoIncrement": true,
+      "android": {
+        "buildType": "apk"
+      },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://service.staraooeal.tech/api"
+        "EXPO_PUBLIC_API_URL": "https://service.starappeal.tech/api"
       }
     }
   },
