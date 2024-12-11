@@ -23,7 +23,7 @@ export default function SettingsScreen() {
             expirationDate: new Date(Date.now() + token.expires_in * 1000),
         };
 
-        RestService.updateSelfSpotifyConfig(spotifyConfig, jwtToken!).then((result) => {
+        new RestService(jwtToken).updateSelfSpotifyConfig(spotifyConfig).then((result) => {
             console.log("Spotify Token gespeichert");
             console.log(result);
         });

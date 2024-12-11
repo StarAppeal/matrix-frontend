@@ -1,178 +1,137 @@
-import axios from 'axios';
+import axios, {AxiosInstance, Method} from 'axios';
 import {makeRedirectUri} from "expo-auth-session";
 import {SpotifyConfig, User} from "@/src/model/User";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export interface Token {
-    access_token: string,
-    refresh_token: string,
-    expires_in: number,
-    token_type: string,
-    scope: string,
-
+    access_token: string;
+    refresh_token: string;
+    expires_in: number;
+    token_type: string;
+    scope: string;
 }
 
-const RestService = {
-    exchangeSpotifyCodeForToken: async (code: string, jwtToken: string) => {
-        try {
-            const redirectUri = makeRedirectUri({
-                scheme: 'led.matrix',
-                path: 'callback',
-            });
-            const response = await axios.get<{ token: Token }>(
-                `${API_URL}/spotify/token/generate/code/${code}/redirect-uri/${encodeURIComponent(redirectUri)}`, {
-                    headers: {
-                        Authorization: `Bearer ${jwtToken}`,
-                    }
+class RestService {
+    private readonly jwtToken: string | null;
+    private api: AxiosInstance;
+
+    constructor(jwtToken: string | null) {
+        this.jwtToken = jwtToken;
+
+        this.api = axios.create({
+            baseURL: API_URL,
+            timeout: 10000, // Set a timeout for requests
+        });
+
+        this.api.interceptors.request.use(
+            (config) => {
+                if (this.jwtToken) {
+                    config.headers.Authorization = `Bearer ${this.jwtToken}`;
                 }
-            );
-            return response.data.token;
-        } catch (error) {
-            console.error("Error exchanging Spotify code:", error);
-            throw error;
-        }
-    },
-
-    fetchAllUser: async (jwtToken: string) => {
-        try {
-            const response = await axios.get<{ users: User[] }>(`${API_URL}/user`, {
-                headers: {
-                    Authorization: `Bearer ${jwtToken}`,
-                },
-            });
-            return response.data;
-        } catch (error) {
-            console.error("Error fetching users:", error);
-            throw error;
-        }
-    },
-
-    fetchUserById: async (id: string, jwtToken: string) => {
-        try {
-            const response = await axios.get<User>(`${API_URL}/user/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${jwtToken}`,
-                },
-            });
-            return response.data;
-        } catch (error) {
-            console.error("Error fetching user by id:", error);
-            throw error;
-        }
-    },
-
-    getSelf: async (jwtToken: string) => {
-        try {
-            const response = await axios.get<User>(`${API_URL}/user/me`, {
-                headers: {
-                    Authorization: `Bearer ${jwtToken}`,
-                },
-            });
-            return response.data;
-        } catch (error) {
-            console.error("Error fetching self:", error);
-            throw error;
-        }
-    },
-
-    changeSelfPassword: async (
-        password: string,
-        passwordConfirmation: string,
-        jwtToken: string
-    ) => {
-        try {
-            const response = await axios.put<{ result: { success: boolean; message: string } }>(
-                `${API_URL}/user/me/password`,
-                {password, passwordConfirmation},
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwtToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                    validateStatus: (status) => status >= 200 && status < 500, // Erlaube 4xx-Statuscodes
-                }
-            );
-
-            return response.data.result;
-        } catch (error) {
-            console.error('Unexpected error:', error);
-            return {success: false, message: 'An unexpected error occurred.'};
-        }
-    },
-
-    sendPayloadToSocket: async (userId: string, payload: object, jwtToken: string) => {
-        try {
-            const response = await axios.post(
-                `${API_URL}/websocket/send-message`,
-                {users: [userId], payload},
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwtToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            return response.data;
-        } catch (error) {
-            console.error("Error sending payload to socket:", error);
-            throw error;
-        }
-    },
-
-    broadcast: async (payload: object, jwtToken: String) => {
-        try {
-            const response = await axios.post(
-                `${API_URL}/websocket/broadcast`,
-                {payload},
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwtToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            return response.data;
-        } catch (error) {
-            console.error("Error broadcasting payload:", error);
-            throw error;
-        }
-    },
-
-    updateSelfSpotifyConfig: async (spotifyConfig: SpotifyConfig, jwtToken: string) => {
-        try {
-            const response = await axios.put<{ result: { success: boolean, message: string } }>(
-                `${API_URL}/user/me/spotify`,
-                spotifyConfig,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwtToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            return response.data;
-        } catch (error) {
-            console.error("Error updating self:", error);
-            throw error;
-        }
-    },
-
-
-    login: async (username: string, password: string) => {
-        const response = await axios.post<{
-            success: boolean, token: string, message: string,
-            id: "username" | "password"
-        }>(
-            `${API_URL}/auth/login`, {
-                username,
-                password,
-            }, {
-                validateStatus: (status) => status === 200 || status === 401 || status === 404,
+                console.log('Request Config:', config);
+                return config;
+            },
+            (error) => {
+                console.error('Request Error:', error);
+                return Promise.reject(error);
             }
         );
-        return response.data;
+
+        this.api.interceptors.response.use(
+            (response) => {
+                console.log('Response Data:', response.data);
+                return response;
+            },
+            (error) => {
+                console.error('Response Error:', error.response?.data || error.message);
+                return Promise.reject(error);
+            }
+        );
     }
-};
+
+    async exchangeSpotifyCodeForToken(code: string): Promise<Token> {
+        const redirectUri = makeRedirectUri({
+            scheme: 'led.matrix',
+            path: 'callback',
+        });
+        return this.request<Token>(
+            'GET',
+            `/spotify/token/generate/code/${code}/redirect-uri/${encodeURIComponent(redirectUri)}`
+        );
+    }
+
+    async fetchAllUser(): Promise<{ users: User[] }> {
+        return this.request<{ users: User[] }>('GET', '/user');
+    }
+
+    async fetchUserById(id: string): Promise<User> {
+        return this.request<User>('GET', `/user/${id}`);
+    }
+
+    async getSelf(): Promise<User> {
+        return this.request<User>('GET', '/user/me');
+    }
+
+    async changeSelfPassword(password: string, passwordConfirmation: string): Promise<{ success: boolean; message: string }> {
+        return this.request<{ success: boolean; message: string }>(
+            'PUT',
+            '/user/me/password',
+            {password, passwordConfirmation},
+            {'Content-Type': 'application/json'}
+        );
+    }
+
+    async sendPayloadToSocket(userId: string, payload: object): Promise<any> {
+        return this.request(
+            'POST',
+            '/websocket/send-message',
+            {users: [userId], payload},
+            {'Content-Type': 'application/json'}
+        );
+    }
+
+    async broadcast(payload: object): Promise<any> {
+        return this.request(
+            'POST',
+            '/websocket/broadcast',
+            {payload},
+            {'Content-Type': 'application/json'}
+        );
+    }
+
+    async updateSelfSpotifyConfig(spotifyConfig: SpotifyConfig): Promise<{ success: boolean; message: string }> {
+        return this.request<{ success: boolean; message: string }>(
+            'PUT',
+            '/user/me/spotify',
+            spotifyConfig,
+            {'Content-Type': 'application/json'}
+        );
+    }
+
+    async login(username: string, password: string): Promise<{ success: boolean; token: string; message: string; id: "username" | "password" }> {
+        return this.request<{ success: boolean; token: string; message: string; id: "username" | "password" }>(
+            "POST",
+            '/auth/login',
+            {username, password},
+            {'Content-Type': 'application/json'}
+        );
+    }
+
+    private async request<T>(method: Method, url: string, data?: any, headers?: any): Promise<T> {
+        try {
+            const response = await this.api.request<T>({
+                method,
+                url,
+                data,
+                headers,
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error during request:', error);
+            throw error;
+        }
+    }
+}
 
 export {RestService};

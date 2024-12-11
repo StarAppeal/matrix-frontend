@@ -2,8 +2,7 @@ import React, {useState} from "react";
 import {Button, Paragraph} from "react-native-paper";
 import ThemedTextInput from "@/src/components/themed/ThemedTextInput";
 import {useTheme} from "@/src/context/ThemeProvider";
-import Modal from "react-native-modal";
-import {StyleSheet, View} from "react-native";
+import {StyleSheet, View, Modal} from "react-native";
 import {RestService} from "@/src/services/RestService";
 import {useAuth} from "@/src/context/AuthProvider";
 
@@ -24,7 +23,7 @@ export default function ChangePasswordModal() {
             setApiResponse({success: false, message: "Passwörter stimmen nicht überein!"});
             return;
         }
-        RestService.changeSelfPassword(password, confirmPassword, jwtToken!).then(
+        new RestService(jwtToken).changeSelfPassword(password, confirmPassword).then(
             (response) => {
                 setApiResponse(response);
                 if (response.success) {
@@ -50,7 +49,7 @@ export default function ChangePasswordModal() {
             <Button mode="outlined" onPress={() => setIsVisible(true)}>
                 Passwort ändern
             </Button>
-            <Modal isVisible={isVisible} onBackdropPress={resetModal}>
+            <Modal visible={isVisible} onDismiss={resetModal} animationType={"slide"} transparent={true}>
                 <View style={styles.modalContent}>
                     <Paragraph>Passwort ändern</Paragraph>
                     {apiResponse && apiResponse.message && (
