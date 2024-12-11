@@ -121,11 +121,13 @@ class RestService {
     private async request<T>(method: Method, url: string, data?: any, headers?: any): Promise<T> {
         try {
             const response = await this.api.request<T>({
-                method,
-                url,
-                data,
-                headers,
-            });
+                    method,
+                    url,
+                    data,
+                    headers,
+                    validateStatus: (status) => status >= 200 && status < 500,
+                }
+            );
             return response.data;
         } catch (error) {
             console.error('Error during request:', error);
