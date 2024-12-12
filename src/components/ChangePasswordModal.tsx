@@ -1,15 +1,16 @@
 import React, {useState} from "react";
 import {Button, Paragraph} from "react-native-paper";
-import ThemedTextInput from "@/src/components/themed/ThemedTextInput";
 import {useTheme} from "@/src/context/ThemeProvider";
-import {StyleSheet, View, Modal} from "react-native";
+import {StyleSheet, View} from "react-native";
 import {RestService} from "@/src/services/RestService";
 import {useAuth} from "@/src/context/AuthProvider";
+import CustomModal from "@/src/components/themed/CustomModal";
+import PasswordInput from "@/src/components/PasswordInput";
+
 
 export default function ChangePasswordModal() {
     const {theme} = useTheme();
     const {token: jwtToken} = useAuth();
-    const [isVisible, setIsVisible] = useState(false);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [apiResponse, setApiResponse] = useState<{ success: boolean, message: string } | null>(null);
@@ -38,7 +39,6 @@ export default function ChangePasswordModal() {
 
     };
     const resetModal = () => {
-        setIsVisible(false);
         setApiResponse(null);
         setPassword("");
         setConfirmPassword("");
@@ -46,10 +46,7 @@ export default function ChangePasswordModal() {
 
     return (
         <>
-            <Button mode="outlined" onPress={() => setIsVisible(true)}>
-                Passwort ändern
-            </Button>
-            <Modal visible={isVisible} onDismiss={resetModal} animationType={"slide"} transparent={true}>
+            <CustomModal resetCallback={resetModal} buttonTitle="Passwort ändern">
                 <View style={styles.modalContent}>
                     <Paragraph>Passwort ändern</Paragraph>
                     {apiResponse && apiResponse.message && (
@@ -60,19 +57,17 @@ export default function ChangePasswordModal() {
                         </View>
                     )}
 
-                    <ThemedTextInput
+                    <PasswordInput
                         label="Passwort"
                         returnKeyType="next"
                         value={password}
                         onChangeText={setPassword}
-                        secureTextEntry
                     />
-                    <ThemedTextInput
+                    <PasswordInput
                         label="Passwort bestätigen"
                         returnKeyType="done"
                         value={confirmPassword}
                         onChangeText={setConfirmPassword}
-                        secureTextEntry
                     />
 
                     <View style={styles.buttonGroup}>
@@ -84,7 +79,7 @@ export default function ChangePasswordModal() {
                         </Button>
                     </View>
                 </View>
-            </Modal>
+            </CustomModal>
         </>
     );
 }

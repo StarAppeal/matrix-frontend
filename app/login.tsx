@@ -11,6 +11,7 @@ import BackButton from "../src/components/BackButton";
 import {useAuth} from "@/src/context/AuthProvider";
 import {useRouter} from "expo-router";
 import ThemeToggleButton from "@/src/components/ThemeToggleButton";
+import PasswordInput from "@/src/components/PasswordInput";
 
 
 export default function LoginScreen() {
@@ -62,14 +63,12 @@ export default function LoginScreen() {
                 errorText={error?.message}
                 autoCapitalize="none"
             />
-            <ThemedTextInput
-                label="Password"
+            <PasswordInput
                 returnKeyType="done"
                 value={password.value}
                 onChangeText={(text: string) => setPassword({value: text})}
                 error={!!error && error?.id === "password"}
                 errorText={error?.message}
-                secureTextEntry
             />
             <ThemedButton mode="outlined" onPress={onLoginPressed}>
                 Log in
