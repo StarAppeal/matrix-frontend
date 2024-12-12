@@ -1,43 +1,46 @@
-import React from "react";
-import {StyleSheet, Text, View} from "react-native";
-import {TextInput as Input} from "react-native-paper";
-import {useTheme} from "@/src/context/ThemeProvider";
+import React, { forwardRef } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { TextInput as Input, TextInputProps } from "react-native-paper"; // Importiere den korrekten Typ
+import { useTheme } from "@/src/context/ThemeProvider";
 
-type Props = {
+export type ThemedTextInputProps = TextInputProps & { // Erweitere die Typen um die Eigenschaften von TextInput
     errorText?: string;
     description?: string;
     error?: boolean;
-    [x: string]: any;
 };
 
-export default function ThemedTextInput({errorText, description, error, ...props}: Props) {
-    const {theme} = useTheme();
+const ThemedTextInput = forwardRef<any, ThemedTextInputProps>(
+    ({ errorText, description, error, ...props }, ref) => {
+        const { theme } = useTheme();
 
+        if (error && !errorText) {
+            console.log("ErrorText is missing! Please provide an errorText prop!");
+        }
 
-    if (error && !errorText) {
-        console.log("ErrorText is missing! Please provide an errorText prop!");
+        const errorStyle = {
+            fontSize: 13,
+            color: theme.colors.error,
+            paddingTop: 8,
+        };
+
+        return (
+            <View style={styles.container}>
+                <Input
+                    underlineColor="transparent"
+                    mode="outlined"
+                    {...props} // Übergib alle Props an Input
+                    ref={ref} // Übergibt die ref an die Input-Komponente
+                />
+                {description && !error ? (
+                    <Text style={styles.description}>{description}</Text>
+                ) : null}
+                {error && <Text style={errorStyle}>{errorText}</Text>}
+            </View>
+        );
     }
+);
 
-    const errorStyle = {
-        fontSize: 13,
-        color: theme.colors.error,
-        paddingTop: 8,
-    };
-
-    return (
-        <View style={styles.container}>
-            <Input
-                underlineColor="transparent"
-                mode="outlined"
-                {...props}
-            />
-            {description && !error ? (
-                <Text style={styles.description}>{description}</Text>
-            ) : null}
-            {error && <Text style={errorStyle}>{errorText}</Text>}
-        </View>
-    );
-}
+export default ThemedTextInput;
 
 const styles = StyleSheet.create({
     container: {
