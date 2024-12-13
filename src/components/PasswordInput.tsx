@@ -40,6 +40,7 @@ export default function PasswordInput(props: ThemedTextInputProps) {
             onChangeText={(input) => {
                 setText(input);
             }}
+            autoCapitalize="none"
             onSelectionChange={(e) => {
                 // Cursor-Position speichern
                 setCursorPosition(e.nativeEvent.selection.start);
