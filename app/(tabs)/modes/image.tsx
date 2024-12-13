@@ -19,7 +19,7 @@ export default function ImageScreen() {
     return (
         <ThemedBackground>
             <ThemedHeader>
-                Image Mode
+                Bildschirm für Bildauswahl
             </ThemedHeader>
             <CustomImagePicker onSuccess={onSuccess} onFailure={onFailure} onCanceled={onCanceled}/>
         </ThemedBackground>

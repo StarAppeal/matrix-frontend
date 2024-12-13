@@ -29,7 +29,6 @@ export default function ChangePasswordModal() {
                 setApiResponse(response);
                 if (response.success) {
                     // add something here
-                    console.log("Password changed successfully");
                     setPassword("");
                     setConfirmPassword("");
                 }
