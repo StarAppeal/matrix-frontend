@@ -32,7 +32,7 @@ export default function SettingsScreen() {
     return (
         <ThemedBackground>
             <View style={styles.container}>
-                <ThemedHeader>Guten Tag, {authenticatedUser?.name}</ThemedHeader>
+                <ThemedHeader>Einen wunderschönen guten Tag, {authenticatedUser?.name}</ThemedHeader>
                 <ChangePasswordModal/>
                 <ThemeToggleButton/>
                 <SpotifyAuthButton
