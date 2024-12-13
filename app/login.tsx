@@ -69,6 +69,7 @@ export default function LoginScreen() {
                 onChangeText={(text: string) => setPassword({value: text})}
                 error={!!error && error?.id === "password"}
                 errorText={error?.message}
+                autoComplete={"password"}
             />
             <ThemedButton mode="outlined" onPress={onLoginPressed}>
                 Log in
