@@ -51,7 +51,8 @@
     "react-native-switch-with-icons": "^3.0.1",
     "react-native-web": "~0.19.13",
     "react-native-webview": "^13.12.5",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "expo-updates": "~0.26.10"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

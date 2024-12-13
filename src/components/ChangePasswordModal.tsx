@@ -65,7 +65,7 @@ export default function ChangePasswordModal() {
                     />
                     <PasswordInput
                         label="Passwort bestätigen"
-                        returnKeyType="done"
+                        returnKeyType="go"
                         value={confirmPassword}
                         onChangeText={setConfirmPassword}
                     />

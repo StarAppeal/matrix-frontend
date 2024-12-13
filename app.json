@@ -16,7 +16,11 @@
         "foregroundImage": "./assets/images/racoon-icon.jpg",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "de.starappeal.ledmatrix"
+      "package": "de.starappeal.ledmatrix",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -51,6 +55,12 @@
       "eas": {
         "projectId": "6c7ada5a-fcc7-4d36-a056-c542c6d13dac"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/6c7ada5a-fcc7-4d36-a056-c542c6d13dac"
     }
   }
 }
