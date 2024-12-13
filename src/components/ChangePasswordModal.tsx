@@ -61,12 +61,14 @@ export default function ChangePasswordModal() {
                         returnKeyType="next"
                         value={password}
                         onChangeText={setPassword}
+                        autoComplete={"new-password"}
                     />
                     <PasswordInput
                         label="Passwort bestätigen"
                         returnKeyType="go"
                         value={confirmPassword}
                         onChangeText={setConfirmPassword}
+                        autoComplete={"new-password"}
                     />
 
                     <View style={styles.buttonGroup}>
