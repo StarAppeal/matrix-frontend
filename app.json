@@ -60,7 +60,8 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/6c7ada5a-fcc7-4d36-a056-c542c6d13dac"
+      "url": "https://u.expo.dev/6c7ada5a-fcc7-4d36-a056-c542c6d13dac",
+      "enabled": true
     }
   }
 }
