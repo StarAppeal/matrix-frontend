@@ -2,7 +2,7 @@
   "expo": {
     "name": "matrix",
     "slug": "matrix-frontend",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/racoon-icon.jpg",
     "scheme": "led.matrix",
