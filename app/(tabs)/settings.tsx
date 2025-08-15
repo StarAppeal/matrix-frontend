@@ -38,7 +38,7 @@ export default function SettingsScreen() {
                 <SpotifyAuthButton
                     onAuthSuccess={handleAuthSuccess}
                     jwtToken={jwtToken!}
-                    disabled={authenticatedUser?.spotifyConfig !== null}
+                    disabled={!!authenticatedUser?.spotifyConfig}
                 />
             </View>
             <ThemedButton mode={"outlined"} onPress={() => {

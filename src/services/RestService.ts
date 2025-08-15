@@ -4,6 +4,10 @@ import {SpotifyConfig, User} from "@/src/model/User";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
+interface TokenWrapper {
+    token: Token
+}
+
 export interface Token {
     access_token: string;
     refresh_token: string;
@@ -50,12 +54,12 @@ class RestService {
         );
     }
 
-    async exchangeSpotifyCodeForToken(code: string): Promise<Token> {
+    async exchangeSpotifyCodeForToken(code: string): Promise<TokenWrapper> {
         const redirectUri = makeRedirectUri({
             scheme: 'led.matrix',
             path: 'callback',
         });
-        return this.request<Token>(
+        return this.request<TokenWrapper>(
             'GET',
             `/spotify/token/generate/code/${code}/redirect-uri/${encodeURIComponent(redirectUri)}`
         );
