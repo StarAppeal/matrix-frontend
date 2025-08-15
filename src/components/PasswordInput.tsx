@@ -5,15 +5,12 @@ import { TextInput as PaperTextInput } from "react-native-paper";
 
 export default function PasswordInput(props: ThemedTextInputProps) {
     const [hidePass, setHidePass] = useState(true);
-    const [text, setText] = useState(""); // Textinhalt verwalten
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
     const inputRef = useRef<TextInput>(null);
 
     const handleCursorReset = () => {
         if (cursorPosition === null) return;
-
         if (Platform.OS === "web") {
-            // Für Web: `setSelectionRange` verwenden
             setTimeout(() => {
                 const inputElement = document.activeElement as HTMLInputElement;
                 if (inputElement) {
@@ -21,7 +18,6 @@ export default function PasswordInput(props: ThemedTextInputProps) {
                 }
             }, 0);
         } else {
-            // Für mobile Plattformen: `setNativeProps` verwenden
             setTimeout(() => {
                 inputRef.current?.setNativeProps({
                     selection: { start: cursorPosition, end: cursorPosition },
@@ -34,15 +30,14 @@ export default function PasswordInput(props: ThemedTextInputProps) {
         <ThemedTextInput
             {...props}
             label="Password"
-            value={text} // Textwert
+            value={props.value}
             secureTextEntry={hidePass}
-            ref={inputRef} // Referenz hinzufügen
+            ref={inputRef}
             onChangeText={(input) => {
-                setText(input);
+                props.onChangeText?.(input);
             }}
             autoCapitalize="none"
             onSelectionChange={(e) => {
-                // Cursor-Position speichern
                 setCursorPosition(e.nativeEvent.selection.start);
             }}
             right={
@@ -50,7 +45,7 @@ export default function PasswordInput(props: ThemedTextInputProps) {
                     icon={hidePass ? "eye" : "eye-off"}
                     onPress={() => {
                         setHidePass(!hidePass);
-                        handleCursorReset(); // Cursor-Position zurücksetzen
+                        handleCursorReset();
                     }}
                 />
             }

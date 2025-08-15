@@ -17,8 +17,8 @@ import PasswordInput from "@/src/components/PasswordInput";
 export default function LoginScreen() {
     const {isAuthenticated, login, logout, error} = useAuth();
     const router = useRouter();
-    const [username, setUsername] = useState({value: ""});
-    const [password, setPassword] = useState({value: ""});
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
 
     useEffect(() => {
         console.log(isAuthenticated);
@@ -31,7 +31,7 @@ export default function LoginScreen() {
 
     const onLoginPressed = async () => {
         console.log("Login wird ausgeführt...")
-        await login(username.value, password.value);
+        await login(username, password);
     };
 
     if (isAuthenticated) {
@@ -57,19 +57,20 @@ export default function LoginScreen() {
             <ThemedTextInput
                 label="Username"
                 returnKeyType="next"
-                value={username.value}
-                onChangeText={(text: string) => setUsername({value: text})}
+                value={username}
+                onChangeText={setUsername}
                 error={!!error && error?.id === "username"}
                 errorText={error?.message}
                 autoCapitalize="none"
             />
+
             <PasswordInput
                 returnKeyType="done"
-                value={password.value}
-                onChangeText={(text: string) => setPassword({value: text})}
+                value={password}
+                onChangeText={setPassword}
                 error={!!error && error?.id === "password"}
                 errorText={error?.message}
-                autoComplete={"password"}
+                autoComplete="password"
             />
             <ThemedButton mode="outlined" onPress={onLoginPressed}>
                 Log in
