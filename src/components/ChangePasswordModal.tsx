@@ -1,11 +1,12 @@
 import React, {useState} from "react";
-import {Button, Paragraph} from "react-native-paper";
+import { Paragraph} from "react-native-paper";
 import {useTheme} from "@/src/context/ThemeProvider";
 import {StyleSheet, View} from "react-native";
 import {RestService} from "@/src/services/RestService";
 import {useAuth} from "@/src/context/AuthProvider";
 import CustomModal from "@/src/components/themed/CustomModal";
 import PasswordInput from "@/src/components/PasswordInput";
+import ThemedButton from "@/src/components/themed/ThemedButton";
 
 
 export default function ChangePasswordModal() {
@@ -73,12 +74,7 @@ export default function ChangePasswordModal() {
                     />
 
                     <View style={styles.buttonGroup}>
-                        <Button mode="contained" onPress={handleConfirm}>
-                            Bestätigen
-                        </Button>
-                        <Button mode="elevated" onPress={resetModal}>
-                            Abbrechen
-                        </Button>
+                        <ThemedButton mode="contained" onPress={handleConfirm} title={"Bestätigen"} />
                     </View>
                 </View>
             </CustomModal>

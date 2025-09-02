@@ -21,9 +21,7 @@ const SpotifyAuthButton = ({onAuthSuccess, jwtToken, disabled}: SpotifyAuthButto
             onPress={promptAuth}
             mode={"outlined"}
             disabled={disabled}
-        >
-            {isReady ? 'Sign in with Spotify' : 'Loading...'}
-        </ThemedButton>
+       title={isReady ? 'Sign in with Spotify' : 'Loading...'} />
     );
 };
 

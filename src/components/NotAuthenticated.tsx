@@ -20,9 +20,7 @@ export default function NotAuthenticated() {
             <ThemedParagraph>
                 You are not authenticated. Please log in to view this content.
             </ThemedParagraph>
-            <ThemedButton mode="outlined" onPress={() => router.push("/login")}>
-                Login
-            </ThemedButton>
+            <ThemedButton mode="outlined" onPress={() => router.push("/login")} title={"Login"} />
         </ThemedBackground>
     );
 }
