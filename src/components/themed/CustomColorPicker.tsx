@@ -55,10 +55,10 @@ export default function CustomColorPicker({defaultColor = [255, 255, 255], onSel
                             value={pickerHex}
                             onComplete={(color: ColorFormatsObject) => setPickerHex(color.hex)}
                         >
-                            <Preview style={{ marginBottom: 15 }} />    {/* Abstand nach unten */}
-                            <Panel1 style={{ marginBottom: 15 }} />     {/* Abstand nach unten */}
-                            <HueSlider style={{ marginBottom: 15 }} />  {/* Abstand nach unten */}
-                            <Swatches style={{ marginTop: 10, marginBottom: 20 }} /> {/* Abstand nach oben und unten */}
+                            <Preview style={{ marginBottom: 15 }} />
+                            <Panel1 style={{ marginBottom: 15 }} />
+                            <HueSlider style={{ marginBottom: 15 }} />
+                            <Swatches style={{ marginTop: 10, marginBottom: 20 }} />
                         </ColorPicker>
 
                         <View style={styles.buttonContainer}>
