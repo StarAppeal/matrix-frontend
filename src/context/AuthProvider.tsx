@@ -16,6 +16,7 @@ type AuthContextType = {
     error: AuthError | null;
     authenticatedUser: User | null;
     loading: boolean;
+    refreshUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -91,8 +92,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
         setAuthenticatedUser(null);
     };
 
+    const refreshUser = async () => {
+        if (!token) return;
+        await saveUser(token);
+    };
+
     return (
-        <AuthContext.Provider value={{isAuthenticated, token, login, logout, error, authenticatedUser, loading}}>
+        <AuthContext.Provider value={{isAuthenticated, token, login, logout, error, authenticatedUser, loading, refreshUser}}>
             {children}
         </AuthContext.Provider>
     );
