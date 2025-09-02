@@ -26,8 +26,9 @@ export default function ChangePasswordModal() {
         }
         new RestService(jwtToken).changeSelfPassword(password, confirmPassword).then(
             (response) => {
-                setApiResponse(response);
-                if (response.success) {
+                console.log(response);
+                setApiResponse(response.result);
+                if (response.result.success) {
                     // add something here
                     setPassword("");
                     setConfirmPassword("");

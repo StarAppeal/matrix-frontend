@@ -77,8 +77,8 @@ class RestService {
         return this.request<User>('GET', '/user/me');
     }
 
-    async changeSelfPassword(password: string, passwordConfirmation: string): Promise<{ success: boolean; message: string }> {
-        return this.request<{ success: boolean; message: string }>(
+    async changeSelfPassword(password: string, passwordConfirmation: string): Promise<{result: { success: boolean; message: string }}> {
+        return this.request<{result: { success: boolean; message: string } }>(
             'PUT',
             '/user/me/password',
             {password, passwordConfirmation},
@@ -104,11 +104,12 @@ class RestService {
         );
     }
 
-    async updateSelfSpotifyConfig(spotifyConfig: SpotifyConfig): Promise<{ success: boolean; message: string }> {
+    async updateSelfSpotifyConfig(spotifyConfig?: SpotifyConfig): Promise<{ success: boolean; message: string }> {
+        const payload = spotifyConfig ?? {};
         return this.request<{ success: boolean; message: string }>(
             'PUT',
             '/user/me/spotify',
-            spotifyConfig,
+            payload,
             {'Content-Type': 'application/json'}
         );
     }

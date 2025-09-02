@@ -12,7 +12,7 @@ import ThemedButton from "@/src/components/themed/ThemedButton";
 import {useRouter} from "expo-router";
 
 export default function SettingsScreen() {
-    const {token: jwtToken, authenticatedUser, logout} = useAuth();
+    const {token: jwtToken, authenticatedUser, logout, refreshUser} = useAuth();
     const router = useRouter();
 
     const handleAuthSuccess = (token: Token) => {
@@ -26,6 +26,8 @@ export default function SettingsScreen() {
         new RestService(jwtToken).updateSelfSpotifyConfig(spotifyConfig).then((result) => {
             console.log("Spotify Token gespeichert");
             console.log(result);
+
+            refreshUser();
         });
     };
 
@@ -40,6 +42,17 @@ export default function SettingsScreen() {
                     jwtToken={jwtToken!}
                     disabled={!!authenticatedUser?.spotifyConfig}
                 />
+                {!!authenticatedUser?.spotifyConfig && ( <ThemedButton mode={"outlined"} onPress={() => {
+                    const rest = new RestService(jwtToken);
+                    rest.updateSelfSpotifyConfig().then((result) => {
+                        console.log("Spotify Login entfernt");
+                        console.log(result);
+                        refreshUser()
+                    })
+                }}>
+                    Remove Spotify
+                </ThemedButton>)}
+
             </View>
             <ThemedButton mode={"outlined"} onPress={() => {
                 console.log("Button pressed");
