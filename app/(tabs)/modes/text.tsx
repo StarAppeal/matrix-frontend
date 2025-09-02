@@ -13,7 +13,7 @@ export default function TextScreen() {
 
     return (
         <ThemedBackground>
-            <View style={{ padding: 20, gap: 10 }}> {/* Container für Input + Picker */}
+            <View style={{ padding: 20, gap: 10 }}>
                 <ThemedTextInput
                     label="Text"
                     returnKeyType="next"
@@ -34,9 +34,7 @@ export default function TextScreen() {
             </View>
 
             <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
-                <ThemedButton mode="contained" onPress={() => console.log(textProps)}>
-                    Cooler Knopf
-                </ThemedButton>
+                <ThemedButton mode="contained" onPress={() => console.log(textProps)} title={"Cooler Knopf"} />
             </View>
         </ThemedBackground>
     );

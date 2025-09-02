@@ -39,12 +39,8 @@ export default function LoginScreen() {
             <ThemedBackground>
                 <Logo/>
                 <ThemedHeader>Du bist bereits eingeloggt. Was machst'n hier?</ThemedHeader>
-                <ThemedButton mode="contained" onPress={logout}>
-                    Logout
-                </ThemedButton>
-                <ThemedButton mode="outlined" onPress={() => router.push("/")}>
-                    Zurück
-                </ThemedButton>
+                <ThemedButton mode="contained" onPress={logout} title={"Logout"} />
+                <ThemedButton mode="outlined" onPress={() => router.push("/")} title={"Zurück"} />
             </ThemedBackground>
         )
     }
@@ -72,9 +68,7 @@ export default function LoginScreen() {
                 errorText={error?.message}
                 autoComplete="password"
             />
-            <ThemedButton mode="outlined" onPress={onLoginPressed}>
-                Log in
-            </ThemedButton>
+            <ThemedButton mode="outlined" onPress={onLoginPressed} title={"Login"} />
            <ThemeToggleButton />
         </ThemedBackground>
     );

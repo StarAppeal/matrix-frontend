@@ -1,15 +1,16 @@
 import React, {useState} from "react";
-import {Button} from "react-native-paper";
-import {StyleSheet, View} from "react-native";
+import {StyleSheet, TouchableWithoutFeedback, View} from "react-native";
 import Modal from "react-native-modal";
+import ThemedButton from "@/src/components/themed/ThemedButton";
 
 export interface Props {
     resetCallback: () => void;
     children: React.ReactNode;
     buttonTitle: string;
+    buttonMode?: 'text' | 'outlined' | 'contained';
 }
 
-export default function CustomModal({resetCallback, children, buttonTitle}: Props) {
+export default function CustomModal({resetCallback, children, buttonTitle, buttonMode = "outlined"}: Props) {
     const [isVisible, setIsVisible] = useState(false);
 
     const resetModal = () => {
@@ -19,9 +20,7 @@ export default function CustomModal({resetCallback, children, buttonTitle}: Prop
 
     return (
         <>
-            <Button mode="outlined" onPress={() => setIsVisible(true)}>
-                {buttonTitle}
-            </Button>
+            <ThemedButton mode={buttonMode} onPress={() => setIsVisible(true)} title={buttonTitle} />
             <Modal isVisible={isVisible} onModalHide={resetModal} onBackdropPress={resetModal} onBackButtonPress={resetModal}>
                 <View style={styles.modalContent}>
                     {children}

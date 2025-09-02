@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Modal, StyleSheet, View, TouchableWithoutFeedback, Dimensions} from 'react-native';
+import {StyleSheet, View, Dimensions} from 'react-native';
 import ColorPicker, {Panel1, Swatches, Preview, HueSlider, ColorFormatsObject} from 'reanimated-color-picker';
+import CustomModal from "@/src/components/themed/CustomModal";
+import ThemedButton from "@/src/components/themed/ThemedButton";
 
 interface CustomColorPickerProps {
     defaultColor?: [number, number, number];
@@ -8,7 +10,6 @@ interface CustomColorPickerProps {
 }
 
 export default function CustomColorPicker({defaultColor = [255, 255, 255], onSelect}: CustomColorPickerProps) {
-    const [showModal, setShowModal] = useState(false);
     const [currentColor, setCurrentColor] = useState(defaultColor);
 
     const rgbToHex = ([r, g, b]: [number, number, number]) =>
@@ -36,18 +37,16 @@ export default function CustomColorPicker({defaultColor = [255, 255, 255], onSel
         const rgb = hexToRgbArray(pickerHex);
         setCurrentColor(rgb);
         onSelect(rgb);
-        setShowModal(false);
+        console.log(rgb)
     };
+
+    const resetModal = () => {
+        setCurrentColor(defaultColor);
+    }
 
     return (
         <View style={styles.container}>
-            <Button title="Color Picker" onPress={() => setShowModal(true)}/>
-
-            <Modal visible={showModal} transparent animationType="fade" onRequestClose={() => setShowModal(false)}>
-                <TouchableWithoutFeedback onPress={() => setShowModal(false)}>
-                    <View style={styles.overlay}/>
-                </TouchableWithoutFeedback>
-
+            <CustomModal resetCallback={resetModal} buttonTitle={"Color Picker"} buttonMode={"outlined"}>
                 <View style={styles.modalWrapper}>
                     <View style={[styles.modalContent, {width: pickerWidth}]}>
                         <ColorPicker
@@ -62,11 +61,11 @@ export default function CustomColorPicker({defaultColor = [255, 255, 255], onSel
                         </ColorPicker>
 
                         <View style={styles.buttonContainer}>
-                            <Button title="Ok" onPress={handleOk}/>
+                            <ThemedButton mode="contained" onPress={handleOk} title={"Bestätigen"} />
                         </View>
                     </View>
                 </View>
-            </Modal>
+            </CustomModal>
         </View>
     );
 }

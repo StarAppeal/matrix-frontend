@@ -42,27 +42,23 @@ export default function SettingsScreen() {
                     jwtToken={jwtToken!}
                     disabled={!!authenticatedUser?.spotifyConfig}
                 />
-                {!!authenticatedUser?.spotifyConfig && ( <ThemedButton mode={"outlined"} onPress={() => {
+                {!!authenticatedUser?.spotifyConfig && ( <ThemedButton mode={"outlined"} title={"Remove Spotify"} onPress={() => {
                     const rest = new RestService(jwtToken);
                     rest.updateSelfSpotifyConfig().then((result) => {
                         console.log("Spotify Login entfernt");
                         console.log(result);
                         refreshUser()
                     })
-                }}>
-                    Remove Spotify
-                </ThemedButton>)}
+                }}/>)}
 
             </View>
-            <ThemedButton mode={"outlined"} onPress={() => {
+            <ThemedButton mode={"outlined"} title={"Logout"} onPress={() => {
                 console.log("Button pressed");
                 logout().then(() => {
                     router.replace("/login");
                 });
             }
-            }>
-                Logout
-            </ThemedButton>
+            }/>
         </ThemedBackground>
     );
 }
