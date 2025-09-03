@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {StyleSheet, TouchableWithoutFeedback, View} from "react-native";
+import {StyleSheet, View} from "react-native";
 import Modal from "react-native-modal";
 import ThemedButton from "@/src/components/themed/ThemedButton";
 
