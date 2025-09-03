@@ -29,7 +29,6 @@ export default function PasswordInput(props: ThemedTextInputProps) {
     return (
         <ThemedTextInput
             {...props}
-            label="Password"
             value={props.value}
             secureTextEntry={hidePass}
             ref={inputRef}
