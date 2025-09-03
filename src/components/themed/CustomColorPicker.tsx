@@ -3,6 +3,7 @@ import {StyleSheet, View, Dimensions} from 'react-native';
 import ColorPicker, {Panel1, Swatches, Preview, HueSlider, ColorFormatsObject} from 'reanimated-color-picker';
 import CustomModal from "@/src/components/themed/CustomModal";
 import ThemedButton from "@/src/components/themed/ThemedButton";
+import {useTheme} from "@/src/context/ThemeProvider";
 
 interface CustomColorPickerProps {
     defaultColor?: [number, number, number];
@@ -11,6 +12,7 @@ interface CustomColorPickerProps {
 
 export default function CustomColorPicker({defaultColor = [255, 255, 255], onSelect}: CustomColorPickerProps) {
     const [currentColor, setCurrentColor] = useState(defaultColor);
+    const {theme} = useTheme();
 
     const rgbToHex = ([r, g, b]: [number, number, number]) =>
         `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
@@ -48,20 +50,20 @@ export default function CustomColorPicker({defaultColor = [255, 255, 255], onSel
         <View style={styles.container}>
             <CustomModal resetCallback={resetModal} buttonTitle={"Color Picker"} buttonMode={"outlined"}>
                 <View style={styles.modalWrapper}>
-                    <View style={[styles.modalContent, {width: pickerWidth}]}>
+                    <View style={[styles.modalContent, {width: pickerWidth, backgroundColor: theme.colors.onSurface}]}>
                         <ColorPicker
                             style={{width: pickerWidth * 0.9, height: pickerHeight}}
                             value={pickerHex}
                             onComplete={(color: ColorFormatsObject) => setPickerHex(color.hex)}
                         >
-                            <Preview style={{ marginBottom: 15 }} />
-                            <Panel1 style={{ marginBottom: 15 }} />
-                            <HueSlider style={{ marginBottom: 15 }} />
-                            <Swatches style={{ marginTop: 10, marginBottom: 20 }} />
+                            <Preview style={{marginBottom: 15}}/>
+                            <Panel1 style={{marginBottom: 15}}/>
+                            <HueSlider style={{marginBottom: 15}}/>
+                            <Swatches style={{marginTop: 10, marginBottom: 20}}/>
                         </ColorPicker>
 
                         <View style={styles.buttonContainer}>
-                            <ThemedButton mode="contained" onPress={handleOk} title={"Bestätigen"} />
+                            <ThemedButton mode="contained" onPress={handleOk} title={"Bestätigen"}/>
                         </View>
                     </View>
                 </View>
