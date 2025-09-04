@@ -9,7 +9,7 @@ import {View} from "react-native";
 
 export default function TextScreen() {
     const {authenticatedUser} = useAuth();
-    const [textProps, setTextProps] = useState(authenticatedUser?.lastState.text);
+    const [textProps, setTextProps] = useState(authenticatedUser!.lastState?.text);
 
     return (
         <ThemedBackground>
@@ -29,7 +29,7 @@ export default function TextScreen() {
 
                 <CustomColorPicker
                     onSelect={rgb => setTextProps(prev => ({ ...prev!, color: rgb }))}
-                    defaultColor={textProps!.color}
+                    defaultColor={textProps?.color}
                 />
             </View>
 

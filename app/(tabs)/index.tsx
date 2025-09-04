@@ -13,7 +13,7 @@ export default function HomeScreen() {
     const {theme} = useTheme();
 
     useEffect(() => {
-        setIdle(authenticatedUser?.lastState.global.mode === "idle")
+        setIdle(authenticatedUser!.lastState?.global.mode === "idle")
     }, [])
 
     return (
