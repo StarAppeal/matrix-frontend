@@ -61,6 +61,7 @@ export default function LoginScreen() {
             />
 
             <PasswordInput
+                label="Password"
                 returnKeyType="done"
                 value={password}
                 onChangeText={setPassword}
