@@ -33,8 +33,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
             const storedToken = await getFromStorage(JWT_TOKEN_KEY);
             if (storedToken) {
                 setToken(storedToken);
-                setIsAuthenticated(true);
-                await saveUser(storedToken);
+                const user = await saveUser(storedToken);
+                setIsAuthenticated(!!user);
             } else {
                 setIsAuthenticated(false);
             }
@@ -44,20 +44,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
         checkAuthStatus();
     }, []);
 
-    const saveUser = async (token: string) => {
+    const saveUser = async (token: string): Promise<User | null> => {
         const user = await new RestService(token).getSelf();
         if (!user) {
-            // token is invalid
+            // token ist ungültig
             await removeFromStorage(JWT_TOKEN_KEY);
             setToken(null);
             setIsAuthenticated(false);
+            setAuthenticatedUser(null);
             setError({
                 message: "Token invalid",
                 id: "general",
             });
-            return;
+            return null;
         }
         setAuthenticatedUser(user);
+        return user;
     }
 
     const login = async (username: string, password: string) => {
@@ -77,11 +79,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
         }
         await saveInStorage(JWT_TOKEN_KEY, response.token);
         setToken(response.token);
-        setIsAuthenticated(true);
-        // correctly logged in, reset error
+        // Fehler zurücksetzen
         setError(null);
-        await saveUser(response.token)
-        // needed?
+        // User laden und ERST DANN isAuthenticated setzen
+        const user = await saveUser(response.token);
+        setIsAuthenticated(!!user);
         setLoading(false);
     };
 
@@ -110,4 +112,4 @@ export const useAuth = (): AuthContextType => {
         throw new Error("useAuth must be used within an AuthProvider");
     }
     return context;
-};
+}
