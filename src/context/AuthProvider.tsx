@@ -3,18 +3,14 @@ import {getFromStorage, JWT_TOKEN_KEY, removeFromStorage, saveInStorage} from "@
 import {RestService} from "@/src/services/RestService";
 import {User} from "@/src/model/User";
 
-interface AuthError {
-    message: string;
-    id: "username" | "password" | "general";
-}
 
 type AuthContextType = {
     isAuthenticated: boolean | null;
     token: string | null;
     login: (username: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
-    error: AuthError | null;
     authenticatedUser: User | null;
+    error: string | null;
     loading: boolean;
     refreshUser: () => Promise<void>;
 };
@@ -25,7 +21,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
-    const [error, setError] = useState<AuthError | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -45,19 +41,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     }, []);
 
     const saveUser = async (token: string): Promise<User | null> => {
-        const user = await new RestService(token).getSelf();
-        if (!user) {
+        const response = await new RestService(token).getSelf();
+        if (!response.ok || !response.data) {
             // token ist ungültig
             await removeFromStorage(JWT_TOKEN_KEY);
             setToken(null);
             setIsAuthenticated(false);
             setAuthenticatedUser(null);
-            setError({
-                message: "Token invalid",
-                id: "general",
-            });
+            setError("Token invalid");
             return null;
         }
+        const user = response.data;
         setAuthenticatedUser(user);
         return user;
     }
@@ -68,21 +62,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
             return;
         }
         const response = await new RestService(null).login(username, password);
-        if (!response.success) {
-            console.error("Login failed:", response.message);
-            setError({
-                message: response.message,
-                id: response.id,
-            });
+        if (!response.ok) {
+            console.error("Login failed:", response.data.message);
+            setError(response.data.message!);
             setIsAuthenticated(false);
             return;
         }
-        await saveInStorage(JWT_TOKEN_KEY, response.token);
-        setToken(response.token);
+        const token = response.data.token!;
+        await saveInStorage(JWT_TOKEN_KEY, token);
+        setToken(token);
         // Fehler zurücksetzen
         setError(null);
         // User laden und ERST DANN isAuthenticated setzen
-        const user = await saveUser(response.token);
+        const user = await saveUser(token);
         setIsAuthenticated(!!user);
         setLoading(false);
     };
@@ -95,12 +87,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     };
 
     const refreshUser = async () => {
+        console.log("refreshUser")
+        console.log(token)
         if (!token) return;
         await saveUser(token);
     };
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, token, login, logout, error, authenticatedUser, loading, refreshUser}}>
+        <AuthContext.Provider
+            value={{isAuthenticated, token, login, logout, error, authenticatedUser, loading, refreshUser}}>
             {children}
         </AuthContext.Provider>
     );

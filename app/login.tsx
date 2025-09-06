@@ -55,8 +55,8 @@ export default function LoginScreen() {
                 returnKeyType="next"
                 value={username}
                 onChangeText={setUsername}
-                error={!!error && error?.id === "username"}
-                errorText={error?.message}
+                error={!!error && error?.toLowerCase().includes("user") }
+                errorText={error!}
                 autoCapitalize="none"
             />
 
@@ -65,8 +65,8 @@ export default function LoginScreen() {
                 returnKeyType="done"
                 value={password}
                 onChangeText={setPassword}
-                error={!!error && error?.id === "password"}
-                errorText={error?.message}
+                error={!!error && error?.toLowerCase().includes("pass") }
+                errorText={error!}
                 autoComplete="password"
             />
             <ThemedButton mode="outlined" onPress={onLoginPressed} title={"Login"} />

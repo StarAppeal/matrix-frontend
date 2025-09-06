@@ -4,16 +4,17 @@ import {SpotifyConfig, User} from "@/src/model/User";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-interface TokenWrapper {
-    token: Token
-}
-
 export interface Token {
     access_token: string;
     refresh_token: string;
     expires_in: number;
     token_type: string;
     scope: string;
+}
+
+export interface ApiResponse<T> {
+    ok: boolean;
+    data: T;
 }
 
 class RestService {
@@ -54,31 +55,33 @@ class RestService {
         );
     }
 
-    async exchangeSpotifyCodeForToken(code: string): Promise<TokenWrapper> {
+    async exchangeSpotifyCodeForToken(code: string): Promise<ApiResponse<{ token: Token }>> {
         const redirectUri = makeRedirectUri({
             scheme: 'led.matrix',
             path: 'callback',
         });
-        return this.request<TokenWrapper>(
-            'GET',
-            `/spotify/token/generate/code/${code}/redirect-uri/${encodeURIComponent(redirectUri)}`
+        return this.request<ApiResponse<{ token: Token }>>(
+            'POST',
+            `/spotify/token/generate`,
+            {"authCode": code, "redirectUri": redirectUri},
+            {'Content-Type': 'application/json'}
         );
     }
 
-    async fetchAllUser(): Promise<{ users: User[] }> {
-        return this.request<{ users: User[] }>('GET', '/user');
+    async fetchAllUser(): Promise<ApiResponse<{ users: User[] }>> {
+        return this.request<ApiResponse<{ users: User[] }>>('GET', '/user');
     }
 
-    async fetchUserById(id: string): Promise<User> {
-        return this.request<User>('GET', `/user/${id}`);
+    async fetchUserById(id: string): Promise<ApiResponse<User>> {
+        return this.request<ApiResponse<User>>('GET', `/user/${id}`);
     }
 
-    async getSelf(): Promise<User> {
-        return this.request<User>('GET', '/user/me');
+    async getSelf(): Promise<ApiResponse<User>> {
+        return this.request<ApiResponse<User>>('GET', '/user/me');
     }
 
-    async changeSelfPassword(password: string, passwordConfirmation: string): Promise<{result: { success: boolean; message: string }}> {
-        return this.request<{result: { success: boolean; message: string } }>(
+    async changeSelfPassword(password: string, passwordConfirmation: string): Promise<ApiResponse<{ message: string }>> {
+        return this.request<ApiResponse<{message: string}>>(
             'PUT',
             '/user/me/password',
             {password, passwordConfirmation},
@@ -104,9 +107,9 @@ class RestService {
         );
     }
 
-    async updateSelfSpotifyConfig(spotifyConfig?: SpotifyConfig): Promise<{ success: boolean; message: string }> {
+    async updateSelfSpotifyConfig(spotifyConfig?: SpotifyConfig): Promise<ApiResponse<{message: string}>> {
         const payload = spotifyConfig ?? {};
-        return this.request<{ success: boolean; message: string }>(
+        return this.request<ApiResponse<{message: string}>>(
             'PUT',
             '/user/me/spotify',
             payload,
@@ -114,8 +117,12 @@ class RestService {
         );
     }
 
-    async login(username: string, password: string): Promise<{ success: boolean; token: string; message: string; id: "username" | "password" }> {
-        return this.request<{ success: boolean; token: string; message: string; id: "username" | "password" }>(
+    async removeSpotifyConfig(): Promise<ApiResponse<User>> {
+        return this.request<ApiResponse<User>>('DELETE', '/user/me/spotify');
+    }
+
+    async login(username: string, password: string): Promise<ApiResponse<{ message?: string, token?: string }>> {
+        return this.request<ApiResponse<{message?: string, token?: string}>>(
             "POST",
             '/auth/login',
             {username, password},

@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import { Paragraph} from "react-native-paper";
 import {useTheme} from "@/src/context/ThemeProvider";
 import {StyleSheet, View} from "react-native";
-import {RestService} from "@/src/services/RestService";
+import {ApiResponse, RestService} from "@/src/services/RestService";
 import {useAuth} from "@/src/context/AuthProvider";
 import CustomModal from "@/src/components/themed/CustomModal";
 import PasswordInput from "@/src/components/PasswordInput";
@@ -14,22 +14,24 @@ export default function ChangePasswordModal() {
     const {token: jwtToken} = useAuth();
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [apiResponse, setApiResponse] = useState<{ success: boolean, message: string } | null>(null);
+    const [apiResponse, setApiResponse] = useState<ApiResponse<{ message: string }> | null>(null);
 
     const handleConfirm = () => {
         if (!password || !confirmPassword) {
-            setApiResponse({success: false, message: "Bitte füllen Sie alle Felder aus!"});
+
+
+            setApiResponse({ok: false, data: {message: "Bitte füllen Sie alle Felder aus!"}});
             return;
         }
         if (password !== confirmPassword) {
-            setApiResponse({success: false, message: "Passwörter stimmen nicht überein!"});
+            setApiResponse({ok: false, data: { message: "Passwörter stimmen nicht überein!"}});
             return;
         }
         new RestService(jwtToken).changeSelfPassword(password, confirmPassword).then(
             (response) => {
                 console.log(response);
-                setApiResponse(response.result);
-                if (response.result.success) {
+                setApiResponse(response);
+                if (response.ok) {
                     // add something here
                     setPassword("");
                     setConfirmPassword("");
@@ -50,11 +52,11 @@ export default function ChangePasswordModal() {
             <CustomModal resetCallback={resetModal} buttonTitle="Passwort ändern">
                 <View style={styles.modalContent}>
                     <Paragraph>Passwort ändern</Paragraph>
-                    {apiResponse && apiResponse.message && (
+                    {apiResponse && apiResponse.data?.message && (
                         <View
-                            style={[styles.apiResponseBox, {backgroundColor: apiResponse.success ? theme.colors.success : theme.colors.error}]}>
+                            style={[styles.apiResponseBox, {backgroundColor: apiResponse.ok ? theme.colors.success : theme.colors.error}]}>
                             <Paragraph
-                                style={{color: apiResponse.success ? theme.colors.onSuccess : theme.colors.onError}}>{apiResponse.message}</Paragraph>
+                                style={{color: apiResponse.ok ? theme.colors.onSuccess : theme.colors.onError}}>{apiResponse.data.message}</Paragraph>
                         </View>
                     )}
 
