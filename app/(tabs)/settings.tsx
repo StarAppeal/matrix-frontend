@@ -44,7 +44,7 @@ export default function SettingsScreen() {
                 />
                 {!!authenticatedUser?.spotifyConfig && ( <ThemedButton mode={"outlined"} title={"Remove Spotify"} onPress={() => {
                     const rest = new RestService(jwtToken);
-                    rest.updateSelfSpotifyConfig().then((result) => {
+                    rest.removeSpotifyConfig().then((result) => {
                         console.log("Spotify Login entfernt");
                         console.log(result);
                         refreshUser()
