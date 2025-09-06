@@ -1,10 +1,10 @@
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import { Paragraph} from "react-native-paper";
 import {useTheme} from "@/src/context/ThemeProvider";
 import {StyleSheet, View} from "react-native";
 import {ApiResponse, RestService} from "@/src/services/RestService";
 import {useAuth} from "@/src/context/AuthProvider";
-import CustomModal from "@/src/components/themed/CustomModal";
+import CustomModal, {CustomModalHandles} from "@/src/components/themed/CustomModal";
 import PasswordInput from "@/src/components/PasswordInput";
 import ThemedButton from "@/src/components/themed/ThemedButton";
 
@@ -15,11 +15,11 @@ export default function ChangePasswordModal() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [apiResponse, setApiResponse] = useState<ApiResponse<{ message: string }> | null>(null);
+    const modalRef = useRef<CustomModalHandles>(null);
+
 
     const handleConfirm = () => {
         if (!password || !confirmPassword) {
-
-
             setApiResponse({ok: false, data: {message: "Bitte füllen Sie alle Felder aus!"}});
             return;
         }
@@ -49,7 +49,7 @@ export default function ChangePasswordModal() {
 
     return (
         <>
-            <CustomModal resetCallback={resetModal} buttonTitle="Passwort ändern">
+            <CustomModal resetCallback={resetModal} buttonTitle="Passwort ändern" ref={modalRef}>
                 <View style={styles.modalContent}>
                     <Paragraph>Passwort ändern</Paragraph>
                     {apiResponse && apiResponse.data?.message && (
@@ -77,6 +77,10 @@ export default function ChangePasswordModal() {
 
                     <View style={styles.buttonGroup}>
                         <ThemedButton mode="contained" onPress={handleConfirm} title={"Bestätigen"} />
+                        <ThemedButton mode="elevated" onPress={() => {
+                            modalRef.current?.close();
+                            resetModal();
+                        }} title={"Abbrechen"} />
                     </View>
                 </View>
             </CustomModal>

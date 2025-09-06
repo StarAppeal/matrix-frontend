@@ -1,7 +1,12 @@
-import React, {useState} from "react";
+import React, {forwardRef, useImperativeHandle, useState} from "react";
 import {StyleSheet, View} from "react-native";
 import Modal from "react-native-modal";
 import ThemedButton from "@/src/components/themed/ThemedButton";
+
+export interface CustomModalHandles {
+    open: () => void;
+    close: () => void;
+}
 
 export interface Props {
     resetCallback: () => void;
@@ -10,25 +15,39 @@ export interface Props {
     buttonMode?: 'text' | 'outlined' | 'contained';
 }
 
-export default function CustomModal({resetCallback, children, buttonTitle, buttonMode = "outlined"}: Props) {
-    const [isVisible, setIsVisible] = useState(false);
+const CustomModal = forwardRef<CustomModalHandles, Props>(
+    ({resetCallback, children, buttonTitle, buttonMode = "outlined"}, ref) => {
+        const [isVisible, setIsVisible] = useState(false);
 
-    const resetModal = () => {
-        setIsVisible(false);
-        resetCallback();
+        const resetModal = () => {
+            setIsVisible(false);
+            resetCallback();
+        };
+
+        useImperativeHandle(ref, () => ({
+            open: () => setIsVisible(true),
+            close: () => setIsVisible(false),
+        }));
+
+        return (
+            <>
+                <ThemedButton mode={buttonMode} onPress={() => setIsVisible(true)} title={buttonTitle} />
+                <Modal
+                    isVisible={isVisible}
+                    onModalHide={resetModal}
+                    onBackdropPress={resetModal}
+                    onBackButtonPress={resetModal}
+                >
+                    <View style={styles.modalContent}>
+                        {children}
+                    </View>
+                </Modal>
+            </>
+        );
     }
+);
 
-    return (
-        <>
-            <ThemedButton mode={buttonMode} onPress={() => setIsVisible(true)} title={buttonTitle} />
-            <Modal isVisible={isVisible} onModalHide={resetModal} onBackdropPress={resetModal} onBackButtonPress={resetModal}>
-                <View style={styles.modalContent}>
-                    {children}
-                </View>
-            </Modal>
-        </>
-    );
-}
+export default CustomModal;
 
 const styles = StyleSheet.create({
     modalContent: {
