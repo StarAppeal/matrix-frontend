@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View, Dimensions} from 'react-native';
 import ColorPicker, {Panel1, Swatches, Preview, HueSlider, ColorFormatsObject} from 'reanimated-color-picker';
-import CustomModal from "@/src/components/themed/CustomModal";
+import CustomModal, {CustomModalHandles} from "@/src/components/themed/CustomModal";
 import ThemedButton from "@/src/components/themed/ThemedButton";
 import {useTheme} from "@/src/context/ThemeProvider";
 
@@ -12,6 +12,7 @@ interface CustomColorPickerProps {
 
 export default function CustomColorPicker({defaultColor = [255, 255, 255], onSelect}: CustomColorPickerProps) {
     const [currentColor, setCurrentColor] = useState(defaultColor);
+    const modalRef = useRef<CustomModalHandles>(null);
     const {theme} = useTheme();
 
     const rgbToHex = ([r, g, b]: [number, number, number]) =>
@@ -40,6 +41,8 @@ export default function CustomColorPicker({defaultColor = [255, 255, 255], onSel
         setCurrentColor(rgb);
         onSelect(rgb);
         console.log(rgb)
+        console.log(modalRef.current)
+        modalRef.current?.close();
     };
 
     const resetModal = () => {
@@ -48,7 +51,7 @@ export default function CustomColorPicker({defaultColor = [255, 255, 255], onSel
 
     return (
         <View style={styles.container}>
-            <CustomModal resetCallback={resetModal} buttonTitle={"Color Picker"} buttonMode={"outlined"}>
+            <CustomModal resetCallback={resetModal} buttonTitle={"Color Picker"} buttonMode={"outlined"} ref={modalRef}>
                 <View style={styles.modalWrapper}>
                     <View style={[styles.modalContent, {width: pickerWidth, backgroundColor: theme.colors.onSurface}]}>
                         <ColorPicker
