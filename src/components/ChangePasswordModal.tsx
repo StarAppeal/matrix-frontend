@@ -80,7 +80,7 @@ export default function ChangePasswordModal() {
                         <ThemedButton mode="elevated" onPress={() => {
                             modalRef.current?.close();
                             resetModal();
-                        }} title={"Abbrechen"} />
+                        }} title={"Schließen"} />
                     </View>
                 </View>
             </CustomModal>
