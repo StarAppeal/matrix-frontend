@@ -1,6 +1,7 @@
 import axios, {AxiosInstance, Method} from 'axios';
 import {makeRedirectUri} from "expo-auth-session";
 import {SpotifyConfig, User} from "@/src/model/User";
+import {Platform} from "react-native";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -27,6 +28,7 @@ class RestService {
         this.api = axios.create({
             baseURL: API_URL,
             timeout: 10000, // Set a timeout for requests
+            withCredentials: Platform.OS === 'web',
         });
 
         this.api.interceptors.request.use(
@@ -128,6 +130,10 @@ class RestService {
             {username, password},
             {'Content-Type': 'application/json'}
         );
+    }
+
+    async logout(): Promise<ApiResponse<{ message: string }>> {
+        return this.request<ApiResponse<{ message: string }>>('POST', '/auth/logout');
     }
 
     private async request<T>(method: Method, url: string, data?: any, headers?: any): Promise<T> {

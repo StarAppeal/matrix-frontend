@@ -2,6 +2,7 @@ import React, {createContext, useContext, useEffect, useState} from "react";
 import {getFromStorage, JWT_TOKEN_KEY, removeFromStorage, saveInStorage} from "@/src/utils/secureStorage";
 import {RestService} from "@/src/services/RestService";
 import {User} from "@/src/model/User";
+import {Platform} from "react-native";
 
 
 type AuthContextType = {
@@ -26,21 +27,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
 
     useEffect(() => {
         const checkAuthStatus = async () => {
-            const storedToken = await getFromStorage(JWT_TOKEN_KEY);
-            if (storedToken) {
-                setToken(storedToken);
-                const user = await saveUser(storedToken);
+            if (Platform.OS === 'web') {
+                const user = await saveUser(null);
                 setIsAuthenticated(!!user);
             } else {
-                setIsAuthenticated(false);
+                const storedToken = await getFromStorage(JWT_TOKEN_KEY);
+                if (storedToken) {
+                    setToken(storedToken);
+                    const user = await saveUser(storedToken);
+                    setIsAuthenticated(!!user);
+                } else {
+                    setIsAuthenticated(false);
+                }
             }
             setLoading(false);
         };
-
         checkAuthStatus();
     }, []);
 
-    const saveUser = async (token: string): Promise<User | null> => {
+    const saveUser = async (token: string | null): Promise<User | null> => {
         const response = await new RestService(token).getSelf();
         if (!response.ok || !response.data) {
             // token ist ungültig
@@ -61,26 +66,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
             console.log("Already authenticated");
             return;
         }
+        setLoading(true);
+        setError(null);
+
         const response = await new RestService(null).login(username, password);
         if (!response.ok) {
             console.error("Login failed:", response.data.message);
             setError(response.data.message!);
             setIsAuthenticated(false);
+            setLoading(false);
             return;
         }
-        const token = response.data.token!;
-        await saveInStorage(JWT_TOKEN_KEY, token);
-        setToken(token);
+        if (Platform.OS !== 'web') {
+            const token = response.data.token!;
+            await saveInStorage(JWT_TOKEN_KEY, token);
+            setToken(token);
+        }
         // Fehler zurücksetzen
         setError(null);
         // User laden und ERST DANN isAuthenticated setzen
-        const user = await saveUser(token);
+        const user = await saveUser(Platform.OS === 'web' ? null : response.data.token!);
         setIsAuthenticated(!!user);
         setLoading(false);
     };
 
     const logout = async () => {
-        await removeFromStorage(JWT_TOKEN_KEY);
+        if (Platform.OS === 'web') {
+            await new RestService(null).logout();
+        } else {
+            await removeFromStorage(JWT_TOKEN_KEY);
+        }
         setToken(null);
         setIsAuthenticated(false);
         setAuthenticatedUser(null);
@@ -88,9 +103,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
 
     const refreshUser = async () => {
         console.log("refreshUser")
-        console.log(token)
-        if (!token) return;
-        await saveUser(token);
+        if (Platform.OS === 'web') {
+            await saveUser(null);
+        } else {
+            console.log(token)
+            if (!token) return;
+            await saveUser(token);
+        }
     };
 
     return (
