@@ -7,26 +7,32 @@ export const JWT_TOKEN_KEY = "jwtToken";
 export const THEME_KEY = "theme";
 
 export const saveInStorage = async (key: string, value: string) => {
+    if (isWeb && key === JWT_TOKEN_KEY) {
+        return;
+    }
     if (isWeb) {
-        localStorage.setItem(key, value); // Web: localStorage
+        localStorage.setItem(key, value);
     } else {
-        await SecureStore.setItemAsync(key, value); // Mobile: SecureStore
+        await SecureStore.setItemAsync(key, value);
     }
 };
+
 
 export const getFromStorage = async (key: string): Promise<string | null> => {
-    if (isWeb) {
-        const item = localStorage.getItem(key);
-        console.log("Item:", item);
-        return item; // Web: localStorage
-    } else {
-        const item = await SecureStore.getItemAsync(key);
-        console.log("Item:", item);
-        return item; // Mobile: SecureStore
+    if (isWeb && key === JWT_TOKEN_KEY) {
+        return null;
     }
-};
+    if (isWeb) {
+        return localStorage.getItem(key);
+    } else {
+        return await SecureStore.getItemAsync(key);
+    }
+}
 
 export const removeFromStorage = async (key: string) => {
+    if (isWeb && key === JWT_TOKEN_KEY) {
+        return;
+    }
     if (isWeb) {
         localStorage.removeItem(key); // Web: localStorage
     } else {
