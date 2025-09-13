@@ -15,25 +15,29 @@ export default function CustomImagePicker({onSuccess, onFailure, onCanceled}: Pr
     const [image, setImage] = useState<string | null>(null);
 
     const pickImage = async () => {
-        // No permissions request is necessary for launching the image library
-        let result = ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images', 'videos'],
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-            base64: true,
-        }).then((result) => {
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images', 'videos'],
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+                base64: true,
+            });
+
             if (result.canceled) {
                 onCanceled();
             } else {
                 setImage(result.assets[0].uri);
                 onSuccess(result);
             }
-        }).catch((error) => {
-            onFailure(error);
-        });
-        console.log(result);
-    }
+        } catch (error) {
+            if (error instanceof Error) {
+                onFailure(error);
+            } else {
+                onFailure(new Error('An unknown error occurred during image picking.'));
+            }
+        }
+    };
 
     return (
         <View style={styles.container}>

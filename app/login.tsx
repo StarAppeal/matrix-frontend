@@ -13,7 +13,6 @@ import {useRouter} from "expo-router";
 import ThemeToggleButton from "@/src/components/ThemeToggleButton";
 import PasswordInput from "@/src/components/PasswordInput";
 
-
 export default function LoginScreen() {
     const {isAuthenticated, login, logout, error} = useAuth();
     const router = useRouter();
@@ -55,8 +54,8 @@ export default function LoginScreen() {
                 returnKeyType="next"
                 value={username}
                 onChangeText={setUsername}
-                error={!!error && error?.toLowerCase().includes("user") }
-                errorText={error!}
+                error={!!error && error?.field === "username" }
+                errorText={error?.message}
                 autoCapitalize="none"
             />
 
@@ -65,8 +64,8 @@ export default function LoginScreen() {
                 returnKeyType="done"
                 value={password}
                 onChangeText={setPassword}
-                error={!!error && error?.toLowerCase().includes("pass") }
-                errorText={error!}
+                error={!!error && error?.field === "password" }
+                errorText={error?.message}
                 autoComplete="password"
             />
             <ThemedButton mode="outlined" onPress={onLoginPressed} title={"Login"} />

@@ -11,7 +11,7 @@ type AuthContextType = {
     login: (username: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     authenticatedUser: User | null;
-    error: string | null;
+    error: { field: string, message: string } | null;
     loading: boolean;
     refreshUser: () => Promise<void>;
 };
@@ -22,7 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<{ field: string, message: string } | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
             setToken(null);
             setIsAuthenticated(false);
             setAuthenticatedUser(null);
-            setError("Token invalid");
+            setError({field: "general", message:"Token is invalid."});
             return null;
         }
         const user = response.data;
@@ -71,8 +71,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
 
         const response = await new RestService(null).login(username, password);
         if (!response.ok) {
-            console.error("Login failed:", response.data.message);
-            setError(response.data.message!);
+            console.error("Login failed:", response.data);
+            const message = response.data.message!;
+            setError({field: response.data.details?.field!, message});
             setIsAuthenticated(false);
             setLoading(false);
             return;

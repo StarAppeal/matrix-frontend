@@ -82,8 +82,10 @@ class RestService {
         return this.request<ApiResponse<User>>('GET', '/user/me');
     }
 
-    async changeSelfPassword(password: string, passwordConfirmation: string): Promise<ApiResponse<{ message: string }>> {
-        return this.request<ApiResponse<{message: string}>>(
+    async changeSelfPassword(password: string, passwordConfirmation: string): Promise<ApiResponse<{
+        message: string
+    }>> {
+        return this.request<ApiResponse<{ message: string }>>(
             'PUT',
             '/user/me/password',
             {password, passwordConfirmation},
@@ -109,9 +111,9 @@ class RestService {
         );
     }
 
-    async updateSelfSpotifyConfig(spotifyConfig?: SpotifyConfig): Promise<ApiResponse<{message: string}>> {
+    async updateSelfSpotifyConfig(spotifyConfig?: SpotifyConfig): Promise<ApiResponse<{ message: string }>> {
         const payload = spotifyConfig ?? {};
-        return this.request<ApiResponse<{message: string}>>(
+        return this.request<ApiResponse<{ message: string }>>(
             'PUT',
             '/user/me/spotify',
             payload,
@@ -123,8 +125,18 @@ class RestService {
         return this.request<ApiResponse<User>>('DELETE', '/user/me/spotify');
     }
 
-    async login(username: string, password: string): Promise<ApiResponse<{ message?: string, token?: string }>> {
-        return this.request<ApiResponse<{message?: string, token?: string}>>(
+    async login(username: string, password: string): Promise<ApiResponse<{
+        message?: string, token?: string, details?: {
+            field: string;
+            code: string;
+        }
+    }>> {
+        return this.request<ApiResponse<{
+            message?: string, token?: string, details?: {
+                field: string;
+                code: string;
+            }
+        }>>(
             "POST",
             '/auth/login',
             {username, password},

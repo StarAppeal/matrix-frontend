@@ -5,7 +5,7 @@ import ThemedButton from "@/src/components/themed/ThemedButton";
 
 interface SpotifyAuthButtonProps {
     onAuthSuccess: (token: Token) => void;
-    jwtToken: string;
+    jwtToken: string | null;
     disabled: boolean;
 }
 

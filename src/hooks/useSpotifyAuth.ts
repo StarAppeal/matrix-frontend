@@ -15,7 +15,7 @@ interface UseSpotifyAuthResult {
 
 export const useSpotifyAuth = (
     onAuthSuccess: (token: Token) => void,
-    jwtToken: string,
+    jwtToken: string | null,
 ): UseSpotifyAuthResult => {
     const [request, response, promptAsync] = useAuthRequest(
         {
