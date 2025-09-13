@@ -14,6 +14,7 @@ import {useRouter} from "expo-router";
 export default function SettingsScreen() {
     const {token: jwtToken, authenticatedUser, logout, refreshUser} = useAuth();
     const router = useRouter();
+    console.log("Mashallah", jwtToken);
 
     const handleAuthSuccess = (token: Token) => {
         const spotifyConfig = {
@@ -37,11 +38,11 @@ export default function SettingsScreen() {
                 <ThemedHeader>Einen wunderschönen guten Tag, {authenticatedUser?.name}</ThemedHeader>
                 <ChangePasswordModal/>
                 <ThemeToggleButton/>
-                <SpotifyAuthButton
-                    onAuthSuccess={handleAuthSuccess}
-                    jwtToken={jwtToken!}
-                    disabled={!!authenticatedUser?.spotifyConfig}
-                />
+                    <SpotifyAuthButton
+                        onAuthSuccess={handleAuthSuccess}
+                        jwtToken={jwtToken}
+                        disabled={!!authenticatedUser?.spotifyConfig}
+                    />
                 {!!authenticatedUser?.spotifyConfig && ( <ThemedButton mode={"outlined"} title={"Remove Spotify"} onPress={() => {
                     const rest = new RestService(jwtToken);
                     rest.removeSpotifyConfig().then((result) => {

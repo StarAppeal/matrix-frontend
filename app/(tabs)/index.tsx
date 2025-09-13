@@ -13,8 +13,10 @@ export default function HomeScreen() {
     const {theme} = useTheme();
 
     useEffect(() => {
-        setIdle(authenticatedUser!.lastState?.global.mode === "idle")
-    }, [])
+        if (authenticatedUser) {
+            setIdle(authenticatedUser.lastState?.global.mode === "idle")
+        }
+    }, [authenticatedUser]);
 
     return (
         <ThemedBackground>
