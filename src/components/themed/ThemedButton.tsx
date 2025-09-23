@@ -1,7 +1,8 @@
 import React from "react";
-import {StyleSheet, Text} from "react-native";
-import {Button as PaperButton} from "react-native-paper";
+import {StyleSheet} from "react-native";
+import { Button as PaperButton } from "react-native-paper";
 import {useTheme} from "@/src/context/ThemeProvider";
+import {IconSource} from "react-native-paper/src/components/Icon";
 
 type Props = {
     mode: "text" | "outlined" | "contained" | "elevated" | "contained-tonal"
@@ -10,9 +11,10 @@ type Props = {
     onPress: () => void;
     disabled?: boolean;
     title: string;
+    icon?: IconSource;
 }
 
-export default function ThemedButton({mode, style, title, ...props}: Props) {
+export default function ThemedButton({mode, style, title, icon, ...props}: Props) {
     const {theme} = useTheme();
     return (
         <PaperButton
@@ -23,9 +25,10 @@ export default function ThemedButton({mode, style, title, ...props}: Props) {
             ]}
             labelStyle={styles.text}
             mode={mode}
+            icon={icon}
             {...props}
         >
-            <Text>{title}</Text>
+            {title}
         </PaperButton>
     );
 }

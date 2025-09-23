@@ -12,12 +12,14 @@ import {useAuth} from "@/src/context/AuthProvider";
 import {useRouter} from "expo-router";
 import ThemeToggleButton from "@/src/components/ThemeToggleButton";
 import PasswordInput from "@/src/components/PasswordInput";
+import ThemedCheckbox from "@/src/components/themed/ThemedCheckbox";
 
 export default function LoginScreen() {
     const {isAuthenticated, login, logout, error} = useAuth();
     const router = useRouter();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [stayLoggedIn, setStayLoggedIn] = useState(false);
 
     useEffect(() => {
         console.log(isAuthenticated);
@@ -30,7 +32,7 @@ export default function LoginScreen() {
 
     const onLoginPressed = async () => {
         console.log("Login wird ausgeführt...")
-        await login(username, password);
+        await login(username, password, stayLoggedIn);
     };
 
     if (isAuthenticated) {
@@ -68,6 +70,12 @@ export default function LoginScreen() {
                 errorText={error?.message}
                 autoComplete="password"
             />
+            <ThemedCheckbox
+                label="Eingeloggt bleiben"
+                value={stayLoggedIn}
+                onValueChange={setStayLoggedIn}
+            />
+
             <ThemedButton mode="outlined" onPress={onLoginPressed} title={"Login"} />
            <ThemeToggleButton />
         </ThemedBackground>
