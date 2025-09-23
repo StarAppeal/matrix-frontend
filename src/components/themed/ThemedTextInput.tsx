@@ -1,9 +1,9 @@
 import React, { forwardRef } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { TextInput as Input, TextInputProps } from "react-native-paper"; // Importiere den korrekten Typ
+import { TextInput as Input, TextInputProps } from "react-native-paper";
 import { useTheme } from "@/src/context/ThemeProvider";
 
-export type ThemedTextInputProps = TextInputProps & { // Erweitere die Typen um die Eigenschaften von TextInput
+export type ThemedTextInputProps = TextInputProps & {
     errorText?: string;
     description?: string;
     error?: boolean;
@@ -28,8 +28,8 @@ const ThemedTextInput = forwardRef<any, ThemedTextInputProps>(
                 <Input
                     underlineColor="transparent"
                     mode="outlined"
-                    {...props} // Übergib alle Props an Input
-                    ref={ref} // Übergibt die ref an die Input-Komponente
+                    {...props}
+                    ref={ref}
                 />
                 {description && !error ? (
                     <Text style={styles.description}>{description}</Text>

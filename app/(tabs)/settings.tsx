@@ -1,7 +1,7 @@
 import ThemedHeader from "@/src/components/themed/ThemedHeader";
 import React from "react";
 import ThemedBackground from "@/src/components/themed/ThemedBackground";
-import ChangePasswordModal from "@/src/components/ChangePasswordModal";
+import ChangePasswordFeature from "@/src/components/ChangePasswordFeature";
 import ThemeToggleButton from "@/src/components/ThemeToggleButton";
 import SpotifyAuthButton from "@/src/components/SpotifyAuthButton";
 import {RestService, Token} from "@/src/services/RestService";
@@ -36,7 +36,7 @@ export default function SettingsScreen() {
         <ThemedBackground>
             <View style={styles.container}>
                 <ThemedHeader>Einen wunderschönen guten Tag, {authenticatedUser?.name}</ThemedHeader>
-                <ChangePasswordModal/>
+                <ChangePasswordFeature/>
                 <ThemeToggleButton/>
                     <SpotifyAuthButton
                         onAuthSuccess={handleAuthSuccess}

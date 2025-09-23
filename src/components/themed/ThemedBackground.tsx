@@ -1,8 +1,6 @@
 import React from "react";
-import {ImageBackground, KeyboardAvoidingView, StyleSheet,} from "react-native";
+import {ImageBackground, KeyboardAvoidingView, Platform, StyleSheet,} from "react-native";
 import {useTheme} from "../../context/ThemeProvider";
-import { Dimensions } from "react-native";
-
 
 type Props = {
     children: React.ReactNode;
@@ -16,14 +14,15 @@ export default function ThemedBackground({children}: Props) {
             resizeMode="repeat"
             style={[styles.background, {backgroundColor: theme.colors.background}]}
         >
-            <KeyboardAvoidingView style={styles.container} behavior="padding">
+            <KeyboardAvoidingView
+                style={styles.container}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
                 {children}
             </KeyboardAvoidingView>
         </ImageBackground>
     );
 }
-
-const screenWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
     background: {
@@ -33,9 +32,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        width: Math.min(screenWidth, 340),
+        width: "90%",
+        maxWidth: 600,
         alignSelf: "center",
-        alignItems: "center",
-        justifyContent: "center",
     },
 });

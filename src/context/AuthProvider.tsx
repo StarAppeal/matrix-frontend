@@ -8,7 +8,7 @@ import {Platform} from "react-native";
 type AuthContextType = {
     isAuthenticated: boolean | null;
     token: string | null;
-    login: (username: string, password: string) => Promise<void>;
+    login: (username: string, password: string, stayLoggedIn?: boolean) => Promise<void>;
     logout: () => Promise<void>;
     authenticatedUser: User | null;
     error: { field: string, message: string } | null;
@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
             setToken(null);
             setIsAuthenticated(false);
             setAuthenticatedUser(null);
-            setError({field: "general", message:"Token is invalid."});
+            setError({field: "general", message: "Token is invalid."});
             return null;
         }
         const user = response.data;
@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
         return user;
     }
 
-    const login = async (username: string, password: string) => {
+    const login = async (username: string, password: string, stayLoggedIn?: boolean) => {
         if (isAuthenticated) {
             console.log("Already authenticated");
             return;
@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
         setLoading(true);
         setError(null);
 
-        const response = await new RestService(null).login(username, password);
+        const response = await new RestService(null).login(username, password, stayLoggedIn);
         if (!response.ok) {
             console.error("Login failed:", response.data);
             const message = response.data.message!;

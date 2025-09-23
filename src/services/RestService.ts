@@ -125,7 +125,7 @@ class RestService {
         return this.request<ApiResponse<User>>('DELETE', '/user/me/spotify');
     }
 
-    async login(username: string, password: string): Promise<ApiResponse<{
+    async login(username: string, password: string, stayLoggedIn?: boolean): Promise<ApiResponse<{
         message?: string, token?: string, details?: {
             field: string;
             code: string;
@@ -139,7 +139,7 @@ class RestService {
         }>>(
             "POST",
             '/auth/login',
-            {username, password},
+            {username, password, stayLoggedIn},
             {'Content-Type': 'application/json'}
         );
     }
