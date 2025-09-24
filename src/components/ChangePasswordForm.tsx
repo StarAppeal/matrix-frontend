@@ -48,7 +48,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
 
             {apiResponse && apiResponse.data?.message && (
                 <View style={[styles.apiResponseBox, { backgroundColor: apiResponse.ok ? theme.colors.success : theme.colors.error }]}>
-                    <Text variant="bodyMedium"style={{ color: apiResponse.ok ? theme.colors.onSuccess : theme.colors.onError }}>
+                    <Text variant="bodyMedium" style={{ color: apiResponse.ok ? theme.colors.onSuccess : theme.colors.onError }}>
                         {apiResponse.data.message}
                     </Text>
                 </View>
