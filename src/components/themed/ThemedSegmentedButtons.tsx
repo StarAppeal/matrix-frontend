@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { SegmentedButtons } from 'react-native-paper';
-import { useTheme } from '@/src/context/ThemeProvider';
 
 export type SegmentedButton<T extends string> = {
     value: T;
