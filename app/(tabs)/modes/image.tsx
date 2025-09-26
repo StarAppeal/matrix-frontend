@@ -1,25 +1,34 @@
 import ThemedHeader from "@/src/components/themed/ThemedHeader";
-import React, { useState } from "react";
+import React, {useState} from "react";
 import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import CustomImagePicker from "@/src/components/ImagePicker";
-import { ImagePickerSuccessResult } from "expo-image-picker";
-import { View, StyleSheet, ActivityIndicator, FlatList, Text, TouchableOpacity, Linking, Modal } from "react-native";
-import { S3File, RestService } from "@/src/services/RestService";
+import {ImagePickerSuccessResult} from "expo-image-picker";
+import {
+    View,
+    StyleSheet,
+    ActivityIndicator,
+    FlatList,
+    Text,
+    TouchableOpacity,
+    Linking,
+    Modal,
+} from "react-native";
+import {S3File, RestService} from "@/src/services/RestService";
 import ThemedButton from "@/src/components/themed/ThemedButton";
-import { useTheme } from "@/src/context/ThemeProvider";
-import { useAuth } from "@/src/context/AuthProvider";
-import { MaterialIcons } from '@expo/vector-icons';
+import {useTheme} from "@/src/context/ThemeProvider";
+import {useAuth} from "@/src/context/AuthProvider";
+import {MaterialIcons} from '@expo/vector-icons';
 
 export default function ImageScreen() {
-    const { token } = useAuth();
+    const {token} = useAuth();
     const [uploading, setUploading] = useState(false);
     const [files, setFiles] = useState<S3File[]>([]);
     const [showFiles, setShowFiles] = useState(false);
     const [loadingFiles, setLoadingFiles] = useState(false);
     const [deletingFile, setDeletingFile] = useState<string | null>(null);
-    const { theme } = useTheme();
+    const {theme} = useTheme();
 
-    const { primary, onSurface, outline, error } = theme.colors;
+    const {primary, onSurface, outline, error} = theme.colors;
 
     const fetchStoredFiles = async () => {
         setLoadingFiles(true);
@@ -46,16 +55,16 @@ export default function ImageScreen() {
             try {
                 setUploading(true);
 
-                // Erstellen eines FormData-Objekts für den Upload
                 const formData = new FormData();
 
-                formData.append('image', {
-                    uri: selectedAsset.uri,
-                    type: selectedAsset.mimeType || 'image/jpeg',
-                    name: selectedAsset.fileName || 'upload.jpg',
-                } as any);
+                const fileBlob = ('file' in selectedAsset && selectedAsset.file) ?
+                    selectedAsset.file as Blob :
+                    await fetch(selectedAsset.uri).then(r => r.blob());
 
-                console.log("FormData erstellt mit:", selectedAsset.uri, selectedAsset.mimeType, selectedAsset.fileName);
+                const fileName = selectedAsset.fileName || 'upload.jpg';
+
+                formData.append('image', fileBlob, fileName);
+                console.log("Web-Plattform: Blob angehängt mit Namen:", fileName);
 
                 const response = await new RestService(token).uploadFile(formData);
 
@@ -159,8 +168,8 @@ export default function ImageScreen() {
             <View style={styles.container}>
                 {uploading ? (
                     <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color={primary} />
-                        <Text style={[styles.loadingText, { color: onSurface }]}>
+                        <ActivityIndicator size="large" color={primary}/>
+                        <Text style={[styles.loadingText, {color: onSurface}]}>
                             Datei wird hochgeladen...
                         </Text>
                     </View>
@@ -185,45 +194,45 @@ export default function ImageScreen() {
                         <ThemedHeader>Gespeicherte Dateien</ThemedHeader>
 
                         {loadingFiles ? (
-                            <ActivityIndicator size="large" color={primary} />
+                            <ActivityIndicator size="large" color={primary}/>
                         ) : files.length > 0 ? (
                             <FlatList
                                 data={files}
                                 keyExtractor={(item) => item.key}
-                                renderItem={({ item }) => (
-                                    <View style={[styles.fileItem, { borderColor: outline }]}>
-                                        <Text style={{ color: onSurface, fontWeight: 'bold' }}>
+                                renderItem={({item}) => (
+                                    <View style={[styles.fileItem, {borderColor: outline}]}>
+                                        <Text style={{color: onSurface, fontWeight: 'bold'}}>
                                             {item.originalName}
                                         </Text>
-                                        <Text style={{ color: onSurface }}>
+                                        <Text style={{color: onSurface}}>
                                             Typ: {item.mimeType}
                                         </Text>
-                                        <Text style={{ color: onSurface }}>
+                                        <Text style={{color: onSurface}}>
                                             Größe: {formatFileSize(item.size)}
                                         </Text>
-                                        <Text style={{ color: onSurface }}>
+                                        <Text style={{color: onSurface}}>
                                             Zuletzt geändert: {formatDate(item.lastModified)}
                                         </Text>
                                         <View style={styles.fileItemButtons}>
                                             <TouchableOpacity
-                                                style={[styles.fileButton, { backgroundColor: primary }]}
+                                                style={[styles.fileButton, {backgroundColor: primary}]}
                                                 onPress={() => viewFile(item.key, item.originalName, item.mimeType)}
                                             >
-                                                <MaterialIcons name="visibility" size={24} color="white" />
+                                                <MaterialIcons name="visibility" size={24} color="white"/>
                                             </TouchableOpacity>
 
                                             <TouchableOpacity
-                                                style={[styles.fileButton, { backgroundColor: error }]}
+                                                style={[styles.fileButton, {backgroundColor: error}]}
                                                 onPress={() => confirmDeleteFile(item.key)}
                                             >
-                                                <MaterialIcons name="delete" size={24} color="white" />
+                                                <MaterialIcons name="delete" size={24} color="white"/>
                                             </TouchableOpacity>
                                         </View>
                                     </View>
                                 )}
                             />
                         ) : (
-                            <Text style={{ color: onSurface, textAlign: 'center' }}>
+                            <Text style={{color: onSurface, textAlign: 'center'}}>
                                 Keine Dateien gefunden
                             </Text>
                         )}
