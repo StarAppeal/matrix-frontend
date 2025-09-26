@@ -165,8 +165,8 @@ class RestService {
         );
     }
 
-    async getStoredFiles(): Promise<ApiResponse<{ files: S3File[] }>> {
-        return this.request<ApiResponse<{ files: S3File[] }>>(
+    async getStoredFiles(): Promise<ApiResponse<S3File[]>> {
+        return this.request<ApiResponse<S3File[]>>(
             'GET',
             '/storage/files'
         );
@@ -182,7 +182,7 @@ class RestService {
     async deleteFile(objectKey: string): Promise<ApiResponse<{ message: string }>> {
         return this.request<ApiResponse<{ message: string }>>(
             'DELETE',
-            `/storage/file/${objectKey}`
+            `/storage/files/${objectKey}`
         );
     }
 
