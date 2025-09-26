@@ -159,7 +159,7 @@ class RestService {
     async uploadFile(file: FormData): Promise<ApiResponse<{ message: string, objectKey: string }>> {
         return this.request<ApiResponse<{ message: string, objectKey: string }>>(
             'POST',
-            ' /storage/upload',
+            '/storage/upload',
             file,
             {'Content-Type': 'multipart/form-data'}
         );
