@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import CustomImagePicker from "@/src/components/ImagePicker";
 import { ImagePickerSuccessResult } from "expo-image-picker";
-import { View, StyleSheet, Alert, FlatList, Text, ActivityIndicator, TouchableOpacity, Linking, Platform } from "react-native";
+import { View, StyleSheet, ActivityIndicator, FlatList, Text, TouchableOpacity, Linking, Modal } from "react-native";
 import { S3File, RestService } from "@/src/services/RestService";
 import ThemedButton from "@/src/components/themed/ThemedButton";
 import { useTheme } from "@/src/context/ThemeProvider";
@@ -16,6 +16,7 @@ export default function ImageScreen() {
     const [files, setFiles] = useState<S3File[]>([]);
     const [showFiles, setShowFiles] = useState(false);
     const [loadingFiles, setLoadingFiles] = useState(false);
+    const [deletingFile, setDeletingFile] = useState<string | null>(null);
     const { theme } = useTheme();
 
     const { primary, onSurface, outline, error } = theme.colors;
@@ -28,11 +29,10 @@ export default function ImageScreen() {
                 setFiles(response.data);
                 setShowFiles(true);
             } else {
-                Alert.alert("Fehler", "Dateien konnten nicht abgerufen werden");
+                console.error("Fehler beim Abrufen der Dateien");
             }
         } catch (error) {
             console.error("Fehler beim Abrufen der Dateien:", error);
-            Alert.alert("Fehler", "Dateien konnten nicht abgerufen werden");
         } finally {
             setLoadingFiles(false);
         }
@@ -60,14 +60,13 @@ export default function ImageScreen() {
                 const response = await new RestService(token).uploadFile(formData);
 
                 if (response.ok) {
-                    Alert.alert("Erfolg", "Datei erfolgreich hochgeladen");
+                    console.log("Datei erfolgreich hochgeladen");
                     fetchStoredFiles();
                 } else {
-                    Alert.alert("Fehler", "Upload fehlgeschlagen");
+                    console.error("Upload fehlgeschlagen");
                 }
             } catch (error) {
                 console.error("Fehler beim Hochladen der Datei:", error);
-                Alert.alert("Fehler", "Upload fehlgeschlagen");
             } finally {
                 setUploading(false);
             }
@@ -76,7 +75,6 @@ export default function ImageScreen() {
 
     const onFailure = (error: Error) => {
         console.error("Error picking image", error);
-        Alert.alert("Fehler", "Bildauswahl fehlgeschlagen");
     };
 
     const onCanceled = () => {
@@ -116,47 +114,40 @@ export default function ImageScreen() {
                 if (canOpen) {
                     await Linking.openURL(url);
                 } else {
-                    Alert.alert("Fehler", "Diese URL kann nicht geöffnet werden");
+                    console.error("Diese URL kann nicht geöffnet werden:", url);
                 }
             } else {
-                Alert.alert("Fehler", "Datei-URL konnte nicht abgerufen werden");
+                console.error("Datei-URL konnte nicht abgerufen werden");
             }
         } catch (error) {
             console.error("Fehler beim Abrufen der Datei-URL:", error);
-            Alert.alert("Fehler", "Datei-URL konnte nicht abgerufen werden");
         }
     };
 
     const deleteFile = async (objectKey: string) => {
-        Alert.alert(
-            "Datei löschen",
-            "Möchtest du diese Datei wirklich löschen?",
-            [
-                {
-                    text: "Abbrechen",
-                    style: "cancel"
-                },
-                {
-                    text: "Löschen",
-                    style: "destructive",
-                    onPress: async () => {
-                        try {
-                            const response = await new RestService(token).deleteFile(objectKey);
-                            if (response.ok) {
-                                Alert.alert("Erfolg", "Datei erfolgreich gelöscht");
-                                // Liste aktualisieren
-                                fetchStoredFiles();
-                            } else {
-                                Alert.alert("Fehler", "Datei konnte nicht gelöscht werden");
-                            }
-                        } catch (error) {
-                            console.error("Fehler beim Löschen der Datei:", error);
-                            Alert.alert("Fehler", "Datei konnte nicht gelöscht werden");
-                        }
-                    }
-                }
-            ]
-        );
+        try {
+            const response = await new RestService(token).deleteFile(objectKey);
+            if (response.ok) {
+                console.log("Datei erfolgreich gelöscht");
+                fetchStoredFiles();
+            } else {
+                console.error("Datei konnte nicht gelöscht werden");
+            }
+        } catch (error) {
+            console.error("Fehler beim Löschen der Datei:", error);
+        }
+    };
+
+    const confirmDeleteFile = (objectKey: string) => {
+        setDeletingFile(objectKey);
+    };
+
+    const cancelDelete = () => {
+        setDeletingFile(null);
+    };
+
+    const confirmCancelDelete = () => {
+        setDeletingFile(null);
     };
 
     return (
@@ -223,7 +214,7 @@ export default function ImageScreen() {
 
                                             <TouchableOpacity
                                                 style={[styles.fileButton, { backgroundColor: error }]}
-                                                onPress={() => deleteFile(item.key)}
+                                                onPress={() => confirmDeleteFile(item.key)}
                                             >
                                                 <MaterialIcons name="delete" size={24} color="white" />
                                             </TouchableOpacity>
@@ -238,6 +229,38 @@ export default function ImageScreen() {
                         )}
                     </View>
                 )}
+
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={!!deletingFile}
+                    onRequestClose={cancelDelete}
+                >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.modalText}>
+                                Sind Sie sicher, dass Sie diese Datei löschen möchten?
+                            </Text>
+                            <View style={styles.modalButtons}>
+                                <ThemedButton
+                                    onPress={() => {
+                                        if (deletingFile) {
+                                            deleteFile(deletingFile);
+                                            setDeletingFile(null);
+                                        }
+                                    }}
+                                    title="Ja, löschen"
+                                    mode="contained"
+                                />
+                                <ThemedButton
+                                    onPress={cancelDelete}
+                                    title="Abbrechen"
+                                    mode="outlined"
+                                />
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
             </View>
         </ThemedBackground>
     );
@@ -286,5 +309,27 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginLeft: 8,
-    }
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: '80%',
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        padding: 20,
+        alignItems: 'center',
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
 });
