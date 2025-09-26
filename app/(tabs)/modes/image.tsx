@@ -46,16 +46,16 @@ export default function ImageScreen() {
             try {
                 setUploading(true);
 
+                // Erstellen eines FormData-Objekts für den Upload
                 const formData = new FormData();
 
-                const fileInfo = {
+                formData.append('image', {
                     uri: selectedAsset.uri,
                     type: selectedAsset.mimeType || 'image/jpeg',
-                    name: selectedAsset.fileName || 'upload.jpg'
-                };
+                    name: selectedAsset.fileName || 'upload.jpg',
+                } as any);
 
-                // @ts-ignore
-                formData.append('image', fileInfo);
+                console.log("FormData erstellt mit:", selectedAsset.uri, selectedAsset.mimeType, selectedAsset.fileName);
 
                 const response = await new RestService(token).uploadFile(formData);
 
@@ -63,7 +63,7 @@ export default function ImageScreen() {
                     console.log("Datei erfolgreich hochgeladen");
                     fetchStoredFiles();
                 } else {
-                    console.error("Upload fehlgeschlagen");
+                    console.error("Upload fehlgeschlagen:", response);
                 }
             } catch (error) {
                 console.error("Fehler beim Hochladen der Datei:", error);
