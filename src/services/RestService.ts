@@ -18,6 +18,14 @@ export interface ApiResponse<T> {
     data: T;
 }
 
+export interface S3File {
+    key: string;
+    lastModified: Date;
+    originalName: string;
+    mimeType: string;
+    size: number;
+}
+
 class RestService {
     private readonly jwtToken: string | null;
     private api: AxiosInstance;
@@ -146,6 +154,36 @@ class RestService {
 
     async logout(): Promise<ApiResponse<{ message: string }>> {
         return this.request<ApiResponse<{ message: string }>>('POST', '/auth/logout');
+    }
+
+    async uploadFile(file: FormData): Promise<ApiResponse<{ message: string, objectKey: string }>> {
+        return this.request<ApiResponse<{ message: string, objectKey: string }>>(
+            'POST',
+            ' /storage/upload',
+            file,
+            {'Content-Type': 'multipart/form-data'}
+        );
+    }
+
+    async getStoredFiles(): Promise<ApiResponse<{ files: S3File[] }>> {
+        return this.request<ApiResponse<{ files: S3File[] }>>(
+            'GET',
+            '/storage/files'
+        );
+    }
+
+    async getFileUrl(objectKey: string): Promise<ApiResponse<{ url: string }>> {
+        return this.request<ApiResponse<{ url: string }>>(
+            'GET',
+            `/storage/files/${objectKey}/url`
+        );
+    }
+
+    async deleteFile(objectKey: string): Promise<ApiResponse<{ message: string }>> {
+        return this.request<ApiResponse<{ message: string }>>(
+            'DELETE',
+            `/storage/file/${objectKey}`
+        );
     }
 
     private async request<T>(method: Method, url: string, data?: any, headers?: any): Promise<T> {
