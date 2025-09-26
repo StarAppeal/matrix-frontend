@@ -24,8 +24,8 @@ export default function ImageScreen() {
         setLoadingFiles(true);
         try {
             const response = await new RestService(token).getStoredFiles();
-            if (response.ok && response.data.files) {
-                setFiles(response.data.files);
+            if (response.ok && response.data) {
+                setFiles(response.data);
                 setShowFiles(true);
             } else {
                 Alert.alert("Fehler", "Dateien konnten nicht abgerufen werden");
