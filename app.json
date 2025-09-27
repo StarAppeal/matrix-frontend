@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "matrix",
+    "fastRefresh": true,
     "slug": "matrix-frontend",
     "version": "1.0.1",
     "orientation": "portrait",
