@@ -1,9 +1,9 @@
-import {Image} from "react-native";
+import { Image } from "react-native";
 import React from "react";
 import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import ThemedParagraph from "@/src/components/themed/ThemedParagraph";
 import ThemedButton from "@/src/components/themed/ThemedButton";
-import {useRouter} from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function NotAuthenticated() {
     const router = useRouter();
@@ -11,11 +11,7 @@ export default function NotAuthenticated() {
         <ThemedBackground>
             <Image
                 source={require("@/assets/images/GarfieldCharakter.webp")}
-                style={{
-                    width: 200,
-                    height: 200,
-                    marginBottom: 12,
-                }}
+                className="w-52 h-52 mb-3"
             />
             <ThemedParagraph>
                 You are not authenticated. Please log in to view this content.

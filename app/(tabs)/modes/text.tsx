@@ -2,7 +2,7 @@ import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import ThemedTextInput from "@/src/components/themed/ThemedTextInput";
 import ThemedButton from "@/src/components/themed/ThemedButton";
 import ColorSelector from "@/src/components/themed/ColorSelector";
-import {View, StyleSheet} from "react-native";
+import {View} from "react-native";
 import ThemedSegmentedButtons from "@/src/components/themed/ThemedSegmentedButtons";
 import { MatrixState } from '@/src/model/User';
 import {useMatrix} from "@/app/(tabs)/_layout";
@@ -25,8 +25,8 @@ export default function TextScreen() {
 
     return (
         <ThemedBackground>
-            <View style={[styles.contentWrapper]}>
-                <View style={styles.inputGroup}>
+            <View className="flex-1 justify-between p-5">
+                <View className="gap-4">
                     <ThemedTextInput
                         label="Text"
                         value={matrixState.text.text}
@@ -49,7 +49,7 @@ export default function TextScreen() {
                     />
                 </View>
 
-                <View style={styles.actionGroup}>
+                <View className="pt-5">
                     <ThemedButton
                         mode="contained"
                         onPress={handleSendToMatrix}
@@ -60,17 +60,3 @@ export default function TextScreen() {
         </ThemedBackground>
     );
 }
-
-const styles = StyleSheet.create({
-    contentWrapper: {
-        flex: 1,
-        justifyContent: 'space-between',
-        padding: 20,
-    },
-    inputGroup: {
-        gap: 15,
-    },
-    actionGroup: {
-        paddingTop: 20,
-    }
-});

@@ -1,30 +1,22 @@
 import React, { forwardRef } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { TextInput as Input, TextInputProps } from "react-native-paper";
-import { useTheme } from "@/src/context/ThemeProvider";
 
 export type ThemedTextInputProps = TextInputProps & {
     errorText?: string;
     description?: string;
     error?: boolean;
+    className?: string;
 };
 
 const ThemedTextInput = forwardRef<any, ThemedTextInputProps>(
-    ({ errorText, description, error, ...props }, ref) => {
-        const { theme } = useTheme();
-
+    ({ errorText, description, error, className, ...props }, ref) => {
         if (error && !errorText) {
             console.log("ErrorText is missing! Please provide an errorText prop!");
         }
 
-        const errorStyle = {
-            fontSize: 13,
-            color: theme.colors.error,
-            paddingTop: 8,
-        };
-
         return (
-            <View style={styles.container}>
+            <View className={`w-full my-3 ${className || ''}`}>
                 <Input
                     underlineColor="transparent"
                     mode="outlined"
@@ -32,23 +24,21 @@ const ThemedTextInput = forwardRef<any, ThemedTextInputProps>(
                     ref={ref}
                 />
                 {description && !error ? (
-                    <Text style={styles.description}>{description}</Text>
+                    <Text className="text-sm pt-2 text-onSurface dark:text-onSurface-dark">
+                        {description}
+                    </Text>
                 ) : null}
-                {error && <Text style={errorStyle}>{errorText}</Text>}
+                {error && (
+                    <Text className="text-sm pt-2 text-error">
+                        {errorText}
+                    </Text>
+                )}
             </View>
         );
     }
 );
 
+ThemedTextInput.displayName = 'ThemedTextInput';
+
 export default ThemedTextInput;
 
-const styles = StyleSheet.create({
-    container: {
-        width: "100%",
-        marginVertical: 12,
-    },
-    description: {
-        fontSize: 13,
-        paddingTop: 8,
-    },
-});

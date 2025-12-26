@@ -6,15 +6,14 @@ import ThemeToggleButton from "@/src/components/ThemeToggleButton";
 import SpotifyAuthButton from "@/src/components/SpotifyAuthButton";
 import {RestService, Token} from "@/src/services/RestService";
 
-import {useAuth} from "@/src/context/AuthProvider";
-import {StyleSheet, View} from "react-native";
+import {useAuth} from "@/src/stores/authStore";
+import {View} from "react-native";
 import ThemedButton from "@/src/components/themed/ThemedButton";
 import {useRouter} from "expo-router";
 
 export default function SettingsScreen() {
     const {token: jwtToken, authenticatedUser, logout, refreshUser} = useAuth();
     const router = useRouter();
-    console.log("Mashallah", jwtToken);
 
     const handleAuthSuccess = (token: Token) => {
         const spotifyConfig = {
@@ -34,7 +33,7 @@ export default function SettingsScreen() {
 
     return (
         <ThemedBackground>
-            <View style={styles.container}>
+            <View className="w-full gap-3 items-center">
                 <ThemedHeader>Einen wunderschönen guten Tag, {authenticatedUser?.name}</ThemedHeader>
                 <ChangePasswordFeature/>
                 <ThemeToggleButton/>
@@ -64,10 +63,3 @@ export default function SettingsScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        width: "100%",
-        gap: 12, // Für Abstand zwischen den Kind-Elementen (ab React Native 0.71)
-        alignItems: "center", // Zentrierung
-    },
-});

@@ -1,13 +1,11 @@
 import {Link, Tabs} from 'expo-router';
 import React, {createContext, useContext, useState, useEffect } from "react";
 import {Feather} from "@expo/vector-icons";
-import {useTheme} from "@/src/context/ThemeProvider";
+import {useThemeStore} from "@/src/stores/themeStore";
 import AuthenticatedWrapper from "@/src/components/AuthenticatedWrapper";
 import { useWindowDimensions } from "react-native";
 import {MatrixState} from "@/src/model/User";
-import {useAuth} from "@/src/context/AuthProvider";
-
-
+import {useAuth} from "@/src/stores/authStore";
 
 const tabs = [
     {name: 'modes/text', title: 'Text', icon: 'type'},
@@ -51,7 +49,7 @@ const getInitialState = (lastState?: MatrixState | null): MatrixState => {
 };
 
 export default function TabLayout() {
-    const {theme} = useTheme();
+    const {theme} = useThemeStore();
     const {authenticatedUser} = useAuth();
     const { width } = useWindowDimensions();
     const shouldHideText = (width < 400);

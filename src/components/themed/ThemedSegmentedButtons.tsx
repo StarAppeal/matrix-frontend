@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { View, StyleProp, ViewStyle } from 'react-native';
 import { SegmentedButtons } from 'react-native-paper';
 
 export type SegmentedButton<T extends string> = {
@@ -13,6 +13,7 @@ type ThemedSegmentedButtonsProps<T extends string> = {
     value: T;
     onValueChange: (value: T) => void;
     style?: StyleProp<ViewStyle>;
+    className?: string;
 } & ({
     buttons: SegmentedButton<T>[];
     options?: never;
@@ -22,12 +23,13 @@ type ThemedSegmentedButtonsProps<T extends string> = {
 });
 
 const ThemedSegmentedButtons = <T extends string>({
-                                                      value,
-                                                      onValueChange,
-                                                      buttons,
-                                                      options,
-                                                      style,
-                                                  }: ThemedSegmentedButtonsProps<T>) => {
+    value,
+    onValueChange,
+    buttons,
+    options,
+    style,
+    className,
+}: ThemedSegmentedButtonsProps<T>) => {
 
     const finalButtons = buttons || (options ? (Object.keys(options) as T[]).map(key => ({
         value: key,
@@ -39,7 +41,7 @@ const ThemedSegmentedButtons = <T extends string>({
     };
 
     return (
-        <View style={[styles.container, style]}>
+        <View className={`w-full my-3 ${className || ''}`} style={style}>
             <SegmentedButtons
                 value={value}
                 onValueChange={handleValueChange}
@@ -49,11 +51,5 @@ const ThemedSegmentedButtons = <T extends string>({
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        marginVertical: 12,
-    },
-});
 
 export default ThemedSegmentedButtons;

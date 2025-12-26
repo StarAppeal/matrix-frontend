@@ -1,19 +1,19 @@
 import React from "react";
-import {StyleSheet} from "react-native";
-import {Text} from "react-native-paper";
+import { Text } from "react-native-paper";
 
 type Props = {
     children: React.ReactNode;
+    className?: string;
+};
+
+export default function ThemedHeader({ children, className, ...props }: Props) {
+    return (
+        <Text
+            className={`text-xl font-bold py-3 ${className || ''}`}
+            {...props}
+        >
+            {children}
+        </Text>
+    );
 }
 
-export default function ThemedHeader(props: Props) {
-    return <Text style={styles.header} {...props} />;
-}
-
-const styles = StyleSheet.create({
-    header: {
-        fontSize: 21,
-        fontWeight: "bold",
-        paddingVertical: 12,
-    },
-});

@@ -1,19 +1,16 @@
 import React from "react";
-import { Image, StyleSheet } from "react-native";
+import { Image } from "react-native";
 
-export default function Logo() {
-  return (
-    <Image
-      source={require("../../assets/items/logo.png")}
-      style={styles.image}
-    />
-  );
+type Props = {
+    className?: string;
+};
+
+export default function Logo({ className }: Props) {
+    return (
+        <Image
+            source={require("../../assets/items/logo.png")}
+            className={`w-28 h-28 mb-2 ${className || ''}`}
+        />
+    );
 }
 
-const styles = StyleSheet.create({
-  image: {
-    width: 110,
-    height: 110,
-    marginBottom: 8,
-  },
-});

@@ -1,14 +1,14 @@
 import React from "react";
-import {useAuth} from "@/src/context/AuthProvider";
+import {useAuth} from "@/src/stores/authStore";
 import NotAuthenticated from "@/src/components/NotAuthenticated";
-import { ActivityIndicator, View, StyleSheet } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 const AuthenticatedWrapper: React.FC<{ children: React.ReactNode }> = ({children}) => {
-    const {isAuthenticated, loading, authenticatedUser} = useAuth();
+    const {isAuthenticated, loading, authenticatedUser, isHydrated} = useAuth();
 
-    if (loading) {
+    if (!isHydrated || loading) {
         return (
-            <View style={styles.loaderContainer}>
+            <View className="flex-1 items-center justify-center">
                 <ActivityIndicator size="large" />
             </View>
         );
@@ -16,17 +16,9 @@ const AuthenticatedWrapper: React.FC<{ children: React.ReactNode }> = ({children
 
     if (!isAuthenticated || !authenticatedUser) {
         return <NotAuthenticated />;
-        // return <Redirect href={"/login"} />;
     }
 
     return <>{children}</>;
 };
 
-const styles = StyleSheet.create({
-    loaderContainer: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-});
 export default AuthenticatedWrapper;

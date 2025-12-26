@@ -1,11 +1,10 @@
 {
   "expo": {
     "name": "matrix",
-    "fastRefresh": true,
     "slug": "matrix-frontend",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/images/racoon-icon.jpg",
+    "icon": "./assets/images/racoon-icon.png",
     "scheme": "led.matrix",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/racoon-icon.jpg",
+        "foregroundImage": "./assets/images/racoon-icon.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "de.starappeal.ledmatrix",
@@ -26,7 +25,7 @@
     "web": {
       "bundler": "metro",
       "output": "server",
-      "favicon": "./assets/images/racoon-icon.jpg"
+      "favicon": "./assets/images/racoon-icon.png"
     },
     "plugins": [
       [
@@ -45,7 +44,9 @@
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos"
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-router",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

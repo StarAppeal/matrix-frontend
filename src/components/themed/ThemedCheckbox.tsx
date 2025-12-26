@@ -1,42 +1,32 @@
 import React from 'react';
-import {  Text, StyleSheet, Pressable } from 'react-native';
+import { Text, Pressable } from 'react-native';
 import Checkbox from 'expo-checkbox';
-import { useTheme } from '@/src/context/ThemeProvider';
+import { useColors } from '@/src/hooks/useColors';
 
 type ThemedCheckboxProps = {
     label: string;
     value: boolean;
     onValueChange: (newValue: boolean) => void;
-    style?: object;
+    className?: string;
 };
 
-const ThemedCheckbox = ({ label, value, onValueChange, style }: ThemedCheckboxProps) => {
-    const { theme } = useTheme();
-
-    const componentStyles = StyleSheet.create({
-        container: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginVertical: 12,
-        },
-        checkbox: {
-            marginRight: 8,
-        },
-        label: {
-            fontSize: 14,
-            color: theme.colors.onSurface,
-        },
-    });
+const ThemedCheckbox = ({ label, value, onValueChange, className }: ThemedCheckboxProps) => {
+    const { colors } = useColors();
 
     return (
-        <Pressable onPress={() => onValueChange(!value)} style={[componentStyles.container, style]}>
+        <Pressable
+            onPress={() => onValueChange(!value)}
+            className={`flex-row items-center my-3 ${className || ''}`}
+        >
             <Checkbox
-                style={componentStyles.checkbox}
+                className="mr-2"
                 value={value}
                 onValueChange={onValueChange}
-                color={value ? theme.colors.primary : undefined} // Setzt die Farbe aus dem Theme
+                color={value ? colors.primary : undefined}
             />
-            <Text style={componentStyles.label}>{label}</Text>
+            <Text className="text-sm text-onSurface dark:text-onSurface-dark">
+                {label}
+            </Text>
         </Pressable>
     );
 };

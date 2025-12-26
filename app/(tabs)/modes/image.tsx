@@ -5,7 +5,6 @@ import CustomImagePicker from "@/src/components/ImagePicker";
 import {ImagePickerSuccessResult} from "expo-image-picker";
 import {
     View,
-    StyleSheet,
     ActivityIndicator,
     FlatList,
     Text,
@@ -15,8 +14,8 @@ import {
 } from "react-native";
 import {S3File, RestService} from "@/src/services/RestService";
 import ThemedButton from "@/src/components/themed/ThemedButton";
-import {useTheme} from "@/src/context/ThemeProvider";
-import {useAuth} from "@/src/context/AuthProvider";
+import {useColors} from "@/src/hooks/useColors";
+import {useAuth} from "@/src/stores/authStore";
 import {MaterialIcons} from '@expo/vector-icons';
 
 export default function ImageScreen() {
@@ -26,9 +25,7 @@ export default function ImageScreen() {
     const [showFiles, setShowFiles] = useState(false);
     const [loadingFiles, setLoadingFiles] = useState(false);
     const [deletingFile, setDeletingFile] = useState<string | null>(null);
-    const {theme} = useTheme();
-
-    const {primary, onSurface, outline, error} = theme.colors;
+    const {colors} = useColors();
 
     const fetchStoredFiles = async () => {
         setLoadingFiles(true);
@@ -113,7 +110,7 @@ export default function ImageScreen() {
         }
     };
 
-    const viewFile = async (objectKey: string, fileName: string, mimeType: string) => {
+    const viewFile = async (objectKey: string) => {
         try {
             const response = await new RestService(token).getFileUrl(objectKey);
             if (response.ok && response.data.url) {
@@ -155,21 +152,17 @@ export default function ImageScreen() {
         setDeletingFile(null);
     };
 
-    const confirmCancelDelete = () => {
-        setDeletingFile(null);
-    };
-
     return (
         <ThemedBackground>
             <ThemedHeader>
                 Bildschirm für Bildauswahl
             </ThemedHeader>
 
-            <View style={styles.container}>
+            <View className="flex-1 w-full p-4">
                 {uploading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color={primary}/>
-                        <Text style={[styles.loadingText, {color: onSurface}]}>
+                    <View className="flex-1 justify-center items-center">
+                        <ActivityIndicator size="large" color={colors.primary}/>
+                        <Text className="mt-2.5 text-base text-onSurface dark:text-onSurface-dark">
                             Datei wird hochgeladen...
                         </Text>
                     </View>
@@ -181,7 +174,7 @@ export default function ImageScreen() {
                     />
                 )}
 
-                <View style={styles.buttonContainer}>
+                <View className="my-5 items-center">
                     <ThemedButton
                         onPress={toggleFilesList}
                         title={showFiles ? "Dateien ausblenden" : "Gespeicherte Dateien anzeigen"}
@@ -190,39 +183,41 @@ export default function ImageScreen() {
                 </View>
 
                 {showFiles && (
-                    <View style={styles.filesList}>
+                    <View className="flex-1 w-full">
                         <ThemedHeader>Gespeicherte Dateien</ThemedHeader>
 
                         {loadingFiles ? (
-                            <ActivityIndicator size="large" color={primary}/>
+                            <ActivityIndicator size="large" color={colors.primary}/>
                         ) : files.length > 0 ? (
                             <FlatList
                                 data={files}
                                 keyExtractor={(item) => item.key}
                                 renderItem={({item}) => (
-                                    <View style={[styles.fileItem, {borderColor: outline}]}>
-                                        <Text style={{color: onSurface, fontWeight: 'bold'}}>
+                                    <View
+                                        className="p-3 my-2 border rounded-lg relative border-outline dark:border-outline-dark"
+                                    >
+                                        <Text className="font-bold text-onSurface dark:text-onSurface-dark">
                                             {item.originalName}
                                         </Text>
-                                        <Text style={{color: onSurface}}>
+                                        <Text className="text-onSurface dark:text-onSurface-dark">
                                             Typ: {item.mimeType}
                                         </Text>
-                                        <Text style={{color: onSurface}}>
+                                        <Text className="text-onSurface dark:text-onSurface-dark">
                                             Größe: {formatFileSize(item.size)}
                                         </Text>
-                                        <Text style={{color: onSurface}}>
+                                        <Text className="text-onSurface dark:text-onSurface-dark">
                                             Zuletzt geändert: {formatDate(item.lastModified)}
                                         </Text>
-                                        <View style={styles.fileItemButtons}>
+                                        <View className="flex-row absolute top-3 right-3">
                                             <TouchableOpacity
-                                                style={[styles.fileButton, {backgroundColor: primary}]}
-                                                onPress={() => viewFile(item.key, item.originalName, item.mimeType)}
+                                                className="w-9 h-9 rounded-full justify-center items-center ml-2 bg-primary"
+                                                onPress={() => viewFile(item.key)}
                                             >
                                                 <MaterialIcons name="visibility" size={24} color="white"/>
                                             </TouchableOpacity>
 
                                             <TouchableOpacity
-                                                style={[styles.fileButton, {backgroundColor: error}]}
+                                                className="w-9 h-9 rounded-full justify-center items-center ml-2 bg-error"
                                                 onPress={() => confirmDeleteFile(item.key)}
                                             >
                                                 <MaterialIcons name="delete" size={24} color="white"/>
@@ -232,7 +227,7 @@ export default function ImageScreen() {
                                 )}
                             />
                         ) : (
-                            <Text style={{color: onSurface, textAlign: 'center'}}>
+                            <Text className="text-center text-onSurface dark:text-onSurface-dark">
                                 Keine Dateien gefunden
                             </Text>
                         )}
@@ -245,12 +240,12 @@ export default function ImageScreen() {
                     visible={!!deletingFile}
                     onRequestClose={cancelDelete}
                 >
-                    <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
-                            <Text style={styles.modalText}>
+                    <View className="flex-1 justify-center items-center bg-black/50">
+                        <View className="w-4/5 bg-surface dark:bg-surface-dark rounded-lg p-5 items-center">
+                            <Text className="mb-4 text-center text-onSurface dark:text-onSurface-dark">
                                 Sind Sie sicher, dass Sie diese Datei löschen möchten?
                             </Text>
-                            <View style={styles.modalButtons}>
+                            <View className="flex-row justify-between w-full">
                                 <ThemedButton
                                     onPress={() => {
                                         if (deletingFile) {
@@ -275,70 +270,3 @@ export default function ImageScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: '100%',
-        padding: 16,
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loadingText: {
-        marginTop: 10,
-        fontSize: 16,
-    },
-    buttonContainer: {
-        marginVertical: 20,
-        alignItems: 'center',
-    },
-    filesList: {
-        flex: 1,
-        width: '100%',
-    },
-    fileItem: {
-        padding: 12,
-        marginVertical: 8,
-        borderWidth: 1,
-        borderRadius: 8,
-        position: 'relative',
-    },
-    fileItemButtons: {
-        flexDirection: 'row',
-        position: 'absolute',
-        top: 12,
-        right: 12,
-    },
-    fileButton: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: 8,
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContent: {
-        width: '80%',
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        padding: 20,
-        alignItems: 'center',
-    },
-    modalText: {
-        marginBottom: 15,
-        textAlign: 'center',
-    },
-    modalButtons: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-    },
-});
