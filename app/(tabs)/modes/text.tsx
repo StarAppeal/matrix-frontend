@@ -5,18 +5,19 @@ import ColorSelector from "@/src/components/themed/ColorSelector";
 import {View} from "react-native";
 import ThemedSegmentedButtons from "@/src/components/themed/ThemedSegmentedButtons";
 import { MatrixState } from '@/src/model/User';
-import {useMatrix} from "@/app/(tabs)/_layout";
+import { useMatrixStore } from "@/src/stores";
 
 type TextProps = MatrixState['text'];
 
 export default function TextScreen() {
-    const { matrixState, updateMatrixState } = useMatrix();
+    const textConfig = useMatrixStore((s) => s.matrixState.text);
+    const updateTextConfig = useMatrixStore((s) => s.updateTextConfig);
+    const setGlobalMode = useMatrixStore((s) => s.setGlobalMode);
+    const matrixState = useMatrixStore((s) => s.matrixState);
 
     const updateTextProp = (prop: Partial<TextProps>) => {
-        updateMatrixState({
-            text: { ...matrixState.text, ...prop },
-            global: { ...matrixState.global, mode: 'text' }
-        });
+        updateTextConfig(prop);
+        setGlobalMode('text');
     };
 
     const handleSendToMatrix = () => {
@@ -29,17 +30,17 @@ export default function TextScreen() {
                 <View className="gap-4">
                     <ThemedTextInput
                         label="Text"
-                        value={matrixState.text.text}
+                        value={textConfig.text}
                         onChangeText={(text) => updateTextProp({ text })}
                     />
 
                     <ColorSelector
                         onSelect={(color) => updateTextProp({ color })}
-                        defaultColor={matrixState.text.color}
+                        defaultColor={textConfig.color}
                     />
 
                     <ThemedSegmentedButtons
-                        value={matrixState.text.align}
+                        value={textConfig.align}
                         onValueChange={(align) => updateTextProp({ align })}
                         options={{
                             left: 'Links',

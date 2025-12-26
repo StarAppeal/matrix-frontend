@@ -1,11 +1,9 @@
 import {Link, Tabs} from 'expo-router';
-import React, {createContext, useContext, useState, useEffect } from "react";
+import React from "react";
 import {Feather} from "@expo/vector-icons";
-import {useThemeStore} from "@/src/stores/themeStore";
+import {useThemeStore} from "@/src/stores";
 import AuthenticatedWrapper from "@/src/components/AuthenticatedWrapper";
 import { useWindowDimensions } from "react-native";
-import {MatrixState} from "@/src/model/User";
-import {useAuth} from "@/src/stores/authStore";
 
 const tabs = [
     {name: 'modes/text', title: 'Text', icon: 'type'},
@@ -15,60 +13,13 @@ const tabs = [
     {name: 'modes/clock', title: 'Uhr', icon: 'clock'},
 ] as const;
 
-type MatrixContextType = {
-    matrixState: MatrixState;
-    updateMatrixState: (newState: Partial<MatrixState>) => void;
-};
-
-const MatrixContext = createContext<MatrixContextType | undefined>(undefined);
-
-export const useMatrix = () => {
-    const context = useContext(MatrixContext);
-    if (!context) throw new Error("useMatrix must be used within a MatrixProvider");
-    return context;
-};
-
-const getInitialState = (lastState?: MatrixState | null): MatrixState => {
-    const defaults: MatrixState = {
-        global: { mode: 'idle', brightness: 100 },
-        text: { text: 'Hello World', align: 'center', speed: 50, size: 16, color: [255, 255, 255] },
-        image: { image: 'dino.gif' },
-        clock: { color: [0, 255, 0] },
-        music: { fullscreen: false }
-    };
-
-    return {
-        ...defaults,
-        ...(lastState || {}),
-        global: { ...defaults.global, ...(lastState?.global || {}) },
-        text: { ...defaults.text, ...(lastState?.text || {}) },
-        image: { ...defaults.image, ...(lastState?.image || {}) },
-        clock: { ...defaults.clock, ...(lastState?.clock || {}) },
-        music: { ...defaults.music, ...(lastState?.music || {}) },
-    };
-};
-
 export default function TabLayout() {
     const {theme} = useThemeStore();
-    const {authenticatedUser} = useAuth();
     const { width } = useWindowDimensions();
     const shouldHideText = (width < 400);
 
-    const [matrixState, setMatrixState] = useState<MatrixState>(() => getInitialState(authenticatedUser?.lastState));
-    const updateMatrixState = (newState: Partial<MatrixState>) => {
-        setMatrixState(prevState => ({...prevState, ...newState}));
-    };
-
-    useEffect(() => {
-        if (authenticatedUser?.lastState) {
-            console.log("Authenticated user or lastState changed, updating matrix context...");
-            setMatrixState(getInitialState(authenticatedUser.lastState));
-        }
-    }, [authenticatedUser]);
-
     return (
         <AuthenticatedWrapper>
-            <MatrixContext.Provider value={{matrixState, updateMatrixState}}>
                 <Tabs
                     screenOptions={({route}) => ({
                         headerStyle: {
@@ -123,7 +74,6 @@ export default function TabLayout() {
                         }}
                     />
                 </Tabs>
-            </MatrixContext.Provider>
         </AuthenticatedWrapper>
     );
 }

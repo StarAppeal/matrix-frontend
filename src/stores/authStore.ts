@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { User } from '@/src/model/User';
 import { RestService } from '@/src/services/RestService';
+import { useMatrixStore } from './matrixStore';
 
 const authStorage = {
     getItem: async (name: string): Promise<string | null> => {
@@ -68,29 +69,19 @@ export const useAuthStore = create<AuthState>()(
             checkAuthStatus: async () => {
                 const state = get();
                 try {
-                    if (Platform.OS === 'web') {
-                        const user = await fetchUser(null);
-                        set({
-                            isAuthenticated: !!user,
-                            authenticatedUser: user,
-                            loading: false,
-                        });
-                    } else {
-                        const storedToken = state.token;
-                        if (storedToken) {
-                            const user = await fetchUser(storedToken);
-                            set({
-                                isAuthenticated: !!user,
-                                authenticatedUser: user,
-                                loading: false,
-                            });
-                        } else {
-                            set({
-                                isAuthenticated: false,
-                                loading: false,
-                            });
-                        }
+                    const token = Platform.OS === 'web' ? null : state.token;
+
+                    if (Platform.OS !== 'web' && !token) {
+                        set({ isAuthenticated: false, loading: false });
+                        return;
                     }
+
+                    const user = await fetchUserAndInitMatrix(token);
+                    set({
+                        isAuthenticated: !!user,
+                        authenticatedUser: user,
+                        loading: false,
+                    });
                 } catch {
                     set({
                         isAuthenticated: false,
@@ -129,7 +120,7 @@ export const useAuthStore = create<AuthState>()(
                         token = response.data.token!;
                     }
 
-                    const user = await fetchUser(token);
+                    const user = await fetchUserAndInitMatrix(token);
 
                     set({
                         token,
@@ -153,6 +144,7 @@ export const useAuthStore = create<AuthState>()(
                         await new RestService(null).logout();
                     }
                 } finally {
+                    useMatrixStore.getState().resetToDefaults();
                     set({
                         token: null,
                         isAuthenticated: false,
@@ -169,7 +161,7 @@ export const useAuthStore = create<AuthState>()(
                 const token = Platform.OS === 'web' ? null : state.token;
                 if (Platform.OS !== 'web' && !token) return;
 
-                const user = await fetchUser(token);
+                const user = await fetchUserAndInitMatrix(token);
                 if (user) {
                     set({ authenticatedUser: user });
                 }
@@ -195,6 +187,14 @@ async function fetchUser(token: string | null): Promise<User | null> {
         return null;
     }
     return response.data;
+}
+
+async function fetchUserAndInitMatrix(token: string | null): Promise<User | null> {
+    const user = await fetchUser(token);
+    if (user?.lastState) {
+        useMatrixStore.getState().initializeFromUser(user.lastState);
+    }
+    return user;
 }
 
 export const useAuth = useAuthStore;
