@@ -1,8 +1,7 @@
 import React, {useRef, useState} from "react";
-import { useTheme } from "@/src/context/ThemeProvider";
-import {StyleSheet, TextInput, View} from "react-native";
+import { TextInput, View } from "react-native";
 import { ApiResponse, RestService } from "@/src/services/RestService";
-import { useAuth } from "@/src/context/AuthProvider";
+import { useAuth } from "@/src/stores/authStore";
 import PasswordInput from "@/src/components/PasswordInput";
 import ThemedButton from "@/src/components/themed/ThemedButton";
 import { Text } from "react-native-paper";
@@ -14,7 +13,6 @@ interface ChangePasswordFormProps {
 }
 
 export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormProps) {
-    const { theme } = useTheme();
     const { token: jwtToken } = useAuth();
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -43,12 +41,22 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
     };
 
     return (
-        <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
-            <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontSize: 18, marginBottom: 10 }}>Passwort ändern</Text>
+        <View className="p-5 rounded-xl self-center w-full max-w-[400px] bg-surface dark:bg-surface-dark">
+            <Text
+                variant="titleMedium"
+                className="text-lg mb-2.5 text-onSurface dark:text-onSurface-dark"
+            >
+                Passwort ändern
+            </Text>
 
             {apiResponse && apiResponse.data?.message && (
-                <View style={[styles.apiResponseBox, { backgroundColor: apiResponse.ok ? theme.colors.success : theme.colors.error }]}>
-                    <Text variant="bodyMedium" style={{ color: apiResponse.ok ? theme.colors.onSuccess : theme.colors.onError }}>
+                <View
+                    className={`my-2 p-3 rounded-lg ${apiResponse.ok ? 'bg-success' : 'bg-error'}`}
+                >
+                    <Text
+                        variant="bodyMedium"
+                        className="text-white"
+                    >
                         {apiResponse.data.message}
                     </Text>
                 </View>
@@ -75,7 +83,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
                 </>
             )}
 
-            <View style={styles.buttonGroup}>
+            <View className="flex-row justify-end gap-2.5 mt-4">
                 {apiResponse?.ok ? (
                     <ThemedButton mode="contained" onPress={onCancel} title={"Schließen"} style={{flex: 1}} />
                 ) : (
@@ -89,24 +97,3 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
     );
 }
 
-const styles = StyleSheet.create({
-    modalContent: {
-        padding: 20,
-        borderRadius: 12,
-        alignSelf: 'center',
-        width: '100%',
-        maxWidth: 400,
-    },
-    apiResponseBox: {
-        marginBottom: 8,
-        marginTop: 8,
-        padding: 12,
-        borderRadius: 8,
-    },
-    buttonGroup: {
-        flexDirection: "row",
-        justifyContent: "flex-end",
-        gap: 10,
-        marginTop: 16,
-    },
-});

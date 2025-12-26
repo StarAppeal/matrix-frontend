@@ -1,5 +1,5 @@
 import React from "react";
-import {StyleSheet, View} from "react-native";
+import { View } from "react-native";
 import Modal from "react-native-modal";
 
 export interface CustomModalHandles {
@@ -12,9 +12,10 @@ export interface Props {
     onClose: () => void;
     children: React.ReactNode;
     onModalDidHide?: () => void;
+    className?: string;
 }
 
-const CustomModal = ({ isVisible, onClose, children, onModalDidHide }: Props) => {
+const CustomModal = ({ isVisible, onClose, children, onModalDidHide, className }: Props) => {
     return (
         <Modal
             isVisible={isVisible}
@@ -25,7 +26,7 @@ const CustomModal = ({ isVisible, onClose, children, onModalDidHide }: Props) =>
             animationOut="zoomOut"
             backdropTransitionOutTiming={0}
         >
-            <View style={styles.modalContent}>
+            <View className={`p-4 rounded-lg ${className || ''}`}>
                 {children}
             </View>
         </Modal>
@@ -34,19 +35,3 @@ const CustomModal = ({ isVisible, onClose, children, onModalDidHide }: Props) =>
 
 export default CustomModal;
 
-const styles = StyleSheet.create({
-    modalContent: {
-        padding: 16,
-        borderRadius: 8,
-    },
-    apiResponseBox: {
-        marginBottom: 8,
-        marginTop: 8,
-        padding: 8,
-    },
-    buttonGroup: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: 16,
-    },
-});

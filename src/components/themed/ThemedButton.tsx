@@ -1,29 +1,30 @@
 import React from "react";
-import {StyleSheet} from "react-native";
 import { Button as PaperButton } from "react-native-paper";
-import {useTheme} from "@/src/context/ThemeProvider";
-import {IconSource} from "react-native-paper/src/components/Icon";
+import { IconSource } from "react-native-paper/src/components/Icon";
+import { useColors } from "@/src/hooks/useColors";
 
 type Props = {
-    mode: "text" | "outlined" | "contained" | "elevated" | "contained-tonal"
+    mode: "text" | "outlined" | "contained" | "elevated" | "contained-tonal";
     style?: any;
     children?: React.ReactNode;
     onPress: () => void;
     disabled?: boolean;
     title: string;
     icon?: IconSource;
-}
+    className?: string;
+};
 
-export default function ThemedButton({mode, style, title, icon, ...props}: Props) {
-    const {theme} = useTheme();
+export default function ThemedButton({ mode, style, title, icon, className, ...props }: Props) {
+    const { colors } = useColors();
+
     return (
         <PaperButton
+            className={`my-2.5 py-0.5 ${className || ''}`}
             style={[
-                styles.button,
-                mode === "outlined" && {backgroundColor: theme.colors.background},
+                mode === "outlined" && { backgroundColor: colors.background },
                 style,
             ]}
-            labelStyle={styles.text}
+            labelStyle={{ fontWeight: "bold", fontSize: 15, lineHeight: 26 }}
             mode={mode}
             icon={icon}
             {...props}
@@ -33,16 +34,4 @@ export default function ThemedButton({mode, style, title, icon, ...props}: Props
     );
 }
 
-const styles =
-    StyleSheet.create({
-        button: {
-            marginVertical: 10,
-            paddingVertical: 2,
-        },
-        text: {
-            fontWeight: "bold",
-            fontSize: 15,
-            lineHeight: 26,
-        },
-    });
 

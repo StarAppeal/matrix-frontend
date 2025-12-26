@@ -1,32 +1,29 @@
 import React from "react";
-import {Image, StyleSheet, TouchableOpacity} from "react-native";
-import {getStatusBarHeight} from "react-native-status-bar-height";
-import {useTheme} from "@/src/context/ThemeProvider";
+import { Image, TouchableOpacity } from "react-native";
+import { getStatusBarHeight } from "react-native-status-bar-height";
+import { useColors } from "@/src/hooks/useColors";
 
 type Props = {
     goBack: () => void;
-}
+    className?: string;
+};
 
-export default function BackButton({goBack}: Props) {
-    const {theme} = useTheme();
+export default function BackButton({ goBack, className }: Props) {
+    const { colors } = useColors();
+    const statusBarHeight = getStatusBarHeight();
+
     return (
-        <TouchableOpacity onPress={goBack} style={styles.container}>
+        <TouchableOpacity
+            onPress={goBack}
+            className={`absolute left-1 ${className || ''}`}
+            style={{ top: 10 + statusBarHeight }}
+        >
             <Image
-                style={[styles.image, {tintColor: theme.colors.onBackground}]}
+                className="w-6 h-6"
+                style={{ tintColor: colors.onBackground }}
                 source={require("../../assets/items/back.png")}
             />
         </TouchableOpacity>
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        position: "absolute",
-        top: 10 + getStatusBarHeight(),
-        left: 4,
-    },
-    image: {
-        width: 24,
-        height: 24,
-    },
-});

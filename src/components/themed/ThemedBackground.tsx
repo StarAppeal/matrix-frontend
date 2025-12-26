@@ -1,21 +1,20 @@
 import React from "react";
-import {ImageBackground, KeyboardAvoidingView, Platform, StyleSheet,} from "react-native";
-import {useTheme} from "../../context/ThemeProvider";
+import { ImageBackground, KeyboardAvoidingView, Platform } from "react-native";
 
 type Props = {
     children: React.ReactNode;
-}
+    className?: string;
+};
 
-export default function ThemedBackground({children}: Props) {
-    const {theme} = useTheme();
+export default function ThemedBackground({ children, className }: Props) {
     return (
         <ImageBackground
             source={require("../../../assets/items/dot.png")}
             resizeMode="repeat"
-            style={[styles.background, {backgroundColor: theme.colors.background}]}
+            className="flex-1 w-full bg-background dark:bg-background-dark"
         >
             <KeyboardAvoidingView
-                style={styles.container}
+                className={`flex-1 p-5 w-[90%] max-w-[600px] self-center ${className || ''}`}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
                 {children}
@@ -24,16 +23,3 @@ export default function ThemedBackground({children}: Props) {
     );
 }
 
-const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-        width: "100%",
-    },
-    container: {
-        flex: 1,
-        padding: 20,
-        width: "90%",
-        maxWidth: 600,
-        alignSelf: "center",
-    },
-});

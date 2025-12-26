@@ -1,21 +1,19 @@
 import React from "react";
-import {StyleSheet} from "react-native";
-import {Text} from "react-native-paper";
+import { Text } from "react-native-paper";
 
 type Props = {
     children: React.ReactNode;
+    className?: string;
 };
 
-export default function ThemedParagraph(props: Props) {
-    return <Text style={styles.text} {...props} />;
+export default function ThemedParagraph({ children, className, ...props }: Props) {
+    return (
+        <Text
+            className={`text-base leading-6 text-center mb-3 ${className || ''}`}
+            {...props}
+        >
+            {children}
+        </Text>
+    );
 }
-
-const styles = StyleSheet.create({
-    text: {
-        fontSize: 15,
-        lineHeight: 21,
-        textAlign: "center",
-        marginBottom: 12,
-    },
-});
 

@@ -8,7 +8,7 @@ import ThemedButton from "../src/components/themed/ThemedButton";
 import ThemedTextInput from "../src/components/themed/ThemedTextInput";
 import BackButton from "../src/components/BackButton";
 
-import {useAuth} from "@/src/context/AuthProvider";
+import {useAuth} from "@/src/stores/authStore";
 import {useRouter} from "expo-router";
 import ThemeToggleButton from "@/src/components/ThemeToggleButton";
 import PasswordInput from "@/src/components/PasswordInput";

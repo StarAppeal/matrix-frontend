@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Button, StyleSheet, View} from 'react-native';
+import { Button, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import ImageViewer from "@/src/components/ImageViewer";
 import {ImagePickerSuccessResult} from "expo-image-picker/src/ImagePicker.types";
@@ -40,21 +40,9 @@ export default function CustomImagePicker({onSuccess, onFailure, onCanceled}: Pr
     };
 
     return (
-        <View style={styles.container}>
+        <View className="flex-1 items-center justify-center">
             <Button title="Pick an image from camera roll" onPress={pickImage}/>
             {image && <ImageViewer imgSource={{uri: image}}/>}
-        </View>);
-};
-
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    image: {
-        width: 200,
-        height: 200,
-    },
-});
+        </View>
+    );
+}

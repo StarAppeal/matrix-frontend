@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import ColorPicker, { Panel1, Swatches, Preview, HueSlider, ColorFormatsObject } from 'reanimated-color-picker';
 import ThemedButton from "@/src/components/themed/ThemedButton";
-import { useTheme } from "@/src/context/ThemeProvider";
 import ThemedColorPickerButton from "@/src/components/themed/ThemedColorPickerButton";
-import CustomModal from './CustomModal'; // Importiere den NEUEN CustomModal
+import CustomModal from './CustomModal';
 
 
 interface ColorSelectorProps {
@@ -13,7 +12,6 @@ interface ColorSelectorProps {
 }
 
 export default function ColorSelector({ defaultColor = [255, 255, 255], onSelect }: ColorSelectorProps) {
-    const { theme } = useTheme();
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -48,7 +46,10 @@ export default function ColorSelector({ defaultColor = [255, 255, 255], onSelect
                 isVisible={isModalVisible}
                 onClose={closeModal}
             >
-                <View style={[styles.modalContent, { width: modalWidth, backgroundColor: theme.colors.surface }]}>
+                <View
+                    className="p-5 rounded-xl self-center items-center bg-surface dark:bg-surface-dark"
+                    style={{ width: modalWidth }}
+                >
                     <ColorPicker
                         style={{ width: '100%' }}
                         value={pickerHex}
@@ -72,14 +73,6 @@ export default function ColorSelector({ defaultColor = [255, 255, 255], onSelect
     );
 }
 
-const styles = StyleSheet.create({
-    modalContent: {
-        padding: 20,
-        borderRadius: 12,
-        alignSelf: 'center',
-        alignItems: 'center',
-    },
-});
 
 const rgbToHex = ([r, g, b]: [number, number, number]) =>
     `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
