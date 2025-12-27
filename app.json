@@ -34,7 +34,7 @@
           "image": "./assets/images/racoon-splash.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#1E1E1E"
         }
       ],
       "expo-secure-store",
