@@ -1,6 +1,6 @@
 import axios, {AxiosInstance, Method} from 'axios';
 import {makeRedirectUri} from "expo-auth-session";
-import {SpotifyConfig, User} from "@/src/model/User";
+import {MatrixState, SpotifyConfig, User} from "@/src/model/User";
 import {Platform} from "react-native";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -97,6 +97,15 @@ class RestService {
             'PUT',
             '/user/me/password',
             {password, passwordConfirmation},
+            {'Content-Type': 'application/json'}
+        );
+    }
+
+    async updateLastState(lastState: MatrixState): Promise<ApiResponse<{ message: string }>> {
+        return this.request<ApiResponse<{ message: string }>>(
+            'PUT',
+            '/user/me/state',
+            { lastState },
             {'Content-Type': 'application/json'}
         );
     }

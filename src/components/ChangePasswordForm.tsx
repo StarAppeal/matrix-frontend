@@ -41,29 +41,24 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
     };
 
     return (
-        <View className="p-5 rounded-xl self-center w-full max-w-[400px] bg-surface dark:bg-surface-dark">
+        <View className="p-6 rounded-2xl self-center w-full max-w-[400px] bg-surface dark:bg-surface-dark">
             <Text
                 variant="titleMedium"
-                className="text-lg mb-2.5 text-onSurface dark:text-onSurface-dark"
+                className="text-lg font-semibold mb-4 text-onSurface dark:text-onSurface-dark"
             >
                 Passwort ändern
             </Text>
 
             {apiResponse && apiResponse.data?.message && (
-                <View
-                    className={`my-2 p-3 rounded-lg ${apiResponse.ok ? 'bg-success' : 'bg-error'}`}
-                >
-                    <Text
-                        variant="bodyMedium"
-                        className="text-white"
-                    >
+                <View className={`my-3 p-4 rounded-xl ${apiResponse.ok ? 'bg-success' : 'bg-error'}`}>
+                    <Text variant="bodyMedium" className="text-white font-medium">
                         {apiResponse.data.message}
                     </Text>
                 </View>
             )}
 
             {!apiResponse?.ok && (
-                <>
+                <View className="gap-2">
                     <PasswordInput
                         label="Neues Passwort"
                         value={password}
@@ -80,16 +75,16 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
                         returnKeyType="go"
                         onSubmitEditing={handleConfirm}
                     />
-                </>
+                </View>
             )}
 
-            <View className="flex-row justify-end gap-2.5 mt-4">
+            <View className="flex-row justify-end gap-3 mt-5">
                 {apiResponse?.ok ? (
-                    <ThemedButton mode="contained" onPress={onCancel} title={"Schließen"} style={{flex: 1}} />
+                    <ThemedButton mode="contained" onPress={onCancel} title="Schließen" className="flex-1" />
                 ) : (
                     <>
-                        <ThemedButton mode="elevated" onPress={onCancel} title={"Abbrechen"} />
-                        <ThemedButton mode="contained" onPress={handleConfirm} title={"Bestätigen"} />
+                        <ThemedButton mode="outlined" onPress={onCancel} title="Abbrechen" />
+                        <ThemedButton mode="contained" onPress={handleConfirm} title="Bestätigen" />
                     </>
                 )}
             </View>

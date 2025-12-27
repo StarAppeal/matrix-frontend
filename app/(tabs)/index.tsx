@@ -2,15 +2,13 @@ import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import {useAuth} from "@/src/stores/authStore";
 import ThemedHeader from "@/src/components/themed/ThemedHeader";
 import React, {useEffect, useState} from "react";
-import Checkbox from 'expo-checkbox';
 import {View} from "react-native";
-import {useColors} from "@/src/hooks/useColors";
+import ThemedCheckbox from "@/src/components/themed/ThemedCheckbox";
 import ThemedParagraph from "@/src/components/themed/ThemedParagraph";
 
 export default function HomeScreen() {
     const [idle, setIdle] = useState(false);
     const {authenticatedUser} = useAuth();
-    const {colors} = useColors();
 
     useEffect(() => {
         if (authenticatedUser) {
@@ -20,15 +18,27 @@ export default function HomeScreen() {
 
     return (
         <ThemedBackground>
-            <ThemedHeader>Willkommen!</ThemedHeader>
-            <View className="flex-row items-center">
-                <Checkbox
-                    className="m-2"
-                    value={idle}
-                    onValueChange={setIdle}
-                    color={idle ? colors.secondary : undefined}
-                />
-                <ThemedParagraph>Energiesparmodus</ThemedParagraph>
+            <View className="flex-1">
+                <ThemedHeader
+                    subtitle="Steuere deine LED Matrix"
+                >
+                    Willkommen{authenticatedUser?.name ? `, ${authenticatedUser.name}` : ''}!
+                </ThemedHeader>
+
+                <View className="mt-6 gap-4">
+                    <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5">
+                        <ThemedParagraph className="text-left mb-3 font-semibold text-lg">
+                            Schnelleinstellungen
+                        </ThemedParagraph>
+
+                        <ThemedCheckbox
+                            label="Energiesparmodus"
+                            description="Reduziert Helligkeit und deaktiviert Animationen"
+                            value={idle}
+                            onValueChange={setIdle}
+                        />
+                    </View>
+                </View>
             </View>
         </ThemedBackground>
     );

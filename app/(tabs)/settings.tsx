@@ -7,7 +7,7 @@ import SpotifyAuthButton from "@/src/components/SpotifyAuthButton";
 import {RestService, Token} from "@/src/services/RestService";
 
 import {useAuth} from "@/src/stores/authStore";
-import {View} from "react-native";
+import {View, Text} from "react-native";
 import ThemedButton from "@/src/components/themed/ThemedButton";
 import {useRouter} from "expo-router";
 
@@ -33,32 +33,76 @@ export default function SettingsScreen() {
 
     return (
         <ThemedBackground>
-            <View className="w-full gap-3 items-center">
-                <ThemedHeader>Einen wunderschönen guten Tag, {authenticatedUser?.name}</ThemedHeader>
-                <ChangePasswordFeature/>
-                <ThemeToggleButton/>
-                    <SpotifyAuthButton
-                        onAuthSuccess={handleAuthSuccess}
-                        jwtToken={jwtToken}
-                        disabled={!!authenticatedUser?.spotifyConfig}
-                    />
-                {!!authenticatedUser?.spotifyConfig && ( <ThemedButton mode={"outlined"} title={"Remove Spotify"} onPress={() => {
-                    const rest = new RestService(jwtToken);
-                    rest.removeSpotifyConfig().then((result) => {
-                        console.log("Spotify Login entfernt");
-                        console.log(result);
-                        refreshUser()
-                    })
-                }}/>)}
+            <View className="flex-1 gap-6">
+                <ThemedHeader subtitle="Verwalte dein Konto und App-Einstellungen">
+                    Hallo, {authenticatedUser?.name}
+                </ThemedHeader>
 
+                {/* Erscheinungsbild Section */}
+                <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5">
+                    <Text className="text-base font-semibold text-onSurface dark:text-onSurface-dark mb-4">
+                        Erscheinungsbild
+                    </Text>
+                    <View className="flex-row items-center justify-between">
+                        <Text className="text-sm text-muted dark:text-muted-dark">
+                            Dark Mode
+                        </Text>
+                        <ThemeToggleButton />
+                    </View>
+                </View>
+
+                {/* Konto Section */}
+                <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5">
+                    <Text className="text-base font-semibold text-onSurface dark:text-onSurface-dark mb-4">
+                        Konto
+                    </Text>
+                    <View className="gap-3">
+                        <ChangePasswordFeature />
+                    </View>
+                </View>
+
+                {/* Integrationen Section */}
+                <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5">
+                    <Text className="text-base font-semibold text-onSurface dark:text-onSurface-dark mb-4">
+                        Integrationen
+                    </Text>
+                    <View className="gap-3">
+                        <SpotifyAuthButton
+                            onAuthSuccess={handleAuthSuccess}
+                            jwtToken={jwtToken}
+                            disabled={!!authenticatedUser?.spotifyConfig}
+                        />
+                        {!!authenticatedUser?.spotifyConfig && (
+                            <ThemedButton
+                                mode="outlined"
+                                title="Spotify trennen"
+                                onPress={() => {
+                                    const rest = new RestService(jwtToken);
+                                    rest.removeSpotifyConfig().then((result) => {
+                                        console.log("Spotify Login entfernt");
+                                        console.log(result);
+                                        refreshUser();
+                                    });
+                                }}
+                            />
+                        )}
+                    </View>
+                </View>
+
+                {/* Logout am Ende */}
+                <View className="mt-auto pb-4">
+                    <ThemedButton
+                        mode="outlined"
+                        title="Abmelden"
+                        onPress={() => {
+                            console.log("Button pressed");
+                            logout().then(() => {
+                                router.replace("/login");
+                            });
+                        }}
+                    />
+                </View>
             </View>
-            <ThemedButton mode={"outlined"} title={"Logout"} onPress={() => {
-                console.log("Button pressed");
-                logout().then(() => {
-                    router.replace("/login");
-                });
-            }
-            }/>
         </ThemedBackground>
     );
 }

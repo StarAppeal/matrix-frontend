@@ -16,22 +16,25 @@ const ThemedTextInput = forwardRef<any, ThemedTextInputProps>(
         }
 
         return (
-            <View className={`w-full my-3 ${className || ''}`}>
+            <View className={`w-full my-2 ${className || ''}`}>
                 <Input
                     underlineColor="transparent"
                     mode="outlined"
+                    className="rounded-xl bg-surface dark:bg-surface-dark"
                     {...props}
                     ref={ref}
                 />
                 {description && !error ? (
-                    <Text className="text-sm pt-2 text-onSurface dark:text-onSurface-dark">
+                    <Text className="text-sm pt-2 px-1 text-muted dark:text-muted-dark">
                         {description}
                     </Text>
                 ) : null}
                 {error && (
-                    <Text className="text-sm pt-2 text-error">
-                        {errorText}
-                    </Text>
+                    <View className="flex-row items-center pt-2 px-1">
+                        <Text className="text-sm text-error font-medium">
+                            {errorText}
+                        </Text>
+                    </View>
                 )}
             </View>
         );
