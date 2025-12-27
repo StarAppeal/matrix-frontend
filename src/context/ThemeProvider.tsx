@@ -5,7 +5,7 @@ import {useColorScheme} from "nativewind";
 import LoadingScreen from "@/src/components/LoadingScreen";
 import * as SplashScreen from 'expo-splash-screen';
 
-SplashScreen.hideAsync().catch(() => {});
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const ThemeProvider = ({children}: { children: ReactNode }) => {
     const { theme, isDark, isHydrated } = useThemeStore();
