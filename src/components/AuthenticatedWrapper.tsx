@@ -1,17 +1,13 @@
 import React from "react";
 import {useAuth} from "@/src/stores/authStore";
 import NotAuthenticated from "@/src/components/NotAuthenticated";
-import { ActivityIndicator, View } from "react-native";
+import LoadingScreen from "@/src/components/LoadingScreen";
 
 const AuthenticatedWrapper: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const {isAuthenticated, loading, authenticatedUser, isHydrated} = useAuth();
 
     if (!isHydrated || loading) {
-        return (
-            <View className="flex-1 items-center justify-center">
-                <ActivityIndicator size="large" />
-            </View>
-        );
+        return <LoadingScreen />;
     }
 
     if (!isAuthenticated || !authenticatedUser) {
