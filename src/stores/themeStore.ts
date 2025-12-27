@@ -80,7 +80,9 @@ export const useThemeStore = create<ThemeState>()(
             onRehydrateStorage: () => (state) => {
                 if (state) {
                     state.theme = state.isDark ? darkTheme : lightTheme;
-                    state.setHydrated();
+                    setTimeout(() => {
+                        state.setHydrated();
+                    }, 0)
                 }
             },
         }
