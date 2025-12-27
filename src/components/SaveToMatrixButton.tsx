@@ -23,13 +23,10 @@ export default function SaveToMatrixButton({ mode, className }: SaveToMatrixButt
         setFeedback(null);
 
         try {
-            // Setze den globalen Mode auf den aktuellen Screen
             setGlobalMode(mode);
 
-            // Warte kurz, damit der State aktualisiert ist
             await new Promise(resolve => setTimeout(resolve, 50));
 
-            // Hole den aktualisierten State
             const updatedState = useMatrixStore.getState().matrixState;
 
             const response = await new RestService(token).updateLastState(updatedState);
@@ -46,7 +43,6 @@ export default function SaveToMatrixButton({ mode, className }: SaveToMatrixButt
         } finally {
             setSaving(false);
 
-            // Feedback nach 3 Sekunden ausblenden
             setTimeout(() => setFeedback(null), 3000);
         }
     };
