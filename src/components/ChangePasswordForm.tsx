@@ -1,7 +1,6 @@
 import React, {useRef, useState} from "react";
 import { TextInput, View } from "react-native";
-import { ApiResponse, RestService } from "@/src/services/RestService";
-import { useAuth } from "@/src/stores/authStore";
+import { ApiResponse, restService } from "@/src/services/RestService";
 import PasswordInput from "@/src/components/PasswordInput";
 import ThemedButton from "@/src/components/themed/ThemedButton";
 import { Text } from "react-native-paper";
@@ -13,7 +12,6 @@ interface ChangePasswordFormProps {
 }
 
 export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormProps) {
-    const { token: jwtToken } = useAuth();
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [apiResponse, setApiResponse] = useState<ApiResponse<{ message: string }> | null>(null);
@@ -30,7 +28,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
             return;
         }
 
-        const response = await new RestService(jwtToken).changeSelfPassword(password, confirmPassword);
+        const response = await restService.changeSelfPassword(password, confirmPassword);
         setApiResponse(response);
 
         if (response.ok) {

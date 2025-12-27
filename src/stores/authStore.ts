@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { User } from '@/src/model/User';
-import { RestService } from '@/src/services/RestService';
+import { restService, setTokenProvider } from '@/src/services/RestService';
 import { useMatrixStore } from './matrixStore';
 
 const authStorage = {
@@ -69,14 +69,12 @@ export const useAuthStore = create<AuthState>()(
             checkAuthStatus: async () => {
                 const state = get();
                 try {
-                    const token = Platform.OS === 'web' ? null : state.token;
-
-                    if (Platform.OS !== 'web' && !token) {
+                    if (Platform.OS !== 'web' && !state.token) {
                         set({ isAuthenticated: false, loading: false });
                         return;
                     }
 
-                    const user = await fetchUserAndInitMatrix(token);
+                    const user = await fetchUserAndInitMatrix();
                     set({
                         isAuthenticated: !!user,
                         authenticatedUser: user,
@@ -102,7 +100,7 @@ export const useAuthStore = create<AuthState>()(
                 set({ loading: true, error: null });
 
                 try {
-                    const response = await new RestService(null).login(username, password, stayLoggedIn);
+                    const response = await restService.login(username, password, stayLoggedIn);
 
                     if (!response.ok) {
                         console.error("Login failed:", response.data);
@@ -118,12 +116,13 @@ export const useAuthStore = create<AuthState>()(
                     let token: string | null = null;
                     if (Platform.OS !== 'web') {
                         token = response.data.token!;
+                        // Set token in state first so the token provider has access to it
+                        set({ token });
                     }
 
-                    const user = await fetchUserAndInitMatrix(token);
+                    const user = await fetchUserAndInitMatrix();
 
                     set({
-                        token,
                         error: null,
                         isAuthenticated: !!user,
                         authenticatedUser: user,
@@ -141,7 +140,7 @@ export const useAuthStore = create<AuthState>()(
             logout: async () => {
                 try {
                     if (Platform.OS === 'web') {
-                        await new RestService(null).logout();
+                        await restService.logout();
                     }
                 } finally {
                     useMatrixStore.getState().resetToDefaults();
@@ -158,10 +157,9 @@ export const useAuthStore = create<AuthState>()(
                 const state = get();
                 console.log("refreshUser");
 
-                const token = Platform.OS === 'web' ? null : state.token;
-                if (Platform.OS !== 'web' && !token) return;
+                if (Platform.OS !== 'web' && !state.token) return;
 
-                const user = await fetchUserAndInitMatrix(token);
+                const user = await fetchUserAndInitMatrix();
                 if (user) {
                     set({ authenticatedUser: user });
                 }
@@ -173,6 +171,8 @@ export const useAuthStore = create<AuthState>()(
             partialize: (state) => ({ token: state.token }),
             onRehydrateStorage: () => (state) => {
                 if (state) {
+                    // Set the token provider so RestService can access the token
+                    setTokenProvider(() => useAuthStore.getState().token);
                     state.setHydrated();
                     state.checkAuthStatus();
                 }
@@ -181,16 +181,16 @@ export const useAuthStore = create<AuthState>()(
     )
 );
 
-async function fetchUser(token: string | null): Promise<User | null> {
-    const response = await new RestService(token).getSelf();
+async function fetchUser(): Promise<User | null> {
+    const response = await restService.getSelf();
     if (!response.ok || !response.data) {
         return null;
     }
     return response.data;
 }
 
-async function fetchUserAndInitMatrix(token: string | null): Promise<User | null> {
-    const user = await fetchUser(token);
+async function fetchUserAndInitMatrix(): Promise<User | null> {
+    const user = await fetchUser();
     if (user?.lastState) {
         useMatrixStore.getState().initializeFromUser(user.lastState);
     }

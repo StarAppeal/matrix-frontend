@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { View, Text } from "react-native";
 import ThemedButton from "@/src/components/themed/ThemedButton";
 import { useMatrixStore } from "@/src/stores";
-import { useAuth } from "@/src/stores/authStore";
-import { RestService } from "@/src/services/RestService";
+import { restService } from "@/src/services/RestService";
 import { MatrixState } from "@/src/model/User";
 
 interface SaveToMatrixButtonProps {
@@ -12,7 +11,6 @@ interface SaveToMatrixButtonProps {
 }
 
 export default function SaveToMatrixButton({ mode, className }: SaveToMatrixButtonProps) {
-    const { token } = useAuth();
     const setGlobalMode = useMatrixStore((s) => s.setGlobalMode);
 
     const [saving, setSaving] = useState(false);
@@ -29,7 +27,7 @@ export default function SaveToMatrixButton({ mode, className }: SaveToMatrixButt
 
             const updatedState = useMatrixStore.getState().matrixState;
 
-            const response = await new RestService(token).updateLastState(updatedState);
+            const response = await restService.updateLastState(updatedState);
 
             if (response.ok) {
                 setFeedback({ type: 'success', message: 'Gespeichert!' });

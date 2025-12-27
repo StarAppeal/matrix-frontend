@@ -4,7 +4,7 @@ import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import ChangePasswordFeature from "@/src/components/ChangePasswordFeature";
 import ThemeToggleButton from "@/src/components/ThemeToggleButton";
 import SpotifyAuthButton from "@/src/components/SpotifyAuthButton";
-import {RestService, Token} from "@/src/services/RestService";
+import {restService, Token} from "@/src/services/RestService";
 
 import {useAuth} from "@/src/stores/authStore";
 import {View, Text} from "react-native";
@@ -12,7 +12,7 @@ import ThemedButton from "@/src/components/themed/ThemedButton";
 import {useRouter} from "expo-router";
 
 export default function SettingsScreen() {
-    const {token: jwtToken, authenticatedUser, logout, refreshUser} = useAuth();
+    const {authenticatedUser, logout, refreshUser} = useAuth();
     const router = useRouter();
 
     const handleAuthSuccess = (token: Token) => {
@@ -23,7 +23,7 @@ export default function SettingsScreen() {
             expirationDate: new Date(Date.now() + token.expires_in * 1000),
         };
 
-        new RestService(jwtToken).updateSelfSpotifyConfig(spotifyConfig).then((result) => {
+        restService.updateSelfSpotifyConfig(spotifyConfig).then((result) => {
             console.log("Spotify Token gespeichert");
             console.log(result);
 
@@ -38,7 +38,6 @@ export default function SettingsScreen() {
                     Hallo, {authenticatedUser?.name}
                 </ThemedHeader>
 
-                {/* Erscheinungsbild Section */}
                 <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5">
                     <Text className="text-base font-semibold text-onSurface dark:text-onSurface-dark mb-4">
                         Erscheinungsbild
@@ -51,7 +50,6 @@ export default function SettingsScreen() {
                     </View>
                 </View>
 
-                {/* Konto Section */}
                 <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5">
                     <Text className="text-base font-semibold text-onSurface dark:text-onSurface-dark mb-4">
                         Konto
@@ -61,7 +59,6 @@ export default function SettingsScreen() {
                     </View>
                 </View>
 
-                {/* Integrationen Section */}
                 <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5">
                     <Text className="text-base font-semibold text-onSurface dark:text-onSurface-dark mb-4">
                         Integrationen
@@ -69,7 +66,6 @@ export default function SettingsScreen() {
                     <View className="gap-3">
                         <SpotifyAuthButton
                             onAuthSuccess={handleAuthSuccess}
-                            jwtToken={jwtToken}
                             disabled={!!authenticatedUser?.spotifyConfig}
                         />
                         {!!authenticatedUser?.spotifyConfig && (
@@ -77,8 +73,7 @@ export default function SettingsScreen() {
                                 mode="outlined"
                                 title="Spotify trennen"
                                 onPress={() => {
-                                    const rest = new RestService(jwtToken);
-                                    rest.removeSpotifyConfig().then((result) => {
+                                    restService.removeSpotifyConfig().then((result) => {
                                         console.log("Spotify Login entfernt");
                                         console.log(result);
                                         refreshUser();
@@ -89,7 +84,6 @@ export default function SettingsScreen() {
                     </View>
                 </View>
 
-                {/* Logout am Ende */}
                 <View className="mt-auto pb-4">
                     <ThemedButton
                         mode="outlined"

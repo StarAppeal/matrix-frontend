@@ -26,13 +26,18 @@ export interface S3File {
     size: number;
 }
 
+// Token provider function type - will be set from authStore
+type TokenProvider = () => string | null;
+let tokenProvider: TokenProvider = () => null;
+
+export const setTokenProvider = (provider: TokenProvider) => {
+    tokenProvider = provider;
+};
+
 class RestService {
-    private readonly jwtToken: string | null;
     private api: AxiosInstance;
 
-    constructor(jwtToken: string | null) {
-        this.jwtToken = jwtToken;
-
+    constructor() {
         this.api = axios.create({
             baseURL: API_URL,
             timeout: 10000, // Set a timeout for requests
@@ -41,25 +46,29 @@ class RestService {
 
         this.api.interceptors.request.use(
             (config) => {
-                if (this.jwtToken) {
-                    config.headers.Authorization = `Bearer ${this.jwtToken}`;
+                // Only use token for non-web platforms
+                if (Platform.OS !== 'web') {
+                    const token = tokenProvider();
+                    if (token) {
+                        config.headers.Authorization = `Bearer ${token}`;
+                    }
                 }
-                console.log('Request Config:', config);
                 return config;
             },
             (error) => {
-                console.error('Request Error:', error);
                 return Promise.reject(error);
             }
         );
 
         this.api.interceptors.response.use(
             (response) => {
-                console.log('Response Data:', response.data);
                 return response;
             },
             (error) => {
-                console.error('Response Error:', error.response?.data || error.message);
+                // Only log non-connection errors to avoid spam when backend is down
+                if (error.code !== 'ECONNREFUSED' && error.code !== 'ERR_NETWORK') {
+                    console.error('Response Error:', error.response?.data || error.message);
+                }
                 return Promise.reject(error);
             }
         );
@@ -207,10 +216,13 @@ class RestService {
             );
             return response.data;
         } catch (error) {
-            console.error('Error during request:', error);
+            // Silently throw connection errors to avoid log spam
             throw error;
         }
     }
 }
 
-export {RestService};
+// Singleton instance
+const restService = new RestService();
+
+export { RestService, restService };

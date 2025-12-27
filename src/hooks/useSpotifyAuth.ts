@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 import {makeRedirectUri, useAuthRequest} from "expo-auth-session";
-import {RestService, Token} from "@/src/services/RestService";
+import {restService, Token} from "@/src/services/RestService";
 
 const discovery = {
     authorizationEndpoint: 'https://accounts.spotify.com/authorize',
@@ -15,7 +15,6 @@ interface UseSpotifyAuthResult {
 
 export const useSpotifyAuth = (
     onAuthSuccess: (token: Token) => void,
-    jwtToken: string | null,
 ): UseSpotifyAuthResult => {
     const [request, response, promptAsync] = useAuthRequest(
         {
@@ -35,7 +34,7 @@ export const useSpotifyAuth = (
             if (response?.type === 'success') {
                 try {
                     const {code} = response.params;
-                    const res = (await new RestService(jwtToken).exchangeSpotifyCodeForToken(code));
+                    const res = (await restService.exchangeSpotifyCodeForToken(code));
                     if (!res.ok) {
                         console.log("Fehler beim token abrufen");
                         return;
