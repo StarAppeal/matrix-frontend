@@ -71,7 +71,7 @@ export default function LoginScreen() {
                 autoComplete="password"
             />
             <ThemedCheckbox
-                label="Stay logged in"
+                label="Eingeloggt bleiben"
                 value={stayLoggedIn}
                 onValueChange={setStayLoggedIn}
             />
