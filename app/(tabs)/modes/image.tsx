@@ -12,16 +12,14 @@ import {
     Linking,
     Modal,
 } from "react-native";
-import {S3File, RestService} from "@/src/services/RestService";
+import {S3File, restService} from "@/src/services/RestService";
 import ThemedButton from "@/src/components/themed/ThemedButton";
 import {useColors} from "@/src/hooks/useColors";
-import {useAuth} from "@/src/stores/authStore";
 import {MaterialIcons} from '@expo/vector-icons';
 import { useMatrixStore } from "@/src/stores";
 import SaveToMatrixButton from "@/src/components/SaveToMatrixButton";
 
 export default function ImageScreen() {
-    const {token} = useAuth();
     const [uploading, setUploading] = useState(false);
     const [files, setFiles] = useState<S3File[]>([]);
     const [showFiles, setShowFiles] = useState(false);
@@ -35,7 +33,7 @@ export default function ImageScreen() {
     const fetchStoredFiles = async () => {
         setLoadingFiles(true);
         try {
-            const response = await new RestService(token).getStoredFiles();
+            const response = await restService.getStoredFiles();
             if (response.ok && response.data) {
                 setFiles(response.data);
                 setShowFiles(true);
@@ -68,7 +66,7 @@ export default function ImageScreen() {
                 formData.append('image', fileBlob, fileName);
                 console.log("Web-Plattform: Blob angehängt mit Namen:", fileName);
 
-                const response = await new RestService(token).uploadFile(formData);
+                const response = await restService.uploadFile(formData);
 
                 if (response.ok) {
                     console.log("Datei erfolgreich hochgeladen");
@@ -117,7 +115,7 @@ export default function ImageScreen() {
 
     const viewFile = async (objectKey: string) => {
         try {
-            const response = await new RestService(token).getFileUrl(objectKey);
+            const response = await restService.getFileUrl(objectKey);
             if (response.ok && response.data.url) {
                 const url = response.data.url;
 
@@ -137,7 +135,7 @@ export default function ImageScreen() {
 
     const deleteFile = async (objectKey: string) => {
         try {
-            const response = await new RestService(token).deleteFile(objectKey);
+            const response = await restService.deleteFile(objectKey);
             if (response.ok) {
                 console.log("Datei erfolgreich gelöscht");
                 fetchStoredFiles();
