@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "composite": true,
+    "allowJs": true,
     "paths": {
       "@/*": [
         "./*"
@@ -12,6 +13,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "src/core/colors.js",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"

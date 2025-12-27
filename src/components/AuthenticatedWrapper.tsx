@@ -10,12 +10,12 @@ const AuthenticatedWrapper: React.FC<{ children: React.ReactNode }> = ({children
     const {isHydrated: themeHydrated} = useThemeStore();
 
     useEffect(() => {
-        if (authHydrated && themeHydrated) {
+        if (authHydrated && themeHydrated && !loading) {
             SplashScreen.hideAsync().catch(() => {});
         }
-    }, [authHydrated, themeHydrated]);
+    }, [authHydrated, themeHydrated, loading]);
 
-    if (!authHydrated || !themeHydrated || loading) {
+    if (!authHydrated || !themeHydrated || loading || isAuthenticated === null) {
         return <SplashScreenComponent/>;
     }
 

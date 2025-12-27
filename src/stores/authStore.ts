@@ -68,6 +68,8 @@ export const useAuthStore = create<AuthState>()(
 
             checkAuthStatus: async () => {
                 const state = get();
+
+                set({ loading: true });
                 try {
                     if (Platform.OS !== 'web' && !state.token) {
                         set({ isAuthenticated: false, loading: false });
