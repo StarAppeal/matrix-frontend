@@ -284,11 +284,12 @@ export default function ImageScreen() {
                         <Text className="text-sm text-muted dark:text-muted-dark mb-2">
                             Ausgewähltes Bild: {imageConfig.image}
                         </Text>
-                        <SaveToMatrixButton mode="image" />
                     </View>
                 )}
             </View>
         </ThemedBackground>
     );
+
+    // add  <SaveToMatrixButton mode="image" /> back after the text block
 }
 
