@@ -4,10 +4,22 @@ import {Platform} from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import {CustomMD3Theme, darkTheme, lightTheme} from '@/src/core/theme';
 
-const getSystemThemeIsDark = () => {
+const getInitialThemeState = () => {
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        try {
+            const storedString = localStorage.getItem('theme-storage');
+            if (storedString) {
+                const parsed = JSON.parse(storedString);
+                if (parsed && parsed.state && typeof parsed.state.isDark === 'boolean') {
+                    return parsed.state.isDark;
+                }
+            }
+        } catch (_) {
+        }
+
         return window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
+
     return false;
 };
 
@@ -45,7 +57,7 @@ interface ThemeState {
 export const useThemeStore = create<ThemeState>()(
     persist(
         (set, get) => {
-            const initialDark = getSystemThemeIsDark();
+            const initialDark = getInitialThemeState();
 
             return {
                 theme: initialDark ? darkTheme : lightTheme,
