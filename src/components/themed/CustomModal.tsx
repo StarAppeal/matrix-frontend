@@ -25,8 +25,9 @@ const CustomModal = ({ isVisible, onClose, children, onModalDidHide, className }
             animationIn="zoomIn"
             animationOut="zoomOut"
             backdropTransitionOutTiming={0}
+            backdropOpacity={0.6}
         >
-            <View className={`p-4 rounded-lg ${className || ''}`}>
+            <View className={`p-4 rounded-2xl ${className || ''}`}>
                 {children}
             </View>
         </Modal>

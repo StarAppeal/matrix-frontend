@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import { Button, View } from 'react-native';
+import { View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import ImageViewer from "@/src/components/ImageViewer";
 import {ImagePickerSuccessResult} from "expo-image-picker/src/ImagePicker.types";
+import ThemedButton from "@/src/components/themed/ThemedButton";
 
 export interface Props {
     onSuccess: (result: ImagePickerSuccessResult) => void;
@@ -40,8 +41,13 @@ export default function CustomImagePicker({onSuccess, onFailure, onCanceled}: Pr
     };
 
     return (
-        <View className="flex-1 items-center justify-center">
-            <Button title="Pick an image from camera roll" onPress={pickImage}/>
+        <View className="flex-1 items-center justify-center gap-4">
+            <ThemedButton
+                mode="contained"
+                title="Bild auswählen"
+                onPress={pickImage}
+                icon="image"
+            />
             {image && <ImageViewer imgSource={{uri: image}}/>}
         </View>
     );

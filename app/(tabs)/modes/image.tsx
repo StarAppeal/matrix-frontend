@@ -17,6 +17,8 @@ import ThemedButton from "@/src/components/themed/ThemedButton";
 import {useColors} from "@/src/hooks/useColors";
 import {useAuth} from "@/src/stores/authStore";
 import {MaterialIcons} from '@expo/vector-icons';
+import { useMatrixStore } from "@/src/stores";
+import SaveToMatrixButton from "@/src/components/SaveToMatrixButton";
 
 export default function ImageScreen() {
     const {token} = useAuth();
@@ -26,6 +28,9 @@ export default function ImageScreen() {
     const [loadingFiles, setLoadingFiles] = useState(false);
     const [deletingFile, setDeletingFile] = useState<string | null>(null);
     const {colors} = useColors();
+
+    const imageConfig = useMatrixStore((s) => s.matrixState.image);
+    const updateImageConfig = useMatrixStore((s) => s.updateImageConfig);
 
     const fetchStoredFiles = async () => {
         setLoadingFiles(true);
@@ -154,98 +159,105 @@ export default function ImageScreen() {
 
     return (
         <ThemedBackground>
-            <ThemedHeader>
-                Bildschirm für Bildauswahl
+            <ThemedHeader subtitle="Lade Bilder hoch und zeige sie an">
+                Bilder Modus
             </ThemedHeader>
 
-            <View className="flex-1 w-full p-4">
+            <View className="flex-1 w-full">
                 {uploading ? (
-                    <View className="flex-1 justify-center items-center">
+                    <View className="flex-1 justify-center items-center bg-surface dark:bg-surface-dark rounded-2xl p-8">
                         <ActivityIndicator size="large" color={colors.primary}/>
-                        <Text className="mt-2.5 text-base text-onSurface dark:text-onSurface-dark">
+                        <Text className="mt-4 text-base font-medium text-onSurface dark:text-onSurface-dark">
                             Datei wird hochgeladen...
                         </Text>
                     </View>
                 ) : (
-                    <CustomImagePicker
-                        onSuccess={onSuccess}
-                        onFailure={onFailure}
-                        onCanceled={onCanceled}
-                    />
+                    <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5">
+                        <CustomImagePicker
+                            onSuccess={onSuccess}
+                            onFailure={onFailure}
+                            onCanceled={onCanceled}
+                        />
+                    </View>
                 )}
 
-                <View className="my-5 items-center">
+                <View className="my-4">
                     <ThemedButton
                         onPress={toggleFilesList}
                         title={showFiles ? "Dateien ausblenden" : "Gespeicherte Dateien anzeigen"}
-                        mode="contained"
+                        mode={showFiles ? "outlined" : "contained"}
+                        icon={showFiles ? "eye-off" : "folder"}
                     />
                 </View>
 
                 {showFiles && (
                     <View className="flex-1 w-full">
-                        <ThemedHeader>Gespeicherte Dateien</ThemedHeader>
+                        <Text className="text-base font-semibold text-onSurface dark:text-onSurface-dark mb-3">
+                            Gespeicherte Dateien
+                        </Text>
 
                         {loadingFiles ? (
-                            <ActivityIndicator size="large" color={colors.primary}/>
+                            <View className="items-center py-8">
+                                <ActivityIndicator size="large" color={colors.primary}/>
+                            </View>
                         ) : files.length > 0 ? (
                             <FlatList
                                 data={files}
                                 keyExtractor={(item) => item.key}
                                 renderItem={({item}) => (
-                                    <View
-                                        className="p-3 my-2 border rounded-lg relative border-outline dark:border-outline-dark"
-                                    >
-                                        <Text className="font-bold text-onSurface dark:text-onSurface-dark">
+                                    <View className="p-4 my-1.5 rounded-xl relative bg-surface dark:bg-surface-dark border border-outline/30 dark:border-outline-dark/30">
+                                        <Text className="font-semibold text-onSurface dark:text-onSurface-dark mb-1">
                                             {item.originalName}
                                         </Text>
-                                        <Text className="text-onSurface dark:text-onSurface-dark">
-                                            Typ: {item.mimeType}
+                                        <Text className="text-sm text-muted dark:text-muted-dark">
+                                            {item.mimeType} • {formatFileSize(item.size)}
                                         </Text>
-                                        <Text className="text-onSurface dark:text-onSurface-dark">
-                                            Größe: {formatFileSize(item.size)}
+                                        <Text className="text-xs text-muted dark:text-muted-dark mt-1">
+                                            {formatDate(item.lastModified)}
                                         </Text>
-                                        <Text className="text-onSurface dark:text-onSurface-dark">
-                                            Zuletzt geändert: {formatDate(item.lastModified)}
-                                        </Text>
-                                        <View className="flex-row absolute top-3 right-3">
+                                        <View className="flex-row absolute top-3 right-3 gap-2">
                                             <TouchableOpacity
-                                                className="w-9 h-9 rounded-full justify-center items-center ml-2 bg-primary"
+                                                className="w-10 h-10 rounded-xl justify-center items-center bg-primary"
                                                 onPress={() => viewFile(item.key)}
                                             >
-                                                <MaterialIcons name="visibility" size={24} color="white"/>
+                                                <MaterialIcons name="visibility" size={22} color="white"/>
                                             </TouchableOpacity>
 
                                             <TouchableOpacity
-                                                className="w-9 h-9 rounded-full justify-center items-center ml-2 bg-error"
+                                                className="w-10 h-10 rounded-xl justify-center items-center bg-error"
                                                 onPress={() => confirmDeleteFile(item.key)}
                                             >
-                                                <MaterialIcons name="delete" size={24} color="white"/>
+                                                <MaterialIcons name="delete" size={22} color="white"/>
                                             </TouchableOpacity>
                                         </View>
                                     </View>
                                 )}
                             />
                         ) : (
-                            <Text className="text-center text-onSurface dark:text-onSurface-dark">
-                                Keine Dateien gefunden
-                            </Text>
+                            <View className="items-center py-8 bg-surface dark:bg-surface-dark rounded-2xl">
+                                <Text className="text-muted dark:text-muted-dark">
+                                    Keine Dateien gefunden
+                                </Text>
+                            </View>
                         )}
                     </View>
                 )}
 
                 <Modal
-                    animationType="slide"
+                    animationType="fade"
                     transparent={true}
                     visible={!!deletingFile}
                     onRequestClose={cancelDelete}
                 >
-                    <View className="flex-1 justify-center items-center bg-black/50">
-                        <View className="w-4/5 bg-surface dark:bg-surface-dark rounded-lg p-5 items-center">
-                            <Text className="mb-4 text-center text-onSurface dark:text-onSurface-dark">
-                                Sind Sie sicher, dass Sie diese Datei löschen möchten?
+                    <View className="flex-1 justify-center items-center bg-black/60 px-6">
+                        <View className="w-full max-w-sm bg-surface dark:bg-surface-dark rounded-2xl p-6">
+                            <Text className="text-lg font-semibold text-center text-onSurface dark:text-onSurface-dark mb-2">
+                                Datei löschen?
                             </Text>
-                            <View className="flex-row justify-between w-full">
+                            <Text className="text-sm text-center text-muted dark:text-muted-dark mb-6">
+                                Diese Aktion kann nicht rückgängig gemacht werden.
+                            </Text>
+                            <View className="gap-2">
                                 <ThemedButton
                                     onPress={() => {
                                         if (deletingFile) {
@@ -255,6 +267,7 @@ export default function ImageScreen() {
                                     }}
                                     title="Ja, löschen"
                                     mode="contained"
+                                    className="bg-error"
                                 />
                                 <ThemedButton
                                     onPress={cancelDelete}
@@ -265,6 +278,15 @@ export default function ImageScreen() {
                         </View>
                     </View>
                 </Modal>
+
+                {imageConfig.image && (
+                    <View className="mt-4">
+                        <Text className="text-sm text-muted dark:text-muted-dark mb-2">
+                            Ausgewähltes Bild: {imageConfig.image}
+                        </Text>
+                        <SaveToMatrixButton mode="image" />
+                    </View>
+                )}
             </View>
         </ThemedBackground>
     );

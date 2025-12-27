@@ -8,22 +8,15 @@ export default function PasswordInput(props: ThemedTextInputProps) {
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
     const inputRef = useRef<TextInput>(null);
 
+    const isWeb = Platform.OS === "web";
+
     const handleCursorReset = () => {
-        if (cursorPosition === null) return;
-        if (Platform.OS === "web") {
-            setTimeout(() => {
-                const inputElement = document.activeElement as HTMLInputElement;
-                if (inputElement) {
-                    inputElement.setSelectionRange(cursorPosition, cursorPosition);
-                }
-            }, 0);
-        } else {
-            setTimeout(() => {
-                inputRef.current?.setNativeProps({
-                    selection: { start: cursorPosition, end: cursorPosition },
-                });
-            }, 0);
-        }
+        if (cursorPosition === null || isWeb) return;
+        setTimeout(() => {
+            inputRef.current?.setNativeProps({
+                selection: { start: cursorPosition, end: cursorPosition },
+            });
+        }, 0);
     };
 
     return (
@@ -40,13 +33,15 @@ export default function PasswordInput(props: ThemedTextInputProps) {
                 setCursorPosition(e.nativeEvent.selection.start);
             }}
             right={
-                <PaperTextInput.Icon
-                    icon={hidePass ? "eye" : "eye-off"}
-                    onPress={() => {
-                        setHidePass(!hidePass);
-                        handleCursorReset();
-                    }}
-                />
+                !isWeb ? (
+                    <PaperTextInput.Icon
+                        icon={hidePass ? "eye" : "eye-off"}
+                        onPress={() => {
+                            setHidePass(!hidePass);
+                            handleCursorReset();
+                        }}
+                    />
+                ) : undefined
             }
         />
     );

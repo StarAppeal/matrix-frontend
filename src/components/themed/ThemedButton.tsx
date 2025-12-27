@@ -1,7 +1,6 @@
 import React from "react";
 import { Button as PaperButton } from "react-native-paper";
 import { IconSource } from "react-native-paper/src/components/Icon";
-import { useColors } from "@/src/hooks/useColors";
 
 type Props = {
     mode: "text" | "outlined" | "contained" | "elevated" | "contained-tonal";
@@ -12,21 +11,31 @@ type Props = {
     title: string;
     icon?: IconSource;
     className?: string;
+    compact?: boolean;
 };
 
-export default function ThemedButton({ mode, style, title, icon, className, ...props }: Props) {
-    const { colors } = useColors();
+export default function ThemedButton({ mode, style, title, icon, className, compact, disabled, ...props }: Props) {
+    // Basis-Klassen für alle Buttons
+    const baseClasses = "my-2 rounded-xl";
+
+    // Mode-spezifische Klassen
+    const modeClasses = {
+        contained: disabled
+            ? "bg-muted dark:bg-muted-dark"
+            : "bg-primary dark:bg-primary-light",
+        outlined: "bg-transparent border-2 border-primary dark:border-primary-light",
+        elevated: "bg-surface dark:bg-surface-dark shadow-card",
+        "contained-tonal": "bg-primary/20 dark:bg-primary-light/20",
+        text: "bg-transparent",
+    };
 
     return (
         <PaperButton
-            className={`my-2.5 py-0.5 ${className || ''}`}
-            style={[
-                mode === "outlined" && { backgroundColor: colors.background },
-                style,
-            ]}
-            labelStyle={{ fontWeight: "bold", fontSize: 15, lineHeight: 26 }}
+            className={`${baseClasses} ${modeClasses[mode]} ${compact ? 'py-0' : 'py-1'} ${className || ''}`}
+            style={style}
             mode={mode}
             icon={icon}
+            disabled={disabled}
             {...props}
         >
             {title}

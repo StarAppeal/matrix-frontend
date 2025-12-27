@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Dimensions } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import ColorPicker, { Panel1, Swatches, Preview, HueSlider, ColorFormatsObject } from 'reanimated-color-picker';
 import ThemedButton from "@/src/components/themed/ThemedButton";
 import ThemedColorPickerButton from "@/src/components/themed/ThemedColorPickerButton";
@@ -14,8 +14,9 @@ interface ColorSelectorProps {
 export default function ColorSelector({ defaultColor = [255, 255, 255], onSelect }: ColorSelectorProps) {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
-
     const [pickerHex, setPickerHex] = useState(() => rgbToHex(defaultColor));
+    const { width } = useWindowDimensions();
+    const isSmallScreen = width < 400;
 
     const openModal = () => {
         setPickerHex(rgbToHex(defaultColor));
@@ -32,9 +33,6 @@ export default function ColorSelector({ defaultColor = [255, 255, 255], onSelect
         closeModal();
     };
 
-    const { width } = Dimensions.get('window');
-    const modalWidth = Math.min(350, width * 0.9);
-
     return (
         <View>
             <ThemedColorPickerButton
@@ -46,23 +44,19 @@ export default function ColorSelector({ defaultColor = [255, 255, 255], onSelect
                 isVisible={isModalVisible}
                 onClose={closeModal}
             >
-                <View
-                    className="p-5 rounded-xl self-center items-center bg-surface dark:bg-surface-dark"
-                    style={{ width: modalWidth }}
-                >
+                <View className={`p-5 rounded-2xl self-center items-center bg-surface dark:bg-surface-dark ${isSmallScreen ? 'w-[90%]' : 'w-[350px]'}`}>
                     <ColorPicker
-                        style={{ width: '100%' }}
                         value={pickerHex}
                         onComplete={(color: ColorFormatsObject) => setPickerHex(color.hex)}
                     >
-                        <Preview style={{ marginBottom: 15 }} />
-                        <Panel1 style={{ marginBottom: 15 }} />
-                        <HueSlider style={{ marginBottom: 15 }} />
-                        <Swatches style={{ marginTop: 10 }} />
+                        <Preview style={{ marginBottom: 16, borderRadius: 12 }} />
+                        <Panel1 style={{ marginBottom: 16, borderRadius: 12 }} />
+                        <HueSlider style={{ marginBottom: 16, borderRadius: 20 }} />
+                        <Swatches style={{ marginTop: 8 }} />
                     </ColorPicker>
 
                     <ThemedButton
-                        style={{ marginTop: 20, width: '100%' }}
+                        className="mt-5 w-full"
                         mode="contained"
                         onPress={handleConfirm}
                         title={"Bestätigen"}
