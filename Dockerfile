@@ -18,13 +18,18 @@ WORKDIR /app
 ARG EXPO_PUBLIC_API_URL
 ARG EXPO_PUBLIC_SPOTIFY_CLIENT_ID
 
+ENV EXPO_PUBLIC_API_URL=$EXPO_PUBLIC_API_URL
+ENV EXPO_PUBLIC_SPOTIFY_CLIENT_ID=$EXPO_PUBLIC_SPOTIFY_CLIENT_ID
+
+RUN echo "API_URL=$EXPO_PUBLIC_API_URL"
+
 COPY package.json package-lock.json ./
 
 RUN npm install --legacy-peer-deps
 
 COPY . .
 
-RUN EXPO_PUBLIC_API_URL=$EXPO_PUBLIC_API_URL EXPO_PUBLIC_SPOTIFY_CLIENT_ID=$EXPO_PUBLIC_SPOTIFY_CLIENT_ID npm run build-web
+RUN npm run build-web
 RUN npx tsc --project tsconfig.server.json
 
 # Production stage
