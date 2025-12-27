@@ -1,26 +1,40 @@
 import React, {ReactNode, useEffect} from "react";
-import {Provider as PaperProvider} from "react-native-paper";
+import {adaptNavigationTheme, Provider as PaperProvider} from "react-native-paper";
 import {useThemeStore} from "@/src/stores/themeStore";
 import {useColorScheme} from "nativewind";
-import LoadingScreen from "@/src/components/LoadingScreen";
-import * as SplashScreen from 'expo-splash-screen';
+import SplashScreenComponent from "@/src/components/SplashScreenComponent";
 
-SplashScreen.preventAutoHideAsync().catch(() => {});
+import { ThemeProvider as NavThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import {View} from "react-native";
+
 
 export const ThemeProvider = ({children}: { children: ReactNode }) => {
     const { theme, isDark, isHydrated } = useThemeStore();
     const { setColorScheme } = useColorScheme();
 
+    const { LightTheme: NavLightTheme, DarkTheme: NavDarkTheme } = adaptNavigationTheme({
+        reactNavigationLight: DefaultTheme,
+        reactNavigationDark: DarkTheme,
+    });
+
+    const navigationTheme = isDark ? NavDarkTheme : NavLightTheme;
+
     useEffect(() => {
         setColorScheme(isDark ? 'dark' : 'light');
-    }, [isDark, setColorScheme]);
+    }, [isDark, setColorScheme, isHydrated]);
 
     if (!isHydrated) {
-        return <LoadingScreen />;
+        return <SplashScreenComponent />;
     }
 
     return (
-        <PaperProvider theme={theme}>{children}</PaperProvider>
+        <NavThemeProvider value={navigationTheme}>
+            <PaperProvider theme={theme}>
+                <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+                    {children}
+                </View>
+            </PaperProvider>
+        </NavThemeProvider>
     );
 };
 

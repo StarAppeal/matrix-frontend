@@ -41,6 +41,9 @@ export default function TabLayout() {
                             </Link>
                         ),
                         tabBarActiveTintColor: theme.colors.primary,
+                        sceneContainerStyle: {
+                            backgroundColor: theme.colors.background,
+                        },
                         tabBarInactiveTintColor: theme.colors.onSurfaceVariant,
                         tabBarStyle: {
                             backgroundColor: theme.colors.surface,
