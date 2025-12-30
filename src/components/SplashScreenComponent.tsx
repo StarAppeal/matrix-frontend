@@ -12,11 +12,6 @@ export default function SplashScreenComponent() {
                 justifyContent: 'center'
             }}
         >
-            <Image
-                source={require('@/assets/images/racoon-splash.png')}
-                style={{ width: 200 }}
-                resizeMode="contain"
-            />
         </View>
     );
 }
