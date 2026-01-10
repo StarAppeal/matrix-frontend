@@ -52,7 +52,7 @@
     "react-native-paper": "^5.12.5",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "~4.11.1",
+    "react-native-screens": "~4.19.0",
     "react-native-status-bar-height": "^2.6.0",
     "react-native-switch-with-icons": "^3.0.1",
     "react-native-web": "^0.20.0",
