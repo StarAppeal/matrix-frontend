@@ -44,7 +44,7 @@
     "express": "^4.21.1",
     "morgan": "^1.10.0",
     "nativewind": "^4.2.1",
-    "react": "19.2.3",
+    "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.6",
     "react-native-gesture-handler": "~2.24.0",
@@ -75,5 +75,10 @@
     "react-test-renderer": "19.0.0",
     "ts-node": "^10.9.2",
     "typescript": "~5.8.3"
+  },
+  "overrides": {
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-test-renderer": "19.0.0"
   }
 }
