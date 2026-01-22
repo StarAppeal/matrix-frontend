@@ -26,6 +26,15 @@ export interface S3File {
     size: number;
 }
 
+export interface LocationResult {
+    name: string;
+    lat: number;
+    lon: number;
+    country?: string;
+    state?: string;
+    local_names?: Record<string, string>;
+}
+
 // Token provider function type - will be set from authStore
 type TokenProvider = () => string | null;
 let tokenProvider: TokenProvider = () => null;
@@ -201,6 +210,22 @@ class RestService {
         return this.request<ApiResponse<{ message: string }>>(
             'DELETE',
             `/storage/files/${objectKey}`
+        );
+    }
+
+    async searchLocations(query: string): Promise<ApiResponse<{ locations: LocationResult[] }>> {
+        return this.request<ApiResponse<{ locations: LocationResult[] }>>(
+            'GET',
+            `/location/search?q=${encodeURIComponent(query)}`
+        );
+    }
+
+    async updateSelfLocation(payload: { name: string; lat: number; lon: number }): Promise<ApiResponse<User>> {
+        return this.request<ApiResponse<User>>(
+            'PUT',
+            '/user/me/location',
+            payload,
+            {'Content-Type': 'application/json'}
         );
     }
 

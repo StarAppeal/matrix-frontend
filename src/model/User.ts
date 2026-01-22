@@ -5,6 +5,12 @@ export interface User {
   config: UserConfig,
   lastState: MatrixState,
   spotifyConfig: SpotifyConfig
+  location: {
+    name: string,
+    lat: number,
+    lon: number
+  },
+  timezone: string
 }
 
 export interface UserConfig {
