@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install dependencies
 COPY package.json package-lock.json ./
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 # Expose ports for Expo development server
 EXPOSE 9090 8081 19000 19001
@@ -25,7 +25,7 @@ RUN echo "API_URL=$EXPO_PUBLIC_API_URL"
 
 COPY package.json package-lock.json ./
 
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 COPY . .
 
@@ -38,7 +38,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN npm install --omit=dev --legacy-peer-deps
+RUN npm install --omit=dev
 
 COPY --from=production-builder /app/serve ./serve
 
