@@ -29,8 +29,6 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ env.IMAGE_NAME }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           build-args: |
             EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL }}
             EXPO_PUBLIC_SPOTIFY_CLIENT_ID=${{ secrets.EXPO_PUBLIC_SPOTIFY_CLIENT_ID }}
