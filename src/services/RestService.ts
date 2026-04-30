@@ -1,17 +1,8 @@
 import axios, {AxiosInstance, Method} from 'axios';
-import {makeRedirectUri} from "expo-auth-session";
-import {MatrixState, SpotifyConfig, User} from "@/src/model/User";
+import {MatrixState, User} from "@/src/model/User";
 import {Platform} from "react-native";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-export interface Token {
-    access_token: string;
-    refresh_token: string;
-    expires_in: number;
-    token_type: string;
-    scope: string;
-}
 
 export interface ApiResponse<T> {
     ok: boolean;
@@ -83,19 +74,6 @@ class RestService {
         );
     }
 
-    async exchangeSpotifyCodeForToken(code: string): Promise<ApiResponse<{ token: Token }>> {
-        const redirectUri = makeRedirectUri({
-            scheme: 'led.matrix',
-            path: 'callback',
-        });
-        return this.request<ApiResponse<{ token: Token }>>(
-            'POST',
-            `/spotify/token/generate`,
-            {"authCode": code, "redirectUri": redirectUri},
-            {'Content-Type': 'application/json'}
-        );
-    }
-
     async fetchAllUser(): Promise<ApiResponse<{ users: User[] }>> {
         return this.request<ApiResponse<{ users: User[] }>>('GET', '/user');
     }
@@ -123,9 +101,25 @@ class RestService {
         return this.request<ApiResponse<{ message: string }>>(
             'PUT',
             '/user/me/state',
-            { lastState },
+            {lastState},
             {'Content-Type': 'application/json'}
         );
+    }
+
+    async updateLastFmUsername(username: string): Promise<ApiResponse<User>> {
+        return this.request<ApiResponse<User>>(
+            'PUT',
+            '/user/me/lastFmUsername',
+            {username},
+            {'Content-Type': 'application/json'}
+        );
+    }
+
+    async removeLastFmUsername(): Promise<ApiResponse<User>> {
+        return this.request(
+            "DELETE",
+            "/user/me/lastFmUsername",
+        )
     }
 
     async sendPayloadToSocket(userId: string, payload: object): Promise<any> {
@@ -146,26 +140,13 @@ class RestService {
         );
     }
 
-    async updateSelfSpotifyConfig(spotifyConfig?: SpotifyConfig): Promise<ApiResponse<{ message: string }>> {
-        const payload = spotifyConfig ?? {};
-        return this.request<ApiResponse<{ message: string }>>(
-            'PUT',
-            '/user/me/spotify',
-            payload,
-            {'Content-Type': 'application/json'}
-        );
-    }
-
-    async removeSpotifyConfig(): Promise<ApiResponse<User>> {
-        return this.request<ApiResponse<User>>('DELETE', '/user/me/spotify');
-    }
-
     async login(username: string, password: string, stayLoggedIn?: boolean): Promise<ApiResponse<{
         message?: string, token?: string, details?: {
             field: string;
             code: string;
         }
     }>> {
+        console.log("HALLO LOGIN OWO")
         return this.request<ApiResponse<{
             message?: string, token?: string, details?: {
                 field: string;
@@ -250,4 +231,4 @@ class RestService {
 // Singleton instance
 const restService = new RestService();
 
-export { RestService, restService };
+export {RestService, restService};

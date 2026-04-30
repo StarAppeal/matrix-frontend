@@ -1,40 +1,66 @@
 import ThemedHeader from "@/src/components/themed/ThemedHeader";
-import React, {useState} from "react";
+import React, { useState } from "react";
 import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import ChangePasswordFeature from "@/src/components/ChangePasswordFeature";
 import ThemeToggleButton from "@/src/components/ThemeToggleButton";
-import SpotifyAuthButton from "@/src/components/SpotifyAuthButton";
-import {restService, Token, LocationResult} from "@/src/services/RestService";
+import { restService, LocationResult } from "@/src/services/RestService";
 import CustomModal from "@/src/components/themed/CustomModal";
-import {useAuth} from "@/src/stores/authStore";
-import {View, Text, TextInput, Pressable, ScrollView} from "react-native";
+import { useAuth } from "@/src/stores/authStore";
+import { View, Text, TextInput, Pressable, ScrollView } from "react-native";
 import ThemedButton from "@/src/components/themed/ThemedButton";
-import {useRouter} from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function SettingsScreen() {
-    const {authenticatedUser, logout, refreshUser} = useAuth();
+    const { authenticatedUser, logout, refreshUser } = useAuth();
     const router = useRouter();
 
     const [locationQuery, setLocationQuery] = useState("");
-    const [locationResults, setLocationResults] = useState<LocationResult[]>([]);
+    const[locationResults, setLocationResults] = useState<LocationResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [isLocationModalVisible, setIsLocationModalVisible] = useState(false);
-    const [hoveredLocation, setHoveredLocation] = useState<LocationResult | null>(null);
+    const[hoveredLocation, setHoveredLocation] = useState<LocationResult | null>(null);
 
-    const handleAuthSuccess = (token: Token) => {
-        const spotifyConfig = {
-            accessToken: token.access_token,
-            refreshToken: token.refresh_token,
-            scope: token.scope,
-            expirationDate: new Date(Date.now() + token.expires_in * 1000),
-        };
+    const [lastFmInput, setLastFmInput] = useState("");
+    const[isLastFmLoading, setIsLastFmLoading] = useState(false);
+    const[lastFmError, setLastFmError] = useState("");
 
-        restService.updateSelfSpotifyConfig(spotifyConfig).then((result) => {
-            console.log("Spotify Token gespeichert");
-            console.log(result);
+    const handleSaveLastFm = async () => {
+        if (!lastFmInput.trim()) return;
+        setIsLastFmLoading(true);
+        setLastFmError("");
 
-            refreshUser();
-        });
+        try {
+            const res = await restService.updateLastFmUsername(lastFmInput.trim());
+            if (res.ok) {
+                console.log("Last.fm username saved!");
+                await refreshUser();
+                // does this need to be set to empty string? It should load it from the db initially
+                setLastFmInput("");
+            } else {
+                // @ts-ignore - needs to be fixed
+                setLastFmError(res.data?.message || "User not found.");
+            }
+        } catch (e) {
+            console.error("Fehler beim Speichern von Last.fm:", e);
+            setLastFmError("Ein Netzwerkfehler ist aufgetreten.");
+        } finally {
+            setIsLastFmLoading(false);
+        }
+    };
+
+    const handleRemoveLastFm = async () => {
+        setIsLastFmLoading(true);
+        try {
+            const res = await restService.removeLastFmUsername();
+            if (res.ok) {
+                console.log("Last.fm Login entfernt");
+                await refreshUser();
+            }
+        } catch (e) {
+            console.error("Fehler beim Entfernen von Last.fm:", e);
+        } finally {
+            setIsLastFmLoading(false);
+        }
     };
 
     const searchLocation = async () => {
@@ -43,7 +69,7 @@ export default function SettingsScreen() {
         try {
             const res = await restService.searchLocations(locationQuery.trim());
             if (res.ok) {
-                setLocationResults(res.data.locations || []);
+                setLocationResults(res.data.locations ||[]);
             }
         } catch (e) {
             console.error("Location search failed", e);
@@ -118,25 +144,52 @@ export default function SettingsScreen() {
 
                 <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5">
                     <Text className="text-base font-semibold text-onSurface dark:text-onSurface-dark mb-4">
-                        Integrationen
+                        Musik Integration (Last.fm)
                     </Text>
+
                     <View className="gap-3">
-                        <SpotifyAuthButton
-                            onAuthSuccess={handleAuthSuccess}
-                            disabled={!!authenticatedUser?.spotifyConfig}
-                        />
-                        {!!authenticatedUser?.spotifyConfig && (
-                            <ThemedButton
-                                mode="outlined"
-                                title="Spotify trennen"
-                                onPress={() => {
-                                    restService.removeSpotifyConfig().then((result) => {
-                                        console.log("Spotify Login entfernt");
-                                        console.log(result);
-                                        refreshUser();
-                                    });
-                                }}
-                            />
+                        {authenticatedUser?.lastFmUsername ? (
+                            <View>
+                                <Text className="text-sm text-onSurface dark:text-onSurface-dark mb-3">
+                                    Verbunden als: <Text className="font-bold text-primary">{authenticatedUser.lastFmUsername}</Text>
+                                </Text>
+                                <ThemedButton
+                                    mode="outlined"
+                                    title={isLastFmLoading ? "Trennen..." : "Last.fm trennen"}
+                                    onPress={handleRemoveLastFm}
+                                    disabled={isLastFmLoading}
+                                />
+                            </View>
+                        ) : (
+                            <View>
+                                <Text className="text-sm text-muted dark:text-muted-dark mb-2">
+                                    Gib deinen Last.fm Benutzernamen ein, um die aktuell gespielte Musik auf der Matrix anzuzeigen.
+                                </Text>
+
+                                <TextInput
+                                    className="bg-background dark:bg-background-dark text-onSurface dark:text-onSurface-dark border border-outline/30 dark:border-outline-dark/30 rounded-lg px-3 py-2 mb-2"
+                                    placeholder="Last.fm Username"
+                                    placeholderTextColor="#888"
+                                    value={lastFmInput}
+                                    onChangeText={(text) => {
+                                        setLastFmInput(text);
+                                        setLastFmError("");
+                                    }}
+                                    autoCapitalize="none"
+                                    autoCorrect={false}
+                                />
+
+                                {lastFmError ? (
+                                    <Text className="text-red-500 text-xs mb-2">{lastFmError}</Text>
+                                ) : null}
+
+                                <ThemedButton
+                                    mode="contained"
+                                    title={isLastFmLoading ? "Prüfe..." : "Verbinden"}
+                                    onPress={handleSaveLastFm}
+                                    disabled={isLastFmLoading || !lastFmInput.trim()}
+                                />
+                            </View>
                         )}
                     </View>
                 </View>

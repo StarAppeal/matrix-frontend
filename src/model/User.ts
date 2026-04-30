@@ -4,7 +4,7 @@ export interface User {
   _id: string,
   config: UserConfig,
   lastState: MatrixState,
-  spotifyConfig: SpotifyConfig
+  lastFmUsername: string,
   location: {
     name: string,
     lat: number,
@@ -32,20 +32,12 @@ export interface MatrixState {
     color: [number, number, number];
   };
   image: {
-    image: string; // Der Name der Bilddatei
+    image: string;
   };
   clock: {
-    color: [number, number, number]; // RGB-Werte
+    color: [number, number, number]; // RGB
   };
   music: {
     fullscreen: boolean;
   };
 }
-
-export interface SpotifyConfig {
-  accessToken: string;
-  refreshToken: string;
-  expirationDate: Date;
-  scope: string;
-}
-

@@ -1,21 +1,22 @@
 import React from "react";
-import {View, Text} from "react-native";
-import {Feather} from "@expo/vector-icons";
+import { View, Text } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import ThemedHeader from "@/src/components/themed/ThemedHeader";
 import ThemedCheckbox from "@/src/components/themed/ThemedCheckbox";
 import SaveToMatrixButton from "@/src/components/SaveToMatrixButton";
 import { useMatrixStore } from "@/src/stores";
 import { useAuth } from "@/src/stores/authStore";
-import {useColors} from "@/src/hooks/useColors";
+import { useColors } from "@/src/hooks/useColors";
 
 export default function MusicScreen() {
-    const {colors} = useColors();
+    const { colors } = useColors();
     const { authenticatedUser } = useAuth();
     const musicConfig = useMatrixStore((s) => s.matrixState.music);
     const updateMusicConfig = useMatrixStore((s) => s.updateMusicConfig);
 
-    const hasSpotify = !!authenticatedUser?.spotifyConfig;
+    // NEU: Prüfen, ob der Last.fm Username gesetzt ist anstatt Spotify
+    const hasLastFm = !!authenticatedUser?.lastFmUsername;
 
     return (
         <ThemedBackground>
@@ -33,23 +34,27 @@ export default function MusicScreen() {
                             <Text className="text-base font-medium text-onSurface dark:text-onSurface-dark">
                                 Musik Visualisierung
                             </Text>
-                            {!hasSpotify && (
-                                <Text className="text-sm text-muted dark:text-muted-dark text-center mt-2">
-                                    Verbinde Spotify in den Einstellungen
+                            {/* NEU: Text auf Last.fm angepasst */}
+                            {!hasLastFm && (
+                                <Text className="text-sm text-red-500 dark:text-red-400 text-center mt-2">
+                                    Verbinde Last.fm in den Einstellungen, um diesen Modus zu nutzen!
                                 </Text>
                             )}
                         </View>
 
                         <ThemedCheckbox
                             label="Vollbild-Modus"
-                            description="Zeigt die Visualisierung im Vollbild"
+                            description="Zeigt das Album-Cover im Vollbild an"
                             value={musicConfig.fullscreen}
                             onValueChange={(fullscreen) => updateMusicConfig({ fullscreen })}
                         />
                     </View>
                 </View>
 
-                <SaveToMatrixButton mode="music" />
+                {/* Add disabled when no account configured */}
+                <View>
+                    <SaveToMatrixButton mode="music"  />
+                </View>
             </View>
         </ThemedBackground>
     );
