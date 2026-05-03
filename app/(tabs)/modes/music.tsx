@@ -10,8 +10,15 @@ import ThemedCheckbox from "@/src/components/themed/ThemedCheckbox";
 import SaveToMatrixButton from "@/src/components/SaveToMatrixButton";
 import MatrixPreview, {AdditionalInitialPayload} from "@/src/components/MatrixPreview";
 
-const mockMusicData: AdditionalInitialPayload[] = [
-    {
+
+export default function MusicScreen() {
+    const {colors} = useColors();
+    const {authenticatedUser} = useAuth();
+    const musicConfig = useMatrixStore((s) => s.matrixState.music);
+    const updateMusicConfig = useMatrixStore((s) => s.updateMusicConfig);
+    const hasLastFm = !!authenticatedUser?.lastFmUsername;
+
+    const mockMusicData: AdditionalInitialPayload[] = React.useMemo(() => [{
         "type": "MUSIC_UPDATE",
         "payload": {
             "isPlaying": true,
@@ -20,15 +27,7 @@ const mockMusicData: AdditionalInitialPayload[] = [
             "imageUrl": "https://lastfm.freetls.fastly.net/i/u/300x300/7eedf5854f216eba1908447afdb746d6.jpg"
         }
     }
-];
-
-export default function MusicScreen() {
-    const {colors} = useColors();
-    const {authenticatedUser} = useAuth();
-    const musicConfig = useMatrixStore((s) => s.matrixState.music);
-    const updateMusicConfig = useMatrixStore((s) => s.updateMusicConfig);
-
-    const hasLastFm = !!authenticatedUser?.lastFmUsername;
+    ], []);
 
     return (
         <ThemedBackground>

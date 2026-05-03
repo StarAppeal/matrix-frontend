@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useMemo} from "react";
 import {View, Text, ScrollView} from "react-native";
 import {Feather} from "@expo/vector-icons";
 import ThemedHeader from "@/src/components/themed/ThemedHeader";
@@ -40,6 +40,14 @@ export default function ClockScreen() {
     const updateClockConfig = useMatrixStore((s) => s.updateClockConfig);
     const settingsPayload = {"type": "SETTINGS", "payload": {"timezone": authenticatedUser?.timezone || "Etc/UTC"}}
 
+    const combinedMemoPayload: AdditionalInitialPayload[] = useMemo(() => [
+        {
+            "type": "SETTINGS",
+            "payload": {"timezone": authenticatedUser?.timezone || "Etc/UTC"}
+        },
+        mockClockData
+    ], [authenticatedUser?.timezone]);
+
     return (
         <ThemedBackground>
             <View className="flex-1">
@@ -52,7 +60,7 @@ export default function ClockScreen() {
                     contentContainerStyle={{paddingBottom: 100}}
                     showsVerticalScrollIndicator={false}
                 >
-                    <MatrixPreview mode="clock" additionalPayload={[settingsPayload, mockClockData]}/>
+                    <MatrixPreview mode="clock" additionalPayload={combinedMemoPayload}/>
 
                     <View
                         className="bg-surface dark:bg-surface-dark rounded-2xl p-6 mt-4 shadow-sm border border-outline/10">

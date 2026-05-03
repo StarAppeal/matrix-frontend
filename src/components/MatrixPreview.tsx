@@ -24,6 +24,9 @@ export default function MatrixPreview({mode, additionalPayload}: MatrixPreviewPr
     const wsRef = useRef<WebSocket | null>(null);
     const isFocused = useIsFocused();
 
+    const latestFrameRef = useRef<string | null>(null);
+    const renderScheduledRef = useRef(false);
+
     const [isConnected, setIsConnected] = useState(false);
     const [previewBase64, setPreviewFrame] = useState<string | null>(null);
     const [isFullScreen, setIsFullScreen] = useState(false);
@@ -79,7 +82,15 @@ export default function MatrixPreview({mode, additionalPayload}: MatrixPreviewPr
                                 additionalPayload.forEach(payload => ws?.send(JSON.stringify(payload)));
                             }
                         } else if (data.type === "PREVIEW_FRAME" && data.payload) {
-                            setPreviewFrame(data.payload);
+                            latestFrameRef.current = data.payload;
+                            if (!renderScheduledRef.current) {
+                                renderScheduledRef.current = true;
+
+                                requestAnimationFrame(() => {
+                                    setPreviewFrame(latestFrameRef.current);
+                                    renderScheduledRef.current = false;
+                                });
+                            }
                         }
                     } catch (e) {
                         console.error("WS Parse Error:", e);
