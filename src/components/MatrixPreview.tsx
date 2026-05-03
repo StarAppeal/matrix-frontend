@@ -7,8 +7,7 @@ import {restService} from '@/src/services/RestService';
 
 import {useIsFocused} from '@react-navigation/native';
 
-//TODO: remove fallback url
-const PREVIEW_WS_URL = process.env.EXPO_PUBLIC_PREVIEW_WS_URL || 'ws://127.0.0.1:8765';
+const PREVIEW_WS_URL = process.env.EXPO_PUBLIC_PREVIEW_WS_URL!;
 
 export interface AdditionalInitialPayload {
     type: string;
