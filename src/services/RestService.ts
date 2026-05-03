@@ -210,6 +210,10 @@ class RestService {
         );
     }
 
+    async getSelfToken(): Promise<ApiResponse<{token: string }>> {
+        return this.request("GET", "/auth/token");
+    }
+
     private async request<T>(method: Method, url: string, data?: any, headers?: any): Promise<T> {
         try {
             const response = await this.api.request<T>({

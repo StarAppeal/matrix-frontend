@@ -1,44 +1,55 @@
+import React, {  useState } from "react";
+import { View, Text } from "react-native";
+import { useAuth } from "@/src/stores/authStore";
 import ThemedBackground from "@/src/components/themed/ThemedBackground";
-import {useAuth} from "@/src/stores/authStore";
 import ThemedHeader from "@/src/components/themed/ThemedHeader";
-import React, {useEffect, useState} from "react";
-import {View} from "react-native";
 import ThemedCheckbox from "@/src/components/themed/ThemedCheckbox";
-import ThemedParagraph from "@/src/components/themed/ThemedParagraph";
+import { useMatrixStore } from "@/src/stores";
+import { restService } from "@/src/services/RestService";
 
 export default function HomeScreen() {
-    const [idle, setIdle] = useState(false);
-    const {authenticatedUser} = useAuth();
+    const { authenticatedUser } = useAuth();
+    const globalMode = useMatrixStore(s => s.matrixState.global.mode);
+    const setGlobalMode = useMatrixStore(s => s.setGlobalMode);
 
-    useEffect(() => {
-        if (authenticatedUser) {
-            setIdle(authenticatedUser.lastState?.global.mode === "idle")
+    const [isSaving, setIsSaving] = useState(false);
+
+    const handleIdleToggle = async (val: boolean) => {
+        setIsSaving(true);
+        const newMode = val ? "idle" : "text";
+
+        try {
+            setGlobalMode(newMode);
+
+            await new Promise(r => setTimeout(r, 50));
+            const updatedState = useMatrixStore.getState().matrixState;
+            await restService.updateLastState(updatedState);
+        } catch (e) {
+            console.error("Error while toggling idle", e);
+        } finally {
+            setIsSaving(false);
         }
-    }, [authenticatedUser]);
+    };
 
     return (
         <ThemedBackground>
-            <View className="flex-1">
-                <ThemedHeader
-                    subtitle="Steuere deine LED Matrix"
-                >
+            <View className="flex-1 px-4 pt-4">
+                <ThemedHeader subtitle="Zentrale Steuerung">
                     Willkommen{authenticatedUser?.name ? `, ${authenticatedUser.name}` : ''}!
                 </ThemedHeader>
 
-                <View className="mt-6 gap-4">
-                    <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5">
-                        <ThemedParagraph className="text-left mb-3 font-semibold text-lg">
-                            Schnelleinstellungen
-                        </ThemedParagraph>
-
-                        <ThemedCheckbox
-                            label="Energiesparmodus"
-                            description="Reduziert Helligkeit und deaktiviert Animationen"
-                            value={idle}
-                            onValueChange={setIdle}
-                        />
-                    </View>
+                <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5 mt-6 border border-outline/10">
+                    <Text className="text-left mb-3 font-bold text-base text-onSurface dark:text-onSurface-dark">
+                        Schnelleinstellungen
+                    </Text>
+                    <ThemedCheckbox
+                        label={isSaving ? "Speichere..." : "Energiesparmodus"}
+                        description="Schaltet die Matrix sofort schwarz"
+                        value={globalMode === "idle"}
+                        onValueChange={handleIdleToggle}
+                    />
                 </View>
+
             </View>
         </ThemedBackground>
     );

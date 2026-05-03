@@ -15,7 +15,6 @@ export default function MusicScreen() {
     const musicConfig = useMatrixStore((s) => s.matrixState.music);
     const updateMusicConfig = useMatrixStore((s) => s.updateMusicConfig);
 
-    // NEU: Prüfen, ob der Last.fm Username gesetzt ist anstatt Spotify
     const hasLastFm = !!authenticatedUser?.lastFmUsername;
 
     return (

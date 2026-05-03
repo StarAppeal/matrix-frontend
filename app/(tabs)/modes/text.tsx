@@ -7,6 +7,7 @@ import { MatrixState } from '@/src/model/User';
 import { useMatrixStore } from "@/src/stores";
 import ThemedHeader from "@/src/components/themed/ThemedHeader";
 import SaveToMatrixButton from "@/src/components/SaveToMatrixButton";
+import MatrixPreview from "@/src/components/MatrixPreview";
 
 type TextProps = MatrixState['text'];
 
@@ -61,6 +62,8 @@ export default function TextScreen() {
                         </View>
                     </View>
                 </View>
+
+                <MatrixPreview mode="text"/>
 
                 <SaveToMatrixButton mode="text" />
             </View>
