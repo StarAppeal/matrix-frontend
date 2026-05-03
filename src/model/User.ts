@@ -32,7 +32,7 @@ export interface MatrixState {
     color: [number, number, number];
   };
   image: {
-    image: string;
+    image_url: string;
   };
   clock: {
     color: [number, number, number]; // RGB

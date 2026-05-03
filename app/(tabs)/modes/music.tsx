@@ -1,13 +1,14 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { useMatrixStore } from "@/src/stores";
+import { useAuth } from "@/src/stores/authStore";
+import { useColors } from "@/src/hooks/useColors";
 import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import ThemedHeader from "@/src/components/themed/ThemedHeader";
 import ThemedCheckbox from "@/src/components/themed/ThemedCheckbox";
 import SaveToMatrixButton from "@/src/components/SaveToMatrixButton";
-import { useMatrixStore } from "@/src/stores";
-import { useAuth } from "@/src/stores/authStore";
-import { useColors } from "@/src/hooks/useColors";
+import MatrixPreview from "@/src/components/MatrixPreview";
 
 export default function MusicScreen() {
     const { colors } = useColors();
@@ -19,13 +20,19 @@ export default function MusicScreen() {
 
     return (
         <ThemedBackground>
-            <View className="flex-1 justify-between">
-                <View>
-                    <ThemedHeader subtitle="Visualisiere deine Musik">
-                        Musik Modus
-                    </ThemedHeader>
+            <View className="flex-1">
+                <ThemedHeader subtitle="Visualisiere deine Musik">
+                    Musik Modus
+                </ThemedHeader>
 
-                    <View className="bg-surface dark:bg-surface-dark rounded-2xl p-6 mt-4">
+                <ScrollView
+                    className="flex-1 px-4"
+                    contentContainerStyle={{ paddingBottom: 100 }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <MatrixPreview mode="music" />
+
+                    <View className="bg-surface dark:bg-surface-dark rounded-2xl p-6 mt-4 shadow-sm border border-outline/10">
                         <View className="items-center mb-6">
                             <View className="w-16 h-16 rounded-full bg-primary/10 dark:bg-primary-light/10 items-center justify-center mb-3">
                                 <Feather name="music" size={32} color={colors.primary} />
@@ -33,9 +40,8 @@ export default function MusicScreen() {
                             <Text className="text-base font-medium text-onSurface dark:text-onSurface-dark">
                                 Musik Visualisierung
                             </Text>
-                            {/* NEU: Text auf Last.fm angepasst */}
                             {!hasLastFm && (
-                                <Text className="text-sm text-red-500 dark:text-red-400 text-center mt-2">
+                                <Text className="text-sm text-error dark:text-error-dark text-center mt-2">
                                     Verbinde Last.fm in den Einstellungen, um diesen Modus zu nutzen!
                                 </Text>
                             )}
@@ -48,11 +54,10 @@ export default function MusicScreen() {
                             onValueChange={(fullscreen) => updateMusicConfig({ fullscreen })}
                         />
                     </View>
-                </View>
+                </ScrollView>
 
-                {/* Add disabled when no account configured */}
-                <View>
-                    <SaveToMatrixButton mode="music"  />
+                <View className="absolute bottom-4 left-4 right-4">
+                    <SaveToMatrixButton mode="music" disabled={!hasLastFm} />
                 </View>
             </View>
         </ThemedBackground>

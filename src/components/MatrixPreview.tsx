@@ -4,6 +4,8 @@ import { Feather } from '@expo/vector-icons';
 import { useMatrixStore } from '@/src/stores';
 import { restService } from '@/src/services/RestService';
 
+import { useIsFocused } from '@react-navigation/native';
+
 //TODO: remove fallback url
 const PREVIEW_WS_URL = process.env.EXPO_PUBLIC_PREVIEW_WS_URL || 'ws://127.0.0.1:8765';
 
@@ -13,37 +15,34 @@ interface MatrixPreviewProps {
 
 export default function MatrixPreview({ mode }: MatrixPreviewProps) {
     const wsRef = useRef<WebSocket | null>(null);
+    const isFocused = useIsFocused();
 
     const [isConnected, setIsConnected] = useState(false);
     const [previewBase64, setPreviewFrame] = useState<string | null>(null);
     const [isFullScreen, setIsFullScreen] = useState(false);
 
-    const matrixState = useMatrixStore((s) => s.matrixState);
-    const setGlobalMode = useMatrixStore((s) => s.setGlobalMode);
+    const getFullState = () => useMatrixStore.getState().matrixState;
 
-    useEffect(() => {
-        if (matrixState.global.mode !== mode) {
-            setGlobalMode(mode as any);
-        }
-    }, [mode, matrixState.global.mode, setGlobalMode]);
+    const sendStateUpdate = useCallback((ws: WebSocket) => {
+        const fullState = getFullState();
 
-    const stateRef = useRef(matrixState);
-    useEffect(() => {
-        stateRef.current = matrixState;
-    }, [matrixState]);
-
-    const sendStateUpdate = useCallback((ws: WebSocket, state: any) => {
         const payload = {
             type: "STATE",
             payload: {
-                global: { ...state.global, mode: mode },
-                [mode]: state[mode]
+                global: { ...fullState.global, mode: mode },
+                [mode]: fullState[mode as keyof typeof fullState]
             }
         };
         ws.send(JSON.stringify(payload));
     }, [mode]);
 
     useEffect(() => {
+        if (!isFocused) {
+            setIsConnected(false);
+            setPreviewFrame(null);
+            return;
+        }
+
         let ws: WebSocket | null = null;
         let isMounted = true;
 
@@ -72,9 +71,6 @@ export default function MatrixPreview({ mode }: MatrixPreviewProps) {
                         else if (data.type === "PREVIEW_FRAME" && data.payload) {
                             setPreviewFrame(data.payload);
                         }
-                        else if (data.type === "ERROR") {
-                            console.error("[Preview] Sidecar service has error");
-                        }
                     } catch (e) {
                         console.error("WS Parse Error:", e);
                     }
@@ -84,7 +80,7 @@ export default function MatrixPreview({ mode }: MatrixPreviewProps) {
                     if (isMounted) setIsConnected(false);
                 };
             } catch (e) {
-                console.error("[Preview] Error while connecting:", e);
+                console.error("[Preview] Fehler beim Verbinden:", e);
             }
         };
 
@@ -92,17 +88,19 @@ export default function MatrixPreview({ mode }: MatrixPreviewProps) {
 
         return () => {
             isMounted = false;
-            if (ws && ws.readyState === WebSocket.OPEN) {
+            if (ws && ws.readyState === WebSocket.OPEN || ws?.readyState === WebSocket.CONNECTING) {
                 ws.close();
             }
         };
-    }, [sendStateUpdate]);
+    }, [sendStateUpdate, isFocused]);
+
+    const currentModeConfig = useMatrixStore((s) => s.matrixState[mode as keyof typeof s.matrixState]);
 
     useEffect(() => {
         if (isConnected && wsRef.current?.readyState === WebSocket.OPEN) {
-            sendStateUpdate(wsRef.current, matrixState);
+            sendStateUpdate(wsRef.current);
         }
-    }, [matrixState, isConnected, sendStateUpdate]);
+    }, [currentModeConfig, isConnected, sendStateUpdate]);
 
     return (
         <View className="items-center justify-center my-4">

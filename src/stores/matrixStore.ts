@@ -4,7 +4,7 @@ import { MatrixState } from '@/src/model/User';
 const defaultMatrixState: MatrixState = {
     global: { mode: 'idle', brightness: 100 },
     text: { text: 'Hello World', align: 'center', speed: 50, size: 16, color: [255, 255, 255] },
-    image: { image: 'dino.gif' },
+    image: { image_url: 'https://static.wikia.nocookie.net/tmnt/images/f/f2/Garfield.jpg/revision/latest?cb=20140610130734&path-prefix=de' },
     clock: { color: [0, 255, 0] },
     music: { fullscreen: false }
 };

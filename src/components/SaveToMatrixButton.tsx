@@ -8,9 +8,10 @@ import { MatrixState } from "@/src/model/User";
 interface SaveToMatrixButtonProps {
     mode: MatrixState['global']['mode'];
     className?: string;
+    disabled?: boolean;
 }
 
-export default function SaveToMatrixButton({ mode, className }: SaveToMatrixButtonProps) {
+export default function SaveToMatrixButton({ mode, className, disabled }: SaveToMatrixButtonProps) {
     const setGlobalMode = useMatrixStore((s) => s.setGlobalMode);
 
     const [saving, setSaving] = useState(false);
@@ -59,7 +60,7 @@ export default function SaveToMatrixButton({ mode, className }: SaveToMatrixButt
                 onPress={handleSave}
                 title={saving ? "Speichern..." : "An Matrix senden"}
                 icon="send"
-                disabled={saving}
+                disabled={saving || disabled}
             />
         </View>
     );

@@ -1,13 +1,13 @@
 import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import ThemedTextInput from "@/src/components/themed/ThemedTextInput";
 import ColorSelector from "@/src/components/themed/ColorSelector";
-import {View, Text} from "react-native";
-import ThemedSegmentedButtons from "@/src/components/themed/ThemedSegmentedButtons";
+import { View, Text, ScrollView } from "react-native";
 import { MatrixState } from '@/src/model/User';
 import { useMatrixStore } from "@/src/stores";
 import ThemedHeader from "@/src/components/themed/ThemedHeader";
 import SaveToMatrixButton from "@/src/components/SaveToMatrixButton";
 import MatrixPreview from "@/src/components/MatrixPreview";
+import ThemedSegmentedButtons from "@/src/components/themed/ThemedSegmentedButtons";
 
 type TextProps = MatrixState['text'];
 
@@ -21,13 +21,19 @@ export default function TextScreen() {
 
     return (
         <ThemedBackground>
-            <View className="flex-1 justify-between">
-                <View className="gap-4">
-                    <ThemedHeader subtitle="Zeige Text auf deiner Matrix an">
-                        Text Modus
-                    </ThemedHeader>
+            <View className="flex-1">
+                <ThemedHeader subtitle="Zeige Text auf deiner Matrix an">
+                    Text Modus
+                </ThemedHeader>
 
-                    <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5 gap-4">
+                <ScrollView
+                    className="flex-1 px-4"
+                    contentContainerStyle={{ paddingBottom: 100 }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <MatrixPreview mode="text" />
+
+                    <View className="bg-surface dark:bg-surface-dark rounded-2xl p-5 gap-6 mt-4 shadow-sm border border-outline/10">
                         <ThemedTextInput
                             label="Dein Text"
                             value={textConfig.text}
@@ -36,22 +42,44 @@ export default function TextScreen() {
                         />
 
                         <View>
-                            <Text className="text-sm font-medium text-muted dark:text-muted-dark mb-2">
-                                Textfarbe
+                            <Text className="text-sm font-semibold text-onSurface dark:text-onSurface-dark mb-3">
+                                Schriftgröße
                             </Text>
-                            <ColorSelector
-                                onSelect={(color) => updateTextProp({ color })}
-                                defaultColor={textConfig.color}
+                            <ThemedSegmentedButtons
+                                value={textConfig.size.toString()}
+                                onValueChange={(val) => updateTextProp({ size: parseInt(val, 10) })}
+                                options={{
+                                    '1': 'Klein',
+                                    '2': 'Mittel',
+                                    '3': 'Groß',
+                                }}
+                                className="my-0"
                             />
                         </View>
 
                         <View>
-                            <Text className="text-sm font-medium text-muted dark:text-muted-dark mb-2">
+                            <Text className="text-sm font-semibold text-onSurface dark:text-onSurface-dark mb-3">
+                                Geschwindigkeit
+                            </Text>
+                            <ThemedSegmentedButtons
+                                value={textConfig.speed.toString()}
+                                onValueChange={(val) => updateTextProp({ speed: parseInt(val, 10) })}
+                                options={{
+                                    '3': 'Langsam',
+                                    '5': 'Normal',
+                                    '10': 'Schnell',
+                                }}
+                                className="my-0"
+                            />
+                        </View>
+
+                        <View>
+                            <Text className="text-sm font-semibold text-onSurface dark:text-onSurface-dark mb-3">
                                 Ausrichtung
                             </Text>
                             <ThemedSegmentedButtons
                                 value={textConfig.align}
-                                onValueChange={(align) => updateTextProp({ align })}
+                                onValueChange={(align) => updateTextProp({ align: align as 'left' | 'center' | 'right' })}
                                 options={{
                                     left: 'Links',
                                     center: 'Mitte',
@@ -60,12 +88,22 @@ export default function TextScreen() {
                                 className="my-0"
                             />
                         </View>
+
+                        <View>
+                            <Text className="text-sm font-semibold text-onSurface dark:text-onSurface-dark mb-3">
+                                Textfarbe
+                            </Text>
+                            <ColorSelector
+                                onSelect={(color) => updateTextProp({ color })}
+                                defaultColor={textConfig.color}
+                            />
+                        </View>
                     </View>
+                </ScrollView>
+
+                <View className="absolute bottom-4 left-4 right-4">
+                    <SaveToMatrixButton mode="text" />
                 </View>
-
-                <MatrixPreview mode="text"/>
-
-                <SaveToMatrixButton mode="text" />
             </View>
         </ThemedBackground>
     );
