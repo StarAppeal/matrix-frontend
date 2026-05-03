@@ -1,19 +1,26 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { ActivityIndicator, Image, Text, View, Pressable, Modal, TouchableOpacity } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { useMatrixStore } from '@/src/stores';
-import { restService } from '@/src/services/RestService';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
+import {ActivityIndicator, Image, Text, View, Pressable, Modal, TouchableOpacity, Platform} from 'react-native';
+import {Feather} from '@expo/vector-icons';
+import {useMatrixStore} from '@/src/stores';
+import {restService} from '@/src/services/RestService';
 
-import { useIsFocused } from '@react-navigation/native';
+
+import {useIsFocused} from '@react-navigation/native';
 
 //TODO: remove fallback url
 const PREVIEW_WS_URL = process.env.EXPO_PUBLIC_PREVIEW_WS_URL || 'ws://127.0.0.1:8765';
 
-interface MatrixPreviewProps {
-    mode: string;
+export interface AdditionalInitialPayload {
+    type: string;
+    payload: any;
 }
 
-export default function MatrixPreview({ mode }: MatrixPreviewProps) {
+interface MatrixPreviewProps {
+    mode: string;
+    additionalPayload?: AdditionalInitialPayload[];
+}
+
+export default function MatrixPreview({mode, additionalPayload}: MatrixPreviewProps) {
     const wsRef = useRef<WebSocket | null>(null);
     const isFocused = useIsFocused();
 
@@ -26,14 +33,14 @@ export default function MatrixPreview({ mode }: MatrixPreviewProps) {
     const sendStateUpdate = useCallback((ws: WebSocket) => {
         const fullState = getFullState();
 
-        const payload = {
+        const statePayload = {
             type: "STATE",
             payload: {
-                global: { ...fullState.global, mode: mode },
+                global: {...fullState.global, mode: mode},
                 [mode]: fullState[mode as keyof typeof fullState]
             }
         };
-        ws.send(JSON.stringify(payload));
+        ws.send(JSON.stringify(statePayload));
     }, [mode]);
 
     useEffect(() => {
@@ -58,7 +65,7 @@ export default function MatrixPreview({ mode }: MatrixPreviewProps) {
                 wsRef.current = ws;
 
                 ws.onopen = () => {
-                    ws?.send(JSON.stringify({ type: "AUTH", token: wsToken }));
+                    ws?.send(JSON.stringify({type: "AUTH", token: wsToken}));
                 };
 
                 ws.onmessage = (event) => {
@@ -67,8 +74,11 @@ export default function MatrixPreview({ mode }: MatrixPreviewProps) {
 
                         if (data.type === "AUTH_SUCCESS") {
                             setIsConnected(true);
-                        }
-                        else if (data.type === "PREVIEW_FRAME" && data.payload) {
+                            sendStateUpdate(ws!);
+                            if (additionalPayload && additionalPayload.length > 0) {
+                                additionalPayload.forEach(payload => ws?.send(JSON.stringify(payload)));
+                            }
+                        } else if (data.type === "PREVIEW_FRAME" && data.payload) {
                             setPreviewFrame(data.payload);
                         }
                     } catch (e) {
@@ -92,13 +102,18 @@ export default function MatrixPreview({ mode }: MatrixPreviewProps) {
                 ws.close();
             }
         };
-    }, [sendStateUpdate, isFocused]);
+    }, [sendStateUpdate, isFocused, additionalPayload]);
 
     const currentModeConfig = useMatrixStore((s) => s.matrixState[mode as keyof typeof s.matrixState]);
 
+    const previousConfigRef = useRef(currentModeConfig);
+
     useEffect(() => {
         if (isConnected && wsRef.current?.readyState === WebSocket.OPEN) {
-            sendStateUpdate(wsRef.current);
+            if (previousConfigRef.current !== currentModeConfig) {
+                sendStateUpdate(wsRef.current);
+                previousConfigRef.current = currentModeConfig;
+            }
         }
     }, [currentModeConfig, isConnected, sendStateUpdate]);
 
@@ -107,11 +122,11 @@ export default function MatrixPreview({ mode }: MatrixPreviewProps) {
             <Pressable
                 onPress={() => previewBase64 && setIsFullScreen(true)}
                 className="w-64 h-64 bg-[#0a0a0a] rounded-xl border-[3px] border-outline/20 dark:border-outline-dark/30 items-center justify-center shadow-2xl overflow-hidden relative"
-                style={{ elevation: 10 }}
+                style={{elevation: 10}}
             >
                 {!isConnected && !previewBase64 && (
                     <View className="items-center">
-                        <ActivityIndicator size="large" color="#888" />
+                        <ActivityIndicator size="large" color="#888"/>
                         <Text className="text-gray-500 mt-3 text-xs font-medium uppercase tracking-widest">
                             Verbinde...
                         </Text>
@@ -121,12 +136,15 @@ export default function MatrixPreview({ mode }: MatrixPreviewProps) {
                 {previewBase64 && (
                     <>
                         <Image
-                            source={{ uri: previewBase64 }}
+                            source={{uri: previewBase64}}
                             className="w-full h-full"
-                            resizeMode="stretch"
+                            resizeMode="contain"
+                            fadeDuration={0}
+                            accessibilityIgnoresInvertColors
+                            style={Platform.OS === 'web' ? { imageRendering: 'pixelated' } as any : {}}
                         />
                         <View className="absolute bottom-2 right-2 bg-black/50 p-1.5 rounded-full">
-                            <Feather name="maximize-2" size={16} color="rgba(255,255,255,0.7)" />
+                            <Feather name="maximize-2" size={16} color="rgba(255,255,255,0.7)"/>
                         </View>
                     </>
                 )}
@@ -143,21 +161,25 @@ export default function MatrixPreview({ mode }: MatrixPreviewProps) {
                         onPress={() => setIsFullScreen(false)}
                         className="absolute top-12 right-6 bg-white/10 p-3 rounded-full z-10"
                     >
-                        <Feather name="x" size={28} color="white" />
+                        <Feather name="x" size={28} color="white"/>
                     </TouchableOpacity>
 
-                    <View className="w-[90vw] h-[90vw] max-w-lg max-h-lg bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                    <View
+                        className="w-full max-w-[80vw] max-h-[80vh] aspect-square bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
                         {previewBase64 && (
                             <Image
-                                source={{ uri: previewBase64 }}
+                                source={{uri: previewBase64}}
                                 className="w-full h-full"
-                                resizeMode="stretch"
+                                resizeMode="contain"
+                                fadeDuration={0}
+                                accessibilityIgnoresInvertColors
+                                style={Platform.OS === 'web' ? { imageRendering: 'pixelated' } as any : {}}
                             />
                         )}
                     </View>
 
                     <Text className="text-white/50 mt-8 text-sm uppercase tracking-widest font-medium">
-                        Live Vorschau
+                        Live Vorschau (Fullscreen)
                     </Text>
                 </View>
             </Modal>
