@@ -1,16 +1,13 @@
 import React, {useState} from "react";
-import {View, ActivityIndicator, FlatList, Text, TouchableOpacity, Linking, Modal} from "react-native";
+import {View, ActivityIndicator, Text, TouchableOpacity, Linking, Modal} from "react-native";
 import {ImagePickerSuccessResult} from "expo-image-picker";
 import {MaterialIcons, Feather} from '@expo/vector-icons';
 import {S3File, restService} from "@/src/services/RestService";
 import {useColors} from "@/src/hooks/useColors";
 import {useMatrixStore} from "@/src/stores";
-import ThemedHeader from "@/src/components/themed/ThemedHeader";
-import ThemedBackground from "@/src/components/themed/ThemedBackground";
 import CustomImagePicker from "@/src/components/ImagePicker";
 import ThemedButton from "@/src/components/themed/ThemedButton";
-import SaveToMatrixButton from "@/src/components/SaveToMatrixButton";
-import MatrixPreview from "@/src/components/MatrixPreview";
+import ModeScreenLayout from "@/src/components/ModeScreenLayout";
 
 export default function ImageScreen() {
     const [uploading, setUploading] = useState(false);
@@ -90,69 +87,61 @@ export default function ImageScreen() {
     };
 
     return (
-        <ThemedBackground>
-            <View className="flex-1">
-                <ThemedHeader subtitle="Lade Bilder hoch und zeige sie an">
-                    Bilder Modus
-                </ThemedHeader>
+        <ModeScreenLayout
+            mode="image"
+            title="Bilder Modus"
+            subtitle="Lade Bilder hoch und zeige sie an"
+            icon="image"
+            settingsTitle="Bilder & Animationen"
+            settingsDescription="Lade Pixel-Art oder GIFs in die Cloud und sende sie an deine Matrix."
+        >
+            {uploading ? (
+                <View className="justify-center items-center py-6">
+                    <ActivityIndicator size="large" color={colors.primary}/>
+                    <Text className="mt-4 text-base font-medium text-onSurface dark:text-onSurface-dark">
+                        Datei wird hochgeladen...
+                    </Text>
+                </View>
+            ) : (
+                <View>
+                    <CustomImagePicker
+                        onSuccess={onSuccess}
+                        onFailure={(e) => console.error(e)}
+                        onCanceled={() => console.log("Canceled")}
+                    />
+                </View>
+            )}
 
-                <FlatList
-                    className="flex-1 px-4"
-                    contentContainerStyle={{paddingBottom: 100}}
-                    showsVerticalScrollIndicator={false}
-                    ListHeaderComponent={
-                        <>
-                            <MatrixPreview mode="image"/>
+            <View className="mt-2">
+                <ThemedButton
+                    onPress={() => !showFiles ? fetchStoredFiles() : setShowFiles(false)}
+                    title={showFiles ? "Dateien ausblenden" : "Gespeicherte Dateien anzeigen"}
+                    mode={showFiles ? "outlined" : "contained"}
+                    icon={showFiles ? "eye-off" : "folder"}
+                />
+            </View>
 
-                            {uploading ? (
-                                <View
-                                    className="justify-center items-center bg-surface dark:bg-surface-dark rounded-2xl p-8 mt-4 border border-outline/10">
-                                    <ActivityIndicator size="large" color={colors.primary}/>
-                                    <Text
-                                        className="mt-4 text-base font-medium text-onSurface dark:text-onSurface-dark">
-                                        Datei wird hochgeladen...
-                                    </Text>
-                                </View>
-                            ) : (
-                                <View
-                                    className="bg-surface dark:bg-surface-dark rounded-2xl p-5 mt-4 border border-outline/10 shadow-sm">
-                                    <CustomImagePicker
-                                        onSuccess={onSuccess}
-                                        onFailure={(e) => console.error(e)}
-                                        onCanceled={() => console.log("Canceled")}
-                                    />
-                                </View>
-                            )}
+            {showFiles && (
+                <View className="mt-2 border-t border-outline/10 pt-4">
+                    <Text className="text-base font-semibold text-onSurface dark:text-onSurface-dark mb-3">
+                        Gespeicherte Dateien
+                    </Text>
 
-                            <View className="my-4">
-                                <ThemedButton
-                                    onPress={() => !showFiles ? fetchStoredFiles() : setShowFiles(false)}
-                                    title={showFiles ? "Dateien ausblenden" : "Gespeicherte Dateien anzeigen"}
-                                    mode={showFiles ? "outlined" : "contained"}
-                                    icon={showFiles ? "eye-off" : "folder"}
-                                />
-                            </View>
+                    {loadingFiles && (
+                        <ActivityIndicator size="large" color={colors.primary} className="py-8"/>
+                    )}
 
-                            {showFiles &&
-                                <Text className="text-base font-semibold text-onSurface dark:text-onSurface-dark mb-3">Gespeicherte
-                                    Dateien</Text>}
-                            {showFiles && loadingFiles &&
-                                <ActivityIndicator size="large" color={colors.primary} className="py-8"/>}
-                        </>
-                    }
-                    data={showFiles && !loadingFiles ? files : []}
-                    keyExtractor={(item) => item.key}
-                    ListEmptyComponent={
-                        showFiles && !loadingFiles ? (
-                            <View className="items-center py-8 bg-surface dark:bg-surface-dark rounded-2xl">
-                                <Text className="text-muted dark:text-muted-dark">Keine Dateien gefunden</Text>
-                            </View>
-                        ) : null
-                    }
-                    renderItem={({item}) => (
+                    {!loadingFiles && files.length === 0 && (
                         <View
-                            className="p-4 my-1.5 rounded-xl bg-surface dark:bg-surface-dark border border-outline/30 shadow-sm">
-                            <View className="pr-24">
+                            className="items-center py-8 bg-background dark:bg-background-dark rounded-xl border border-outline/10">
+                            <Text className="text-muted dark:text-muted-dark">Keine Dateien gefunden</Text>
+                        </View>
+                    )}
+
+                    {!loadingFiles && files.map((item) => (
+                        <View key={item.key}
+                              className="p-4 my-1.5 rounded-xl bg-background dark:bg-background-dark border border-outline/30 shadow-sm relative">
+                            <View className="pr-36">
                                 <Text className="font-semibold text-onSurface dark:text-onSurface-dark mb-1"
                                       numberOfLines={1}>
                                     {item.originalName}
@@ -168,53 +157,49 @@ export default function ImageScreen() {
                                     className="w-10 h-10 rounded-xl justify-center items-center bg-green-500"
                                     onPress={() => selectImageForMatrix(item.key)}
                                 >
-                                    <Feather name="check" size={22} color="white"/>
+                                    <Feather name="check" size={20} color="white"/>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     className="w-10 h-10 rounded-xl justify-center items-center bg-primary"
                                     onPress={() => viewFile(item.key)}
                                 >
-                                    <MaterialIcons name="visibility" size={22} color="white"/>
+                                    <MaterialIcons name="visibility" size={20} color="white"/>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     className="w-10 h-10 rounded-xl justify-center items-center bg-error"
                                     onPress={() => setDeletingFile(item.key)}
                                 >
-                                    <MaterialIcons name="delete" size={22} color="white"/>
+                                    <MaterialIcons name="delete" size={20} color="white"/>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                    )}
-                />
-
-                <View className="absolute bottom-4 left-4 right-4 bg-background dark:bg-background-dark pt-2">
-                    <SaveToMatrixButton mode="image"/>
+                    ))}
                 </View>
+            )}
 
-                <Modal animationType="fade" transparent={true} visible={!!deletingFile}
-                       onRequestClose={() => setDeletingFile(null)}>
-                    <View className="flex-1 justify-center items-center bg-black/60 px-6">
-                        <View className="w-full max-w-sm bg-surface dark:bg-surface-dark rounded-2xl p-6">
-                            <Text
-                                className="text-lg font-semibold text-center text-onSurface dark:text-onSurface-dark mb-2">Datei
-                                löschen?</Text>
-                            <Text className="text-sm text-center text-muted dark:text-muted-dark mb-6">Diese Aktion kann
-                                nicht rückgängig gemacht werden.</Text>
-                            <View className="gap-2">
-                                <ThemedButton onPress={() => {
-                                    if (deletingFile) {
-                                        deleteFile(deletingFile);
-                                        setDeletingFile(null);
-                                    }
-                                }} title="Ja, löschen" mode="contained" className="bg-error"/>
-                                <ThemedButton onPress={() => setDeletingFile(null)} title="Abbrechen" mode="outlined"/>
-                            </View>
+            <Modal animationType="fade" transparent={true} visible={!!deletingFile}
+                   onRequestClose={() => setDeletingFile(null)}>
+                <View className="flex-1 justify-center items-center bg-black/60 px-6">
+                    <View className="w-full max-w-sm bg-surface dark:bg-surface-dark rounded-2xl p-6">
+                        <Text
+                            className="text-lg font-semibold text-center text-onSurface dark:text-onSurface-dark mb-2">Datei
+                            löschen?</Text>
+                        <Text className="text-sm text-center text-muted dark:text-muted-dark mb-6">Diese Aktion kann
+                            nicht rückgängig gemacht werden.</Text>
+                        <View className="gap-2">
+                            <ThemedButton onPress={() => {
+                                if (deletingFile) {
+                                    deleteFile(deletingFile);
+                                    setDeletingFile(null);
+                                }
+                            }} title="Ja, löschen" mode="contained" className="bg-error"/>
+                            <ThemedButton onPress={() => setDeletingFile(null)} title="Abbrechen" mode="outlined"/>
                         </View>
                     </View>
-                </Modal>
-            </View>
-        </ThemedBackground>
+                </View>
+            </Modal>
+        </ModeScreenLayout>
     );
 }

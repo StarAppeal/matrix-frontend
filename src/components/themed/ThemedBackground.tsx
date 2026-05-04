@@ -14,7 +14,7 @@ export default function ThemedBackground({ children, className }: Props) {
             className="flex-1 w-full bg-background dark:bg-background-dark"
         >
             <KeyboardAvoidingView
-                className={`flex-1 p-5 w-[90%] max-w-[600px] self-center ${className || ''}`}
+                className={`flex-1 w-full ${className || ''}`}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
                 {children}
@@ -22,4 +22,3 @@ export default function ThemedBackground({ children, className }: Props) {
         </ImageBackground>
     );
 }
-
