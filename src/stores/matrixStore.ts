@@ -1,12 +1,13 @@
-import { create } from 'zustand';
-import { MatrixState } from '@/src/model/User';
+import {create} from 'zustand';
+import {MatrixState} from '@/src/model/User';
 
 const defaultMatrixState: MatrixState = {
-    global: { mode: 'idle', brightness: 100 },
-    text: { text: 'Hello World', align: 'center', speed: 50, size: 16, color: [255, 255, 255] },
-    image: { image_url: 'https://static.wikia.nocookie.net/tmnt/images/f/f2/Garfield.jpg/revision/latest?cb=20140610130734&path-prefix=de' },
-    clock: { color: [0, 255, 0] },
-    music: { fullscreen: false }
+    global: {mode: 'idle', brightness: 100},
+    text: {text: 'Hello World', align: 'center', speed: 50, size: 16, color: [255, 255, 255]},
+    image: {image_url: 'https://static.wikia.nocookie.net/tmnt/images/f/f2/Garfield.jpg/revision/latest?cb=20140610130734&path-prefix=de'},
+    clock: {color: [0, 255, 0]},
+    music: {fullscreen: false},
+    game_of_life: {color: [0, 255, 255], speed: 10, cell_size: 2}
 };
 
 interface PartialMatrixState {
@@ -15,6 +16,7 @@ interface PartialMatrixState {
     image?: Partial<MatrixState['image']>;
     clock?: Partial<MatrixState['clock']>;
     music?: Partial<MatrixState['music']>;
+    game_of_life?: Partial<MatrixState['game_of_life']>;
 }
 
 interface MatrixStore {
@@ -29,6 +31,7 @@ interface MatrixStore {
     updateImageConfig: (config: Partial<MatrixState['image']>) => void;
     updateClockConfig: (config: Partial<MatrixState['clock']>) => void;
     updateMusicConfig: (config: Partial<MatrixState['music']>) => void;
+    updateGameOfLifeConfig: (config: Partial<MatrixState['game_of_life']>) => void;
     initializeFromUser: (lastState?: MatrixState | null) => void;
     resetToDefaults: () => void;
 }
@@ -39,11 +42,12 @@ export const useMatrixStore = create<MatrixStore>()((set) => ({
     updateMatrixState: (newState) =>
         set((state) => ({
             matrixState: {
-                global: { ...state.matrixState.global, ...newState.global },
-                text: { ...state.matrixState.text, ...newState.text },
-                image: { ...state.matrixState.image, ...newState.image },
-                clock: { ...state.matrixState.clock, ...newState.clock },
-                music: { ...state.matrixState.music, ...newState.music },
+                global: {...state.matrixState.global, ...newState.global},
+                text: {...state.matrixState.text, ...newState.text},
+                image: {...state.matrixState.image, ...newState.image},
+                clock: {...state.matrixState.clock, ...newState.clock},
+                music: {...state.matrixState.music, ...newState.music},
+                game_of_life: {...state.matrixState.game_of_life, ...newState.game_of_life},
             },
         })),
 
@@ -51,7 +55,7 @@ export const useMatrixStore = create<MatrixStore>()((set) => ({
         set((state) => ({
             matrixState: {
                 ...state.matrixState,
-                global: { ...state.matrixState.global, mode },
+                global: {...state.matrixState.global, mode},
             },
         })),
 
@@ -59,7 +63,7 @@ export const useMatrixStore = create<MatrixStore>()((set) => ({
         set((state) => ({
             matrixState: {
                 ...state.matrixState,
-                global: { ...state.matrixState.global, brightness },
+                global: {...state.matrixState.global, brightness},
             },
         })),
 
@@ -67,7 +71,7 @@ export const useMatrixStore = create<MatrixStore>()((set) => ({
         set((state) => ({
             matrixState: {
                 ...state.matrixState,
-                text: { ...state.matrixState.text, ...config },
+                text: {...state.matrixState.text, ...config},
             },
         })),
 
@@ -75,7 +79,7 @@ export const useMatrixStore = create<MatrixStore>()((set) => ({
         set((state) => ({
             matrixState: {
                 ...state.matrixState,
-                image: { ...state.matrixState.image, ...config },
+                image: {...state.matrixState.image, ...config},
             },
         })),
 
@@ -83,7 +87,7 @@ export const useMatrixStore = create<MatrixStore>()((set) => ({
         set((state) => ({
             matrixState: {
                 ...state.matrixState,
-                clock: { ...state.matrixState.clock, ...config },
+                clock: {...state.matrixState.clock, ...config},
             },
         })),
 
@@ -91,7 +95,15 @@ export const useMatrixStore = create<MatrixStore>()((set) => ({
         set((state) => ({
             matrixState: {
                 ...state.matrixState,
-                music: { ...state.matrixState.music, ...config },
+                music: {...state.matrixState.music, ...config},
+            },
+        })),
+
+    updateGameOfLifeConfig: (config) =>
+        set((state) => ({
+            matrixState: {
+                ...state.matrixState,
+                game_of_life: { ...state.matrixState.game_of_life, ...config },
             },
         })),
 
@@ -100,11 +112,11 @@ export const useMatrixStore = create<MatrixStore>()((set) => ({
             matrixState: {
                 ...defaultMatrixState,
                 ...(lastState || {}),
-                global: { ...defaultMatrixState.global, ...(lastState?.global || {}) },
-                text: { ...defaultMatrixState.text, ...(lastState?.text || {}) },
-                image: { ...defaultMatrixState.image, ...(lastState?.image || {}) },
-                clock: { ...defaultMatrixState.clock, ...(lastState?.clock || {}) },
-                music: { ...defaultMatrixState.music, ...(lastState?.music || {}) },
+                global: {...defaultMatrixState.global, ...(lastState?.global || {})},
+                text: {...defaultMatrixState.text, ...(lastState?.text || {})},
+                image: {...defaultMatrixState.image, ...(lastState?.image || {})},
+                clock: {...defaultMatrixState.clock, ...(lastState?.clock || {})},
+                music: {...defaultMatrixState.music, ...(lastState?.music || {})},
             },
         })),
 

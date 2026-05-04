@@ -21,7 +21,7 @@ export interface UserConfig {
 
 export interface MatrixState {
   global: {
-    mode: 'image' | 'text' | "idle" | "music" | "clock";
+    mode: 'image' | 'text' | "idle" | "music" | "clock" | "game_of_life";
     brightness: number;
   };
   text: {
@@ -39,5 +39,10 @@ export interface MatrixState {
   };
   music: {
     fullscreen: boolean;
+  };
+  game_of_life: {
+    color: [number, number, number];
+    speed: number;
+    cell_size: number;
   };
 }

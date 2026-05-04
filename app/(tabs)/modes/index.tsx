@@ -10,7 +10,7 @@ const AVAILABLE_MODES = [
     { id: 'image', title: 'Bilder & GIFs', description: 'Pixel-Art hochladen', icon: 'image', path: '/modes/image', color: 'bg-green-500' },
     { id: 'music', title: 'Musik', description: 'Spotify / Last.fm Visualisierung', icon: 'music', path: '/modes/music', color: 'bg-purple-500' },
     { id: 'clock', title: 'Uhr & Wetter', description: 'Digitale Uhr mit Wetterdaten', icon: 'clock', path: '/modes/clock', color: 'bg-orange-500' },
-   // { id: 'gol', title: 'Game of Life', description: 'Zellulärer Automat', icon: 'cpu', path: '/modes/game_of_life', color: 'bg-teal-500' },
+    { id: 'gol', title: 'Game of Life', description: 'Zellulärer Automat', icon: 'cpu', path: '/modes/game_of_life', color: 'bg-teal-500' },
 ];
 
 export default function ModesDashboardScreen() {
