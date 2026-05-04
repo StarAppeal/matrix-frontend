@@ -155,8 +155,8 @@ export default function MatrixPreview({mode, additionalPayload}: MatrixPreviewPr
                             accessibilityIgnoresInvertColors
                             style={Platform.OS === 'web' ? { imageRendering: 'pixelated' } as any : {}}
                         />
-                        <View className="absolute bottom-3 right-3 bg-black/60 p-2 rounded-full border border-white/10">
-                            <Feather name="maximize-2" size={18} color="rgba(255,255,255,0.8)"/>
+                        <View className="absolute top-3 right-3 bg-black/40 p-2 rounded-full border border-white/5 opacity-50">
+                            <Feather name="maximize-2" size={18} color="rgba(255,255,255,0.6)"/>
                         </View>
                     </>
                 )}
