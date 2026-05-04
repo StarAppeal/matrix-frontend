@@ -38,7 +38,6 @@ export default function ClockScreen() {
     const {colors} = useColors();
     const clockConfig = useMatrixStore((s) => s.matrixState.clock);
     const updateClockConfig = useMatrixStore((s) => s.updateClockConfig);
-    const settingsPayload = {"type": "SETTINGS", "payload": {"timezone": authenticatedUser?.timezone || "Etc/UTC"}}
 
     const combinedMemoPayload: AdditionalInitialPayload[] = useMemo(() => [
         {
