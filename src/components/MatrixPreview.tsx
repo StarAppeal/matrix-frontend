@@ -128,16 +128,18 @@ export default function MatrixPreview({mode, additionalPayload}: MatrixPreviewPr
     }, [currentModeConfig, isConnected, sendStateUpdate]);
 
     return (
-        <View className="items-center justify-center my-4">
+        <View className="items-center justify-center my-4 w-full">
             <Pressable
                 onPress={() => previewBase64 && setIsFullScreen(true)}
-                className="w-64 h-64 bg-[#0a0a0a] rounded-xl border-[3px] border-outline/20 dark:border-outline-dark/30 items-center justify-center shadow-2xl overflow-hidden relative"
-                style={{elevation: 10}}
+                className="w-64 h-64 md:w-80 md:h-80 bg-black rounded-3xl border-[12px] border-[#2a2a2a] dark:border-[#1a1a1a] items-center justify-center overflow-hidden relative shadow-2xl"
+                style={{
+                    elevation: 15,
+                }}
             >
                 {!isConnected && !previewBase64 && (
-                    <View className="items-center">
+                    <View className="items-center px-4">
                         <ActivityIndicator size="large" color="#888"/>
-                        <Text className="text-gray-500 mt-3 text-xs font-medium uppercase tracking-widest">
+                        <Text className="text-gray-500 mt-4 text-center text-xs font-medium uppercase tracking-widest">
                             Verbinde...
                         </Text>
                     </View>
@@ -153,8 +155,8 @@ export default function MatrixPreview({mode, additionalPayload}: MatrixPreviewPr
                             accessibilityIgnoresInvertColors
                             style={Platform.OS === 'web' ? { imageRendering: 'pixelated' } as any : {}}
                         />
-                        <View className="absolute bottom-2 right-2 bg-black/50 p-1.5 rounded-full">
-                            <Feather name="maximize-2" size={16} color="rgba(255,255,255,0.7)"/>
+                        <View className="absolute bottom-3 right-3 bg-black/60 p-2 rounded-full border border-white/10">
+                            <Feather name="maximize-2" size={18} color="rgba(255,255,255,0.8)"/>
                         </View>
                     </>
                 )}
