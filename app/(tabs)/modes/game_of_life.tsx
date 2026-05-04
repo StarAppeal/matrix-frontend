@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text, ScrollView} from "react-native";
+import {View, Text} from "react-native";
 import {useMatrixStore} from "@/src/stores";
 import ColorSelector from "@/src/components/themed/ColorSelector";
 import ThemedSegmentedButtons from "@/src/components/themed/ThemedSegmentedButtons";
