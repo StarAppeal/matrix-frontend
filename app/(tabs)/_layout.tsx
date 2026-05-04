@@ -1,4 +1,4 @@
-import { Link, Tabs } from 'expo-router';
+import { Tabs } from 'expo-router';
 import React from "react";
 import { Feather } from "@expo/vector-icons";
 import { useThemeStore } from "@/src/stores";
@@ -29,11 +29,6 @@ export default function TabLayout() {
                     options={{
                         title: 'Startseite',
                         tabBarIcon: ({ color }) => <Feather size={28} name="home" color={color} />,
-                        headerRight: () => (
-                            <Link href="/settings" style={{ marginRight: 16 }}>
-                                <Feather name="settings" size={24} color={theme.colors.onPrimaryContainer} />
-                            </Link>
-                        ),
                     }}
                 />
 
