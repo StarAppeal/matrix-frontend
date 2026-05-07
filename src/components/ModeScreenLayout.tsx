@@ -14,6 +14,7 @@ interface ModeScreenLayoutProps {
     subtitle: string;
     icon: keyof typeof Feather.glyphMap;
     additionalPayload?: AdditionalInitialPayload[];
+    hidePreview?: boolean;
     disableSave?: boolean;
     warningText?: string;
     settingsTitle?: string;
@@ -22,17 +23,18 @@ interface ModeScreenLayoutProps {
 }
 
 export default function ModeScreenLayout({
-                                             mode,
-                                             title,
-                                             subtitle,
-                                             icon,
-                                             additionalPayload,
-                                             disableSave = false,
-                                             warningText,
-                                             settingsTitle = "Einstellungen",
-                                             settingsDescription,
-                                             children
-                                         }: ModeScreenLayoutProps) {
+    mode,
+    title,
+    subtitle,
+    icon,
+    additionalPayload,
+    hidePreview = false,
+    disableSave = false,
+    warningText,
+    settingsTitle = "Einstellungen",
+    settingsDescription,
+    children
+}: ModeScreenLayoutProps) {
     const { colors } = useColors();
 
     return (
@@ -50,13 +52,15 @@ export default function ModeScreenLayout({
                     contentContainerStyle={{ paddingBottom: 100, alignItems: 'center' }}
                     showsVerticalScrollIndicator={false}
                 >
-                    <View className="w-full max-w-xl md:max-w-4xl px-4 flex-col md:flex-row md:items-center gap-6 mt-4">
+                    <View className="w-full max-w-xl md:max-w-4xl px-4 flex-col md:flex-row md:items-center md:justify-center gap-6 mt-4">
 
-                        <View className="w-full md:w-[45%] items-center">
-                            <MatrixPreview mode={mode} additionalPayload={additionalPayload} />
-                        </View>
+                        {!hidePreview && (
+                            <View className="w-full md:w-[45%] items-center">
+                                <MatrixPreview mode={mode} additionalPayload={additionalPayload} />
+                            </View>
+                        )}
 
-                        <View className="w-full md:w-[55%]">
+                        <View className={`w-full ${hidePreview ? 'md:w-[60%]' : 'md:w-[55%]'}`}>
                             {children && (
                                 <View className="bg-surface dark:bg-surface-dark rounded-2xl p-6 shadow-sm border border-outline/10 gap-6">
                                     <View className="items-center mb-2">

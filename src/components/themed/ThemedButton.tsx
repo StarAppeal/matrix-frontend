@@ -15,10 +15,8 @@ type Props = {
 };
 
 export default function ThemedButton({ mode, style, title, icon, className, compact, disabled, ...props }: Props) {
-    // Basis-Klassen für alle Buttons
     const baseClasses = "my-2 rounded-xl";
 
-    // Mode-spezifische Klassen
     const modeClasses = {
         contained: disabled
             ? "bg-muted dark:bg-muted-dark"

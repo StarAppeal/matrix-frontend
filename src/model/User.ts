@@ -21,12 +21,12 @@ export interface UserConfig {
 
 export interface MatrixState {
   global: {
-    mode: 'image' | 'text' | "idle" | "music" | "clock" | "game_of_life";
+    mode: "image" | "text" | "idle" | "music" | "clock" | "game_of_life" | "tamagotchi";
     brightness: number;
   };
   text: {
     text: string;
-    align: 'left' | 'center' | 'right';
+    align: "left" | "center" | "right";
     speed: number;
     size: number;
     color: [number, number, number];

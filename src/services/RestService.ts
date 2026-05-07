@@ -26,6 +26,14 @@ export interface LocationResult {
     local_names?: Record<string, string>;
 }
 
+export interface TamagotchiResponse {
+    hunger: number;
+    happiness: number;
+    energy: number;
+    hygiene: number;
+    status: string,
+}
+
 // Token provider function type - will be set from authStore
 type TokenProvider = () => string | null;
 let tokenProvider: TokenProvider = () => null;
@@ -210,8 +218,32 @@ class RestService {
         );
     }
 
-    async getSelfToken(): Promise<ApiResponse<{token: string }>> {
+    async getSelfToken(): Promise<ApiResponse<{ token: string }>> {
         return this.request("GET", "/auth/token");
+    }
+
+    async getTamagotchi(): Promise<ApiResponse<TamagotchiResponse>> {
+        return this.request("GET", "/tamagotchi");
+    }
+
+    async feedTamagotchi(): Promise<ApiResponse<TamagotchiResponse>> {
+        return this.request("POST", "/tamagotchi/feed");
+    }
+
+    async playTamagotchi(): Promise<ApiResponse<TamagotchiResponse>> {
+        return this.request("POST", "/tamagotchi/play");
+    }
+
+    async cleanTamagotchi(): Promise<ApiResponse<TamagotchiResponse>> {
+        return this.request("POST", "/tamagotchi/clean");
+    }
+
+    async sleepTamagotchi(): Promise<ApiResponse<TamagotchiResponse>> {
+        return this.request("POST", "/tamagotchi/sleep");
+    }
+
+    async awakeTamagotchi(): Promise<ApiResponse<TamagotchiResponse>> {
+        return this.request("POST", "/tamagotchi/awake");
     }
 
     private async request<T>(method: Method, url: string, data?: any, headers?: any): Promise<T> {

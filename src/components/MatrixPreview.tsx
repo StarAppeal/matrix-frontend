@@ -67,24 +67,19 @@ export default function MatrixPreview({mode, additionalPayload}: MatrixPreviewPr
                 wsRef.current = ws;
 
                 ws.onopen = () => {
-                    ws?.send(JSON.stringify({type: "AUTH", token: wsToken}));
+                    ws?.send(JSON.stringify({ type: "AUTH", token: wsToken }));
                 };
 
                 ws.onmessage = (event) => {
                     try {
                         const data = JSON.parse(event.data);
-
                         if (data.type === "AUTH_SUCCESS") {
                             setIsConnected(true);
                             sendStateUpdate(ws!);
-                            if (additionalPayload && additionalPayload.length > 0) {
-                                additionalPayload.forEach(payload => ws?.send(JSON.stringify(payload)));
-                            }
                         } else if (data.type === "PREVIEW_FRAME" && data.payload) {
                             latestFrameRef.current = data.payload;
                             if (!renderScheduledRef.current) {
                                 renderScheduledRef.current = true;
-
                                 requestAnimationFrame(() => {
                                     setPreviewFrame(latestFrameRef.current);
                                     renderScheduledRef.current = false;
@@ -100,7 +95,7 @@ export default function MatrixPreview({mode, additionalPayload}: MatrixPreviewPr
                     if (isMounted) setIsConnected(false);
                 };
             } catch (e) {
-                console.error("[Preview] Fehler beim Verbinden:", e);
+                console.error("[Preview] Error connecting:", e);
             }
         };
 
@@ -108,11 +103,23 @@ export default function MatrixPreview({mode, additionalPayload}: MatrixPreviewPr
 
         return () => {
             isMounted = false;
-            if (ws && ws.readyState === WebSocket.OPEN || ws?.readyState === WebSocket.CONNECTING) {
+            if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
                 ws.close();
             }
         };
-    }, [sendStateUpdate, isFocused, additionalPayload]);
+    }, [isFocused, sendStateUpdate]);
+
+    useEffect(() => {
+        if (isConnected && wsRef.current?.readyState === WebSocket.OPEN) {
+            sendStateUpdate(wsRef.current);
+
+            if (additionalPayload && additionalPayload.length > 0) {
+                additionalPayload.forEach(payload => {
+                    wsRef.current?.send(JSON.stringify(payload));
+                });
+            }
+        }
+    }, [isConnected, additionalPayload, sendStateUpdate]);
 
     const currentModeConfig = useMatrixStore((s) => s.matrixState[mode as keyof typeof s.matrixState]);
 
