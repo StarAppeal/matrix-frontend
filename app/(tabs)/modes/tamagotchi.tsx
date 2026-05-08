@@ -83,8 +83,8 @@ export default function TamagotchiScreen() {
         >
             <View className="mb-4">
                 <ProgressBar label="🍎 Hunger" value={stats?.hunger || 0} colorClass="bg-red-500"/>
-                <ProgressBar label="🎾 Glück" value={stats?.happiness || 0} colorClass="bg-yellow-400"/>
-                <ProgressBar label="⚡ Energie" value={stats?.energy || 0} colorClass="bg-blue-500"/>
+                <ProgressBar label="🎾 Glück" value={stats?.happiness || 0} colorClass="bg-green-400"/>
+                <ProgressBar label="⚡ Energie" value={stats?.energy || 0} colorClass="bg-yellow-400"/>
                 <ProgressBar label="🧽 Hygiene" value={stats?.hygiene || 0} colorClass="bg-cyan-400"/>
             </View>
 
