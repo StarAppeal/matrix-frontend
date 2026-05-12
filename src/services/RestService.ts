@@ -188,10 +188,11 @@ class RestService {
         );
     }
 
-    async getFileUrl(objectKey: string): Promise<ApiResponse<{ url: string }>> {
+    async getFileUrl(objectKey: string, variant: "matrix64" | "original" = "original"): Promise<ApiResponse<{ url: string }>> {
+        const query = `?variant=${encodeURIComponent(variant)}`;
         return this.request<ApiResponse<{ url: string }>>(
             'GET',
-            `/storage/files/${objectKey}/url`
+            `/storage/files/${objectKey}/url${query}`
         );
     }
 

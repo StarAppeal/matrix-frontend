@@ -61,7 +61,7 @@ export default function ImageScreen() {
 
     const selectImageForMatrix = async (objectKey: string) => {
         try {
-            const response = await restService.getFileUrl(objectKey);
+            const response = await restService.getFileUrl(objectKey, "matrix64");
             if (response.ok && response.data.url) {
                 updateImageConfig({image_url: response.data.url});
             }
