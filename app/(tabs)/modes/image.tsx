@@ -15,7 +15,7 @@ export default function ImageScreen() {
     const [showFiles, setShowFiles] = useState(false);
     const [loadingFiles, setLoadingFiles] = useState(false);
     const [deletingFile, setDeletingFile] = useState<string | null>(null);
-    const {colors} = useColors();
+    const {colors} =useColors();
 
     const updateImageConfig = useMatrixStore((s) => s.updateImageConfig);
 
@@ -62,8 +62,12 @@ export default function ImageScreen() {
     const selectImageForMatrix = async (objectKey: string) => {
         try {
             const response = await restService.getFileUrl(objectKey, "matrix64");
+
             if (response.ok && response.data.url) {
-                updateImageConfig({image_url: response.data.url});
+                updateImageConfig({
+                    s3_key: objectKey,
+                    image_url: response.data.url
+                });
             }
         } catch (error) {
             console.error("Fehler beim Setzen des Bildes:", error);

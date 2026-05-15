@@ -4,7 +4,6 @@ import {Feather} from '@expo/vector-icons';
 import {useMatrixStore} from '@/src/stores';
 import {restService} from '@/src/services/RestService';
 
-
 import {useIsFocused} from '@react-navigation/native';
 
 const PREVIEW_WS_URL = process.env.EXPO_PUBLIC_PREVIEW_WS_URL!;

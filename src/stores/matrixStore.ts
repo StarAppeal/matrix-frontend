@@ -4,7 +4,10 @@ import {MatrixState} from '@/src/model/User';
 const defaultMatrixState: MatrixState = {
     global: {mode: 'idle', brightness: 100},
     text: {text: 'Hello World', align: 'center', speed: 50, size: 16, color: [255, 255, 255]},
-    image: {image_url: 'https://static.wikia.nocookie.net/tmnt/images/f/f2/Garfield.jpg/revision/latest?cb=20140610130734&path-prefix=de'},
+    image: {
+        image_url: 'https://i.imgur.com/DTDKgUb.png',
+        s3_key: ""
+    },
     clock: {color: [0, 255, 0]},
     music: {fullscreen: false},
     game_of_life: {color: [0, 255, 255], speed: 10, cell_size: 2}
@@ -28,7 +31,7 @@ interface MatrixStore {
     setGlobalMode: (mode: MatrixState['global']['mode']) => void;
     setBrightness: (brightness: number) => void;
     updateTextConfig: (config: Partial<MatrixState['text']>) => void;
-    updateImageConfig: (config: Partial<MatrixState['image']>) => void;
+    updateImageConfig: (config: Partial<MatrixState["image"]>) => void;
     updateClockConfig: (config: Partial<MatrixState['clock']>) => void;
     updateMusicConfig: (config: Partial<MatrixState['music']>) => void;
     updateGameOfLifeConfig: (config: Partial<MatrixState['game_of_life']>) => void;
@@ -103,7 +106,7 @@ export const useMatrixStore = create<MatrixStore>()((set) => ({
         set((state) => ({
             matrixState: {
                 ...state.matrixState,
-                game_of_life: { ...state.matrixState.game_of_life, ...config },
+                game_of_life: {...state.matrixState.game_of_life, ...config},
             },
         })),
 
